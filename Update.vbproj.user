@@ -1,0 +1,15 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectView>ProjectFiles</ProjectView>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <StartArguments>
+    </StartArguments>
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartArguments>Karteikasten Karteikasten.exe</StartArguments>
+    <StartWorkingDirectory>D:\Dokumente und Einstellungen\Flose\Eigene Dateien\Visual Studio 2005\Projects\Karteikasten\bin\</StartWorkingDirectory>
+  </PropertyGroup>
+</Project>
