@@ -6,7 +6,6 @@ Public Class frmUpdate
 
             Me.Show()
 
-
             lblDatei.Text = "Beenden Sie das Programm"
             If System.IO.File.Exists(System.Environment.GetCommandLineArgs(2)) Then
                 Dim Writer As System.IO.FileStream
@@ -16,6 +15,7 @@ Public Class frmUpdate
                         Writer.Close()
                         Exit Do
                     Catch ex As Exception
+                        Threading.Thread.Sleep(100)
                         Application.DoEvents()
                     End Try
                 Loop
@@ -34,6 +34,8 @@ Public Class frmUpdate
             UpdateWriter.WriteLine(Now & "|" & tmpVersion)
             UpdateWriter.Close()
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            If System.IO.Directory.GetFiles(Application.StartupPath, "Lizenz-*.txt").Length > 0 Then frmLizenz.ShowDialog(Me)
             Process.Start(System.Environment.GetCommandLineArgs(1), "")
         End If
         End

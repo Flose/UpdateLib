@@ -24,10 +24,11 @@ Partial Class frmUpdate
         '
         'lblDatei
         '
+        Me.lblDatei.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblDatei.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblDatei.Location = New System.Drawing.Point(-4, 9)
+        Me.lblDatei.Location = New System.Drawing.Point(0, 0)
         Me.lblDatei.Name = "lblDatei"
-        Me.lblDatei.Size = New System.Drawing.Size(282, 23)
+        Me.lblDatei.Size = New System.Drawing.Size(273, 54)
         Me.lblDatei.TabIndex = 1
         Me.lblDatei.Text = "Updaten ..."
         Me.lblDatei.TextAlign = System.Drawing.ContentAlignment.MiddleCenter

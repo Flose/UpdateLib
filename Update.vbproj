@@ -50,6 +50,12 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmLizenz.Designer.vb">
+      <DependentUpon>frmLizenz.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmLizenz.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmUpdate.Designer.vb">
       <DependentUpon>frmUpdate.vb</DependentUpon>
     </Compile>
@@ -73,6 +79,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="frmLizenz.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmLizenz.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmUpdate.resx">
       <SubType>Designer</SubType>
       <DependentUpon>frmUpdate.vb</DependentUpon>
