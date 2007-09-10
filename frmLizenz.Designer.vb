@@ -38,17 +38,21 @@ Partial Class frmLizenz
         '
         'txtLizenz
         '
+        Me.txtLizenz.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtLizenz.Location = New System.Drawing.Point(12, 39)
         Me.txtLizenz.Multiline = True
         Me.txtLizenz.Name = "txtLizenz"
+        Me.txtLizenz.ReadOnly = True
         Me.txtLizenz.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtLizenz.Size = New System.Drawing.Size(472, 294)
+        Me.txtLizenz.Size = New System.Drawing.Size(472, 314)
         Me.txtLizenz.TabIndex = 1
         '
         'cmdOk
         '
         Me.cmdOk.Anchor = System.Windows.Forms.AnchorStyles.Bottom
-        Me.cmdOk.Location = New System.Drawing.Point(211, 339)
+        Me.cmdOk.Location = New System.Drawing.Point(211, 359)
         Me.cmdOk.Name = "cmdOk"
         Me.cmdOk.Size = New System.Drawing.Size(75, 23)
         Me.cmdOk.TabIndex = 2
@@ -60,11 +64,12 @@ Partial Class frmLizenz
         Me.AcceptButton = Me.cmdOk
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(496, 374)
+        Me.ClientSize = New System.Drawing.Size(496, 394)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.txtLizenz)
         Me.Controls.Add(Me.cmbSprachen)
         Me.Name = "frmLizenz"
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Lizenz - license - licence - licencia - licenza"
         Me.ResumeLayout(False)
         Me.PerformLayout()

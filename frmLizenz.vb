@@ -1,8 +1,9 @@
 Public Class frmLizenz
-
     Private Sub frmLizenz_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Dim tmpDatei As String
         For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath, "Lizenz-*.txt")
-            cmbSprachen.Items.Add(Datei.Substring(7, Datei.Length - 11))
+            tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
+            cmbSprachen.Items.Add(tmpDatei.Substring(7))
         Next
         cmbSprachen.SelectedIndex = 0
     End Sub
