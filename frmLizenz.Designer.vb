@@ -25,6 +25,7 @@ Partial Class frmLizenz
         Me.cmbSprachen = New System.Windows.Forms.ComboBox
         Me.txtLizenz = New System.Windows.Forms.TextBox
         Me.cmdOk = New System.Windows.Forms.Button
+        Me.lblReleasenotes = New System.Windows.Forms.LinkLabel
         Me.SuspendLayout()
         '
         'cmbSprachen
@@ -59,12 +60,23 @@ Partial Class frmLizenz
         Me.cmdOk.Text = "O&k"
         Me.cmdOk.UseVisualStyleBackColor = True
         '
+        'lblReleasenotes
+        '
+        Me.lblReleasenotes.AutoSize = True
+        Me.lblReleasenotes.Location = New System.Drawing.Point(265, 15)
+        Me.lblReleasenotes.Name = "lblReleasenotes"
+        Me.lblReleasenotes.Size = New System.Drawing.Size(89, 13)
+        Me.lblReleasenotes.TabIndex = 3
+        Me.lblReleasenotes.TabStop = True
+        Me.lblReleasenotes.Text = "{0} Releasenotes"
+        '
         'frmLizenz
         '
         Me.AcceptButton = Me.cmdOk
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(496, 394)
+        Me.Controls.Add(Me.lblReleasenotes)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.txtLizenz)
         Me.Controls.Add(Me.cmbSprachen)
@@ -78,4 +90,5 @@ Partial Class frmLizenz
     Friend WithEvents cmbSprachen As System.Windows.Forms.ComboBox
     Friend WithEvents txtLizenz As System.Windows.Forms.TextBox
     Friend WithEvents cmdOk As System.Windows.Forms.Button
+    Friend WithEvents lblReleasenotes As System.Windows.Forms.LinkLabel
 End Class
