@@ -2,7 +2,7 @@ Public Class frmLizenz
     Private Sub frmLizenz_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         lblReleasenotes.Text = System.String.Format(lblReleasenotes.Text, System.Environment.GetCommandLineArgs(1))
         Dim tmpDatei As String
-        For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath, "Lizenz-*.txt")
+        For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "\Update\", "Lizenz-*.txt")
             tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
             cmbSprachen.Items.Add(tmpDatei.Substring(7))
         Next
@@ -12,7 +12,7 @@ Public Class frmLizenz
     Private Sub cmbSprachen_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbSprachen.SelectedIndexChanged
         If cmbSprachen.SelectedIndex > -1 Then
             Try
-                Dim Reader As New System.IO.StreamReader(Application.StartupPath & "\Lizenz-" & CStr(cmbSprachen.SelectedItem) & ".txt", True)
+                Dim Reader As New System.IO.StreamReader(Application.StartupPath & "\Update\Lizenz-" & CStr(cmbSprachen.SelectedItem) & ".txt", True)
                 txtLizenz.Text = Reader.ReadToEnd
                 Reader.Close()
             Catch ex As Exception

@@ -26,6 +26,7 @@ Partial Class frmLizenz
         Me.txtLizenz = New System.Windows.Forms.TextBox
         Me.cmdOk = New System.Windows.Forms.Button
         Me.lblReleasenotes = New System.Windows.Forms.LinkLabel
+        Me.cmdAblehnen = New System.Windows.Forms.Button
         Me.SuspendLayout()
         '
         'cmbSprachen
@@ -52,12 +53,13 @@ Partial Class frmLizenz
         '
         'cmdOk
         '
-        Me.cmdOk.Anchor = System.Windows.Forms.AnchorStyles.Bottom
-        Me.cmdOk.Location = New System.Drawing.Point(211, 359)
+        Me.cmdOk.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.cmdOk.DialogResult = System.Windows.Forms.DialogResult.OK
+        Me.cmdOk.Location = New System.Drawing.Point(12, 359)
         Me.cmdOk.Name = "cmdOk"
-        Me.cmdOk.Size = New System.Drawing.Size(75, 23)
+        Me.cmdOk.Size = New System.Drawing.Size(130, 23)
         Me.cmdOk.TabIndex = 2
-        Me.cmdOk.Text = "O&k"
+        Me.cmdOk.Text = "Akzeptieren/Accept"
         Me.cmdOk.UseVisualStyleBackColor = True
         '
         'lblReleasenotes
@@ -70,17 +72,31 @@ Partial Class frmLizenz
         Me.lblReleasenotes.TabStop = True
         Me.lblReleasenotes.Text = "{0} Releasenotes"
         '
+        'cmdAblehnen
+        '
+        Me.cmdAblehnen.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdAblehnen.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.cmdAblehnen.Location = New System.Drawing.Point(376, 359)
+        Me.cmdAblehnen.Name = "cmdAblehnen"
+        Me.cmdAblehnen.Size = New System.Drawing.Size(108, 23)
+        Me.cmdAblehnen.TabIndex = 4
+        Me.cmdAblehnen.Text = "Ablehnen/Decline"
+        Me.cmdAblehnen.UseVisualStyleBackColor = True
+        '
         'frmLizenz
         '
         Me.AcceptButton = Me.cmdOk
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.CancelButton = Me.cmdAblehnen
         Me.ClientSize = New System.Drawing.Size(496, 394)
+        Me.Controls.Add(Me.cmdAblehnen)
         Me.Controls.Add(Me.lblReleasenotes)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.txtLizenz)
         Me.Controls.Add(Me.cmbSprachen)
         Me.Name = "frmLizenz"
+        Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Lizenz - license - licence - licencia - licenza"
         Me.ResumeLayout(False)
@@ -91,4 +107,5 @@ Partial Class frmLizenz
     Friend WithEvents txtLizenz As System.Windows.Forms.TextBox
     Friend WithEvents cmdOk As System.Windows.Forms.Button
     Friend WithEvents lblReleasenotes As System.Windows.Forms.LinkLabel
+    Friend WithEvents cmdAblehnen As System.Windows.Forms.Button
 End Class

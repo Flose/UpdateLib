@@ -4,6 +4,13 @@ Public Class frmUpdate
         If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
             Me.Text = System.String.Format(Me.Text, System.Environment.GetCommandLineArgs(1))
 
+            If System.IO.Directory.GetFiles(Application.StartupPath & "\Update\", "Lizenz-*.txt").Length > 0 Then
+                If frmLizenz.ShowDialog(Me) <> Windows.Forms.DialogResult.OK Then
+                    End
+                End If
+            End If
+
+
             Me.Show()
 
             lblDatei.Text = "Beenden Sie das Programm"
@@ -35,7 +42,6 @@ Public Class frmUpdate
             UpdateWriter.Close()
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
-            If System.IO.Directory.GetFiles(Application.StartupPath, "Lizenz-*.txt").Length > 0 Then frmLizenz.ShowDialog(Me)
             Process.Start(System.Environment.GetCommandLineArgs(1), "")
         End If
         End
