@@ -15,7 +15,7 @@ Public Class frmLizenz
         Try
             For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "\", "Lizenz-*.txt")
                 tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
-                If cmbSprachen.Items.IndexOf(tmpDatei) = -1 Then '=>Datei nicht in update verzeichnis
+                If cmbSprachen.Items.IndexOf(tmpDatei.Substring(7)) = -1 Then '=>Datei nicht in update verzeichnis
                     cmbSprachen.Items.Add(tmpDatei.Substring(7))
                 End If
             Next
