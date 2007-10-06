@@ -48,14 +48,14 @@ Partial Class frmLizenz
         Me.txtLizenz.Name = "txtLizenz"
         Me.txtLizenz.ReadOnly = True
         Me.txtLizenz.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
-        Me.txtLizenz.Size = New System.Drawing.Size(472, 314)
+        Me.txtLizenz.Size = New System.Drawing.Size(430, 334)
         Me.txtLizenz.TabIndex = 1
         '
         'cmdOk
         '
         Me.cmdOk.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.cmdOk.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.cmdOk.Location = New System.Drawing.Point(12, 359)
+        Me.cmdOk.Location = New System.Drawing.Point(12, 379)
         Me.cmdOk.Name = "cmdOk"
         Me.cmdOk.Size = New System.Drawing.Size(130, 23)
         Me.cmdOk.TabIndex = 2
@@ -76,7 +76,7 @@ Partial Class frmLizenz
         '
         Me.cmdAblehnen.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdAblehnen.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.cmdAblehnen.Location = New System.Drawing.Point(376, 359)
+        Me.cmdAblehnen.Location = New System.Drawing.Point(334, 379)
         Me.cmdAblehnen.Name = "cmdAblehnen"
         Me.cmdAblehnen.Size = New System.Drawing.Size(108, 23)
         Me.cmdAblehnen.TabIndex = 4
@@ -89,12 +89,13 @@ Partial Class frmLizenz
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.CancelButton = Me.cmdAblehnen
-        Me.ClientSize = New System.Drawing.Size(496, 394)
+        Me.ClientSize = New System.Drawing.Size(454, 414)
         Me.Controls.Add(Me.cmdAblehnen)
         Me.Controls.Add(Me.lblReleasenotes)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.txtLizenz)
         Me.Controls.Add(Me.cmbSprachen)
+        Me.MinimumSize = New System.Drawing.Size(366, 131)
         Me.Name = "frmLizenz"
         Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

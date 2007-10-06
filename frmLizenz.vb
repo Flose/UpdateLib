@@ -3,19 +3,30 @@ Public Class frmLizenz
         lblReleasenotes.Text = System.String.Format(lblReleasenotes.Text, System.Environment.GetCommandLineArgs(1))
         Dim tmpDatei As String
         'Lizenzen aus Update verzeichnis(haben vorrang)
-        For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "\Update\", "Lizenz-*.txt")
-            tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
-            cmbSprachen.Items.Add(tmpDatei.Substring(7))
-        Next
+        Try
+            For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "\Update\", "Lizenz-*.txt")
+                tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
+                cmbSprachen.Items.Add(tmpDatei.Substring(7))
+            Next
+        Catch
+        End Try
 
         'Lizenzen aus hauptverzeichnis
-        For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "\", "Lizenz-*.txt")
-            tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
-            If cmbSprachen.Items.IndexOf(tmpDatei) = -1 Then '=>Datei nicht in update verzeichnis
-                cmbSprachen.Items.Add(tmpDatei.Substring(7))
-            End If
-        Next
-        cmbSprachen.SelectedIndex = 0
+        Try
+            For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "\", "Lizenz-*.txt")
+                tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
+                If cmbSprachen.Items.IndexOf(tmpDatei) = -1 Then '=>Datei nicht in update verzeichnis
+                    cmbSprachen.Items.Add(tmpDatei.Substring(7))
+                End If
+            Next
+        Catch
+        End Try
+        Dim tmpIndex As Int16 = cmbSprachen.Items.IndexOf(My.Application.Culture.NativeName.Substring(0, My.Application.Culture.EnglishName.IndexOf(" (") + 1))
+        If tmpIndex = -1 Then
+            cmbSprachen.SelectedIndex = 0
+        Else
+            cmbSprachen.SelectedIndex = tmpIndex
+        End If
     End Sub
 
     Private Sub cmbSprachen_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbSprachen.SelectedIndexChanged
