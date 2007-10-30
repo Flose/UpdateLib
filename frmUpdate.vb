@@ -4,7 +4,7 @@ Public Class frmUpdate
         If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
             Me.Text = System.String.Format(Me.Text, System.Environment.GetCommandLineArgs(1))
 
-            If System.IO.Directory.GetFiles(Application.StartupPath & "\Update\", "Lizenz-*.txt").Length > 0 Then
+            If System.IO.Directory.GetFiles(Application.StartupPath & "/Update/", "Lizenz-*.txt").Length > 0 Then
                 If frmLizenz.ShowDialog(Me) <> Windows.Forms.DialogResult.OK Then
                     End
                 End If
@@ -29,10 +29,11 @@ Public Class frmUpdate
             End If
             lblDatei.Text = "Updaten..."
 
-            My.Computer.FileSystem.MoveDirectory(Application.StartupPath & "\Update", Application.StartupPath, True)
-            My.Computer.FileSystem.MoveFile(Application.StartupPath & "\Update.txt", Application.StartupPath & "\Versionen.txt", True)
+            'My.Computer.FileSystem.MoveDirectory(Application.StartupPath & "/Update/", Application.StartupPath & "/", True)
+            VerschiebeVerzeichnis(Application.StartupPath & "/Update/", Application.StartupPath & "/")
+            My.Computer.FileSystem.MoveFile(Application.StartupPath & "/Update.txt", Application.StartupPath & "/Versionen.txt", True)
 
-            Dim Reader As New System.IO.StreamReader(Application.StartupPath & "\Versionen.txt")
+            Dim Reader As New System.IO.StreamReader(Application.StartupPath & "/Versionen.txt")
             Reader.ReadLine()
             Dim tmpVersion As String = Reader.ReadLine()
             Reader.Close()
@@ -41,9 +42,31 @@ Public Class frmUpdate
             UpdateWriter.WriteLine(Now & "|" & tmpVersion)
             UpdateWriter.Close()
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-            Process.Start(System.Environment.GetCommandLineArgs(1), "")
+            Process.Start("""" & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """", "")
         End If
         End
+    End Sub
+
+    Sub VerschiebeVerzeichnis(ByVal Von As String, ByVal Nach As String)
+        System.IO.Directory.CreateDirectory(Nach)
+        For Each Datei As String In System.IO.Directory.GetFiles(Von)
+NochMal:
+            Try
+                My.Computer.FileSystem.MoveFile(Datei, Nach & System.IO.Path.GetFileName(Datei), True)
+            Catch ex As Exception
+                Dim tmpResult As DialogResult = MessageBox.Show("Fehler beim Aktualisieren der Datei " & System.IO.Path.GetFileName(Datei) & ":" & Environment.NewLine & ex.Message, "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
+                If tmpResult = Windows.Forms.DialogResult.Abort Then
+                    End
+                ElseIf tmpResult = Windows.Forms.DialogResult.Retry Then
+                    GoTo Nochmal
+                ElseIf tmpResult = Windows.Forms.DialogResult.Ignore Then
+                    'Nichts machen
+                End If
+            End Try
+        Next
+        For Each Pfad As String In System.IO.Directory.GetDirectories(Von)
+            VerschiebeVerzeichnis(Pfad & "/", Nach & Pfad.Substring(Pfad.LastIndexOf("/") + 1) & "/")
+        Next
+        System.IO.Directory.Delete(Von, True)
     End Sub
 End Class
