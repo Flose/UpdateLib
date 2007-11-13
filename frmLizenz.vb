@@ -21,14 +21,18 @@ Public Class frmLizenz
         'Lizenzen aus hauptverzeichnis
         Try
             For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "/", "Lizenz-*.txt")
-                tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
-                If tmpLizenzen Is Nothing OrElse Array.IndexOf(tmpLizenzen, tmpDatei.Substring(7)) = -1 Then '=>Datei nicht in update verzeichnis
-                    tmpReader = New IO.StreamReader(Datei)
-                    cmbSprachen.Items.Add(tmpReader.ReadLine)
-                    tmpReader.Close()
-                    If tmpLizenzen Is Nothing Then ReDim tmpLizenzen(0) Else ReDim Preserve tmpLizenzen(tmpLizenzen.Length)
-                    tmpLizenzen(tmpLizenzen.GetUpperBound(0)) = tmpDatei.Substring(7)
-                End If
+                Try
+                    tmpDatei = System.IO.Path.GetFileNameWithoutExtension(Datei)
+                    If tmpLizenzen Is Nothing OrElse Array.IndexOf(tmpLizenzen, tmpDatei.Substring(7)) = -1 Then '=>Datei nicht in update verzeichnis
+                        tmpReader = New IO.StreamReader(Datei)
+
+                        cmbSprachen.Items.Add(tmpReader.ReadLine)
+                        tmpReader.Close()
+                        If tmpLizenzen Is Nothing Then ReDim tmpLizenzen(0) Else ReDim Preserve tmpLizenzen(tmpLizenzen.Length)
+                        tmpLizenzen(tmpLizenzen.GetUpperBound(0)) = tmpDatei.Substring(7)
+                    End If
+                Catch
+                End Try
             Next
         Catch
         End Try
@@ -37,6 +41,10 @@ Public Class frmLizenz
             cmbSprachen.SelectedIndex = 0
         Else
             cmbSprachen.SelectedIndex = tmpIndex
+        End If
+        'Releasenotes
+        If frmUpdate.ReleasNotesUrl.Trim = "" Then
+            lblReleasenotes.Visible = False
         End If
     End Sub
 
@@ -68,6 +76,9 @@ Public Class frmLizenz
 
     Private Sub lblReleasenotes_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles lblReleasenotes.LinkClicked
         lblReleasenotes.LinkVisited = True
-        Process.Start("http://www.mal-was-anderes.de/programme/karteikasten/releasenotes.txt")
+        Try
+            Process.Start(frmUpdate.ReleasNotesUrl) '"http://www.mal-was-anderes.de/programme/karteikasten/releasenotes.txt")
+        Catch
+        End Try
     End Sub
 End Class
