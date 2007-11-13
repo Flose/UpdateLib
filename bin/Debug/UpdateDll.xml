@@ -1,0 +1,23 @@
+﻿<?xml version="1.0"?>
+<doc>
+<assembly>
+<name>
+UpdateDll
+</name>
+</assembly>
+<members>
+<member name="M:UpdateDll.Update.UpdateSuchenInstallieren(System.Object)">
+	<summary>
+ Sucht nach Updates und fragt fals vorhanden, ob es installiert werden soll.
+ </summary>
+	<remarks></remarks>
+</member><member name="M:UpdateDll.Update.SucheUpdate(System.Boolean)">
+	<summary>
+ Sucht nach Updates
+ </summary>
+	<param name="ZeigeFehler">Ob fehler angezeigt werden sollen</param>
+	<returns>Gibt die neuere Version des Updates zurück andernfalls ""</returns>
+	<remarks></remarks>
+</member>
+</members>
+</doc>
