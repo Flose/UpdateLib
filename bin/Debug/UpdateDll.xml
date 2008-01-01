@@ -6,7 +6,12 @@ UpdateDll
 </name>
 </assembly>
 <members>
-<member name="M:UpdateDll.Update.UpdateSuchenInstallieren(System.Object)">
+<member name="F:UpdateDll.Update.GoogleStatistik">
+	<summary>
+ Gibt an ob Updatesuchen/Update Information zu Statistikzwecken an Google Analytics gesendet werden sollen
+ </summary>
+	<remarks></remarks>
+</member><member name="M:UpdateDll.Update.UpdateSuchenInstallieren(System.Object)">
 	<summary>
  Sucht nach Updates und fragt fals vorhanden, ob es installiert werden soll.
  </summary>
