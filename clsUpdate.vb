@@ -3,6 +3,8 @@ Public Class Update
     Dim InstallierteKategorien() As String = Nothing
     Dim ‹bersetzen As New dllSprache.cls‹bersetzen("xxx")
 
+    Event Neustarten(ByRef Manual As System.Threading.ManualResetEvent)
+
     Dim ZuAktualisierendeDateien As Dateien, AktuellerServer As String
     Dim ProgrammName, ProgrammExe, ProgrammPfad, ProgrammVersion, ProgrammSprache As String
     Public GeradeUpdaten As Boolean
@@ -281,6 +283,9 @@ Suche:
 
     Function InstalliereUpdate() As Boolean 'Wenn update vorhande true sonst false
         If System.IO.File.Exists(ProgrammPfad & "/Update/Versionen.lst") Then
+            Dim Manual As New System.Threading.ManualResetEvent(False)
+            RaiseEvent Neustarten(Manual)
+            Manual.WaitOne(60000, False)
             Process.Start("""" & ProgrammPfad & "/Update.exe""", """" & ProgrammName & """ """ & ProgrammExe & """")
             Application.Exit()
             Return True

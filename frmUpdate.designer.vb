@@ -54,7 +54,6 @@ Partial Class frmUpdate
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmUpdate"
-        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Tag = "Update"
         Me.Text = "Update"

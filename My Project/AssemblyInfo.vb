@@ -14,7 +14,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Updatefunktion für Programme")> 
 <Assembly: AssemblyCompany("Flo & Seb Engineering")> 
 <Assembly: AssemblyProduct("UpdateDll")> 
-<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2007")> 
+<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2007 - 2008")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)> 
@@ -33,7 +33,7 @@ Imports System.Runtime.InteropServices
 ' übernehmen, indem Sie "*" eingeben:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.0.0.0")> 
-<Assembly: AssemblyFileVersion("1.0.0.0")> 
+<Assembly: AssemblyVersion("1.1.0.0")> 
+<Assembly: AssemblyFileVersion("1.1.0.0")> 
 
 <Assembly: NeutralResourcesLanguageAttribute("de-DE")> 
