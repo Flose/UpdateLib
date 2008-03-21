@@ -42,20 +42,7 @@ Public Class frmUpdate
 
             Me.Show()
 
-            'lblDatei.Text = "Beenden Sie das Programm"
-            'If System.IO.File.Exists(System.Environment.GetCommandLineArgs(2)) Then
-            '    Dim Writer As System.IO.FileStream
-            '    Do
-            '        Try
-            '            Writer = New System.IO.FileStream(System.Environment.GetCommandLineArgs(2), IO.FileMode.Open)
-            '            Writer.Close()
-            '            Exit Do
-            '        Catch ex As Exception
-            '            Threading.Thread.Sleep(100)
-            '            Application.DoEvents()
-            '        End Try
-            '    Loop
-            'End If
+
             lblDatei.Text = "Updaten..."
 
             'My.Computer.FileSystem.MoveDirectory(Application.StartupPath & "/Update/", Application.StartupPath & "/", True)
@@ -83,7 +70,11 @@ Public Class frmUpdate
             UpdateWriter.WriteLine(Now & "|" & tmpVersion)
             UpdateWriter.Close()
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Process.Start("""" & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """", "")
+            If Environment.OSVersion.Platform = PlatformID.Unix Then
+                Process.Start("mono """ & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
+            Else
+                Process.Start("""" & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
+            End If
         End If
         End
     End Sub
