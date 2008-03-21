@@ -218,7 +218,12 @@ Suche:
                         If MitUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("lblAktuelleDatei", "Aktuelle Datei: {0}", ZuAktualisierendeDateien(i).Name), i, ZuAktualisierendeDateien.Count - 1, Übersetzen.Übersetze("Update", "Update"))
                         Application.DoEvents()
                         Try
-                            Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), ProgrammPfad & "/Update/" & ZuAktualisierendeDateien(i).Name)
+                            Try
+                                Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), ProgrammPfad & "/Update/" & ZuAktualisierendeDateien(i).Name)
+                            Catch
+                                Client.Proxy = Nothing
+                                Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), ProgrammPfad & "/Update/" & ZuAktualisierendeDateien(i).Name)
+                            End Try
                         Catch ex As Exception
                             Console.Error.WriteLine(AktuellerServer & ZuAktualisierendeDateien(i).Name & ": " & ex.Message)
                             MessageBox.Show(ex.Message, Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -254,13 +259,14 @@ Suche:
         Dim offset As Integer = 0
         Dim totalCount As Integer = 0
         While True
-            ReDim Preserve tmp(totalCount + 100)
-            Dim bytesRead As Integer = Gzip.Read(tmp, offset, 100)
+            ReDim Preserve tmp(totalCount + 4000)
+            Dim bytesRead As Integer = Gzip.Read(tmp, offset, 4000)
             If bytesRead = 0 Then
                 Exit While
             End If
             offset += bytesRead
             totalCount += bytesRead
+            If (totalCount Mod 80000) = 0 Then Application.DoEvents()
         End While
         ReDim Preserve tmp(totalCount)
         Gzip.Close()
@@ -275,7 +281,12 @@ Suche:
         '7flashversion        '8Titel        '9host        '10UA-Code UA-2276175-1
         Try
             Dim client As New System.Net.WebClient, rnd As New Random
-            client.OpenRead(String.Format("http://www.google-analytics.com/__utm.gif?utmwv=1&utmn={0}&utmcs={3}&utmsr={4}&utmsc={5}&utmul={6}&utmje=1&utmfl={7}&utmcn=1&utmdt={8}&utmhn={9}&utmr=-&utmp={2}&utmac={10}&utmcc=__utma%3D81541394.{0}.{1}.{1}.{1}.1%3B%2B__utmb%3D81541394%3B%2B__utmc%3D81541394%3B%2B__utmz%3D81541394.{1}.1.1.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B", rnd.NextDouble * 2147483647, Int(Date.UtcNow.Subtract(New Date(1970, 1, 1)).Ticks / 10000000), Datei, Kodierung, Auflösung, Farbtiefe, Sprache, Flashversion, Titel, Host, UACode)).Close()
+            Try
+                client.OpenRead(String.Format("http://www.google-analytics.com/__utm.gif?utmwv=1&utmn={0}&utmcs={3}&utmsr={4}&utmsc={5}&utmul={6}&utmje=1&utmfl={7}&utmcn=1&utmdt={8}&utmhn={9}&utmr=-&utmp={2}&utmac={10}&utmcc=__utma%3D81541394.{0}.{1}.{1}.{1}.1%3B%2B__utmb%3D81541394%3B%2B__utmc%3D81541394%3B%2B__utmz%3D81541394.{1}.1.1.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B", rnd.NextDouble * 2147483647, Int(Date.UtcNow.Subtract(New Date(1970, 1, 1)).Ticks / 10000000), Datei, Kodierung, Auflösung, Farbtiefe, Sprache, Flashversion, Titel, Host, UACode)).Close()
+            Catch
+                client.Proxy = Nothing
+                client.OpenRead(String.Format("http://www.google-analytics.com/__utm.gif?utmwv=1&utmn={0}&utmcs={3}&utmsr={4}&utmsc={5}&utmul={6}&utmje=1&utmfl={7}&utmcn=1&utmdt={8}&utmhn={9}&utmr=-&utmp={2}&utmac={10}&utmcc=__utma%3D81541394.{0}.{1}.{1}.{1}.1%3B%2B__utmb%3D81541394%3B%2B__utmc%3D81541394%3B%2B__utmz%3D81541394.{1}.1.1.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B", rnd.NextDouble * 2147483647, Int(Date.UtcNow.Subtract(New Date(1970, 1, 1)).Ticks / 10000000), Datei, Kodierung, Auflösung, Farbtiefe, Sprache, Flashversion, Titel, Host, UACode)).Close()
+            End Try
             client.Dispose()
         Catch
         End Try
@@ -286,7 +297,11 @@ Suche:
             Dim Manual As New System.Threading.ManualResetEvent(False)
             RaiseEvent Neustarten(Manual)
             Manual.WaitOne(60000, False)
-            Process.Start("""" & ProgrammPfad & "/Update.exe""", """" & ProgrammName & """ """ & ProgrammExe & """")
+            If Environment.OSVersion.Platform = PlatformID.Unix Then
+                Process.Start("mono """ & ProgrammPfad & "/Update.exe""" & " """ & ProgrammName & """ """ & ProgrammExe & """")
+            Else
+                Process.Start("""" & ProgrammPfad & "/Update.exe""", """" & ProgrammName & """ """ & ProgrammExe & """")
+            End If
             Application.Exit()
             Return True
         End If
@@ -339,7 +354,12 @@ Class VersionenDatei
             Dim Client As New System.Net.WebClient
 
             'Stream = Client.OpenRead(Datei)
-            Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+            Try
+                Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+            Catch
+                Client.Proxy = Nothing
+                Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+            End Try
         End If
 
         Dim tmpKategorienIndex As Int16 = -1, tmp As String
@@ -361,13 +381,11 @@ Class VersionenDatei
                 Kategorien(tmpKategorienIndex).Dateien.Add(tmp, Reader.ReadLine)
             End If
         Loop
-        If Environment.OSVersion.Platform <> PlatformID.Unix Then ' todo
-            Try 'für linux
-                Reader.Close()
-                Stream.Close()
-            Catch
-            End Try
-        End If
+        Try 'für linux
+            Reader.Close()
+            Stream.Close()
+        Catch
+        End Try
     End Sub
 End Class
 
