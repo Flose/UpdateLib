@@ -1,4 +1,4 @@
-Public Class frmUpdate
+﻿Public Class frmUpdate
     Delegate Sub Aktualisieren_Callback(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Int32, ByVal Max As Int32, ByVal Caption As String)
 
     Sub Aktualisieren(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Int32, ByVal Max As Int32, ByVal Caption As String)
