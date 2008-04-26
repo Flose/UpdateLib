@@ -66,7 +66,7 @@ Public Class frmUpdate
             End If
 
 
-            Dim UpdateWriter As New System.IO.StreamWriter("UpdateHistory.txt", True)
+            Dim UpdateWriter As New System.IO.StreamWriter(Application.StartupPath & "/UpdateHistory.txt", True)
             UpdateWriter.WriteLine(Now & "|" & tmpVersion)
             UpdateWriter.Close()
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
