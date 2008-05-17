@@ -272,6 +272,16 @@ Suche:
         Return False
     End Function
 
+    Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String) As Boolean
+        Try
+            Dim tmpRegistry As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
+            tmpRegistry.SetValue("DisplayName", VersionsText)
+            Return True
+        Catch
+            Return False
+        End Try
+    End Function
+
     Sub Entkomprimieren(ByVal Stream As IO.Stream, ByVal DateiNach As String) 'geht nicht anders, da gzip.length nicht unterstützt wird:-(
         Dim tmp() As Byte
         Dim Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
@@ -322,14 +332,19 @@ Suche:
     ''' <remarks></remarks>
 
     Function SendeStatistik(ByVal Programmname As String, ByVal Version As String, ByVal PN As String, ByVal Typ As String) As Boolean
-        Dim Server As String = "update.mal-was-anderes.de" '"flose.homedns.org/update" 'todo
+#If Debug Then
+        Dim Server As String = "lokal.mal-was-anderes.de/update"
+#Else
+        Dim Server As String = "update.mal-was-anderes.de"
+#End If
+
         Try
             Dim client As New System.Net.WebClient, rnd As New Random
             Try
-                client.OpenRead(String.Format("http://{5}/update.php?programm={0}&version={1}&pn={2}&typ={3}&platform={4}", Programmname, Version, PN, Typ, My.Computer.Info.OSPlatform, Server)).Close()
+                client.OpenRead(String.Format("http://{5}/update.php?programm={0}&version={1}&pn={2}&typ={3}&platform={4}&lang={6}", Programmname, Version, PN, Typ, My.Computer.Info.OSPlatform, Server, My.Application.Culture.Name)).Close()
             Catch
                 client.Proxy = Nothing
-                client.OpenRead(String.Format("http://{5}/update.php?programm={0}&version={1}&pn={2}&typ={3}&platform={4}", Programmname, Version, PN, Typ, My.Computer.Info.OSPlatform, Server)).Close()
+                client.OpenRead(String.Format("http://{5}/update.php?programm={0}&version={1}&pn={2}&typ={3}&platform={4}&lang={6}", Programmname, Version, PN, Typ, My.Computer.Info.OSPlatform, Server, My.Application.Culture.Name)).Close()
             End Try
             client.Dispose()
             Return True
