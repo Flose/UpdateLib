@@ -24,7 +24,7 @@ Public Class frmUpdate
                     ElseIf tmpKategorienIndex = -2 Then
                         'Dateien zum Löschen
                         If DateienZumLöschen Is Nothing Then ReDim DateienZumLöschen(0) Else ReDim Preserve DateienZumLöschen(DateienZumLöschen.Length)
-                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = tmp
+                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = Application.StartupPath & "/" & tmp
                     ElseIf tmpKategorienIndex > -1 Then
                         'Dateien in Kategorien
                     End If
@@ -38,19 +38,15 @@ Public Class frmUpdate
                     End
                 End If
             End If
-
-
             Me.Show()
-
-
             lblDatei.Text = "Updaten..."
 
             'My.Computer.FileSystem.MoveDirectory(Application.StartupPath & "/Update/", Application.StartupPath & "/", True)
             VerschiebeVerzeichnis(Application.StartupPath & "/Update/", Application.StartupPath & "/")
-            Try
-                My.Computer.FileSystem.MoveFile(Application.StartupPath & "/Update/Versionen.lst", Application.StartupPath & "/Versionen.lst", True)
-            Catch
-            End Try
+            'Try
+            '    My.Computer.FileSystem.MoveFile(Application.StartupPath & "/Update/Versionen.lst", Application.StartupPath & "/Versionen.lst", True)
+            'Catch
+            'End Try
 
             If DateienZumLöschen IsNot Nothing Then
                 For i As Int16 = 0 To DateienZumLöschen.GetUpperBound(0)
@@ -65,10 +61,12 @@ Public Class frmUpdate
                 Next i
             End If
 
-
-            Dim UpdateWriter As New System.IO.StreamWriter(Application.StartupPath & "/UpdateHistory.txt", True)
-            UpdateWriter.WriteLine(Now & "|" & tmpVersion)
-            UpdateWriter.Close()
+            Try
+                Dim UpdateWriter As New System.IO.StreamWriter(Application.StartupPath & "/UpdateHistory.txt", True)
+                UpdateWriter.WriteLine(Now & "|" & tmpVersion)
+                UpdateWriter.Close()
+            Catch
+            End Try
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             If Environment.OSVersion.Platform = PlatformID.Unix Then
                 Process.Start("mono """ & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
