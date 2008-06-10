@@ -339,7 +339,7 @@ Suche:
 #End If
 
         Try
-            Dim client As New System.Net.WebClient, rnd As New Random
+            Dim client As New System.Net.WebClient
             Try
                 client.OpenRead(String.Format("http://{5}/update.php?programm={0}&version={1}&pn={2}&typ={3}&platform={4}&lang={6}", Programmname, Version, PN, Typ, My.Computer.Info.OSPlatform, Server, My.Application.Culture.Name)).Close()
             Catch

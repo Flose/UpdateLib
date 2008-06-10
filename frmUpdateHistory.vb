@@ -14,6 +14,7 @@
                 Catch
                 End Try
             Loop
+            Reader.Close()
         End If
     End Sub
 
