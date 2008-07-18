@@ -1,0 +1,16 @@
+﻿1
+SprachenName=Français
+msgUpdateBereitsVorhanden=Il y a déjà une mise à jour.{0} Redémarrez {1} pour l'installer.
+Update=Mise à jour de {0}
+msgUpdateVorhanden=Une mise à jour à version {0} est disponible.{1}Voulez vous la télécharger maintenant?
+msgUpdateVorhandenAdmin=Une mise à jour à version {0} est disponible.{1}Entre comme administrateur pour la télécharger.
+msgKeinUpdate=Il n'y a pas de mise à jour.
+msgFehlerUpdateSuchen=Erreur à chercher une mise à jour: {0}
+lblAktuelleDatei=Fichier actuel: {0}
+UpdateFertigstellen=Terminer...
+msgUpdateErfolgreich=Mise à jour téléchargé avec succès!{0}Pour installer la mise à jour vous devez redémarrer {1}.{0}Redémarrer automatiquement?
+msgFehlerUpdate=Erreur au téléchargement de la mise à jour: {0}
+UpdateHistory=L'histoire des mises à jour
+Updates=Les mises à jour:
+Schließen=Fer&mer
+VersionErfolgreichInstalliert={0}: version {1} installé avec succès.

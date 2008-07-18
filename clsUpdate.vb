@@ -1,7 +1,9 @@
 ﻿Public Class Update
     Dim UpdateServer() As String
     Dim InstallierteKategorien() As String = Nothing
-    Dim Übersetzen As New dllSprache.clsÜbersetzen("xxx")
+    Dim Übersetzen As New dllSprache.clsÜbersetzen("xxx", My.Resources.German)
+
+    Dim ÜbersetzterProgrammName As String
 
     Event Neustarten(ByRef Manual As System.Threading.ManualResetEvent)
 
@@ -49,61 +51,73 @@
     End Sub
 
     Sub Übersetze(ByVal Sprache As String, ByVal ÜbersetzterName As String)
-        Übersetzen.Ausdrücke = New dllSprache.clsAusdrücke
-        Übersetzen.Ausdrücke.Add("ProgrammName", ÜbersetzterName)
-        If Sprache.ToLower = "german" Then
-            Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie " & ÜbersetzterName & " neu, um es zu installieren.")
-            Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
-            Übersetzen.Ausdrücke.Add("msgUpdateVorhanden", "Ein Update auf Version {0} ist vorhanden.{1}Wollen Sie dieses jetzt herunterladen?")
-            Übersetzen.Ausdrücke.Add("msgUpdateVorhandenAdmin", "Ein Update auf Version {0} ist vorhanden.{1}Melden Sie sich als Administrator an, um es herunterzuladen.")
-            Übersetzen.Ausdrücke.Add("msgKeinUpdate", "Kein Update vorhanden")
-            Übersetzen.Ausdrücke.Add("msgFehlerUpdateSuchen", "Fehler beim Updatesuchen: {0}")
-            Übersetzen.Ausdrücke.Add("lblAktuelleDatei", "Aktuelle Datei: {0}")
-            Übersetzen.Ausdrücke.Add("UpdateFertigstellen", "Fertigstellen...")
-            Übersetzen.Ausdrücke.Add("msgUpdateErfolgreich", "Update erfolgreich heruntergeladen!{0}Um das Update zu installieren müssen Sie " & ÜbersetzterName & " neustarten.{0}Soll automatisch neu gestartet werden?")
-            Übersetzen.Ausdrücke.Add("msgFehlerUpdate", "Fehler beim Updaten: {0}")
-            Übersetzen.Ausdrücke.Add("UpdateHistory", "Update history")
-            Übersetzen.Ausdrücke.Add("Updates", "Updates:")
-            Übersetzen.Ausdrücke.Add("Schließen", "Schlie&ßen")
-            Übersetzen.Ausdrücke.Add("VersionErfolgreichInstalliert", "{0}: Version {1} erfolgreich installiert.")
-        ElseIf Sprache.ToLower = "english" Then
-            Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "You have already downloaded an update.{0} Restart " & ÜbersetzterName & " to install it.")
-            Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
-            Übersetzen.Ausdrücke.Add("msgUpdateVorhanden", "Update to version {0} is available.{1}Do you want to download it now?")
-            Übersetzen.Ausdrücke.Add("msgUpdateVorhandenAdmin", "Update to version {0} is available.{1}Logon as administrator to download it.")
-            Übersetzen.Ausdrücke.Add("msgKeinUpdate", "No update available")
-            Übersetzen.Ausdrücke.Add("msgFehlerUpdateSuchen", "Error while searching updates: {0}")
-            Übersetzen.Ausdrücke.Add("lblAktuelleDatei", "Current file: {0}")
-            Übersetzen.Ausdrücke.Add("UpdateFertigstellen", "Finalising...")
-            Übersetzen.Ausdrücke.Add("msgUpdateErfolgreich", "Update downloaded successfully!{0}To install the update you have to restart " & ÜbersetzterName & ".{0}Restart now?")
-            Übersetzen.Ausdrücke.Add("msgFehlerUpdate", "Error while Updating: {0}")
-            Übersetzen.Ausdrücke.Add("UpdateHistory", "Update history")
-            Übersetzen.Ausdrücke.Add("Updates", "Updates:")
-            Übersetzen.Ausdrücke.Add("Schließen", "Clo&se")
-            Übersetzen.Ausdrücke.Add("VersionErfolgreichInstalliert", "{0}: version {1} successfully installed.")
-        ElseIf Sprache.ToLower = "french" Then
-            Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Il y a déjà une mise à jour.{0} Redémarrez " & ÜbersetzterName & " pour l'installer.")
-            Übersetzen.Ausdrücke.Add("Update", "Mise à jour de " & ÜbersetzterName)
-            Übersetzen.Ausdrücke.Add("msgUpdateVorhanden", "Une mise à jour à version {0} est disponible.{1}Voulez vous la télécharger maintenant?")
-            Übersetzen.Ausdrücke.Add("msgUpdateVorhandenAdmin", "Une mise à jour à version {0} est disponible.{1}Entre comme administrateur pour télécharger la.")
-            Übersetzen.Ausdrücke.Add("msgKeinUpdate", "Il n'y a pas de mise à jour.")
-            Übersetzen.Ausdrücke.Add("msgFehlerUpdateSuchen", "Erreur à chercher une mise à jour: {0}")
-            Übersetzen.Ausdrücke.Add("lblAktuelleDatei", "Fichier actuel: {0}")
-            Übersetzen.Ausdrücke.Add("UpdateFertigstellen", "Terminer...")
-            Übersetzen.Ausdrücke.Add("msgUpdateErfolgreich", "Mise à jour téléchargé avec succès!{0}Pour installer la mise à jour vous devez redémarrer " & ÜbersetzterName & ".{0}Redémarrer automatiquement?")
-            Übersetzen.Ausdrücke.Add("msgFehlerUpdate", "Erreur au téléchargement de la mise à jour: {0}")
-            Übersetzen.Ausdrücke.Add("UpdateHistory", "L'histoire des mises à jour")
-            Übersetzen.Ausdrücke.Add("Updates", "Les mises à jour:")
-            Übersetzen.Ausdrücke.Add("Schließen", "Fer&mer")
-            Übersetzen.Ausdrücke.Add("VersionErfolgreichInstalliert", "{0}: version {1} installé avec succès.")
-        ElseIf Sprache.ToLower = "italian" Then
-            Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Gia esiste un aggoirnamento, inizzializza il " & ÜbersetzterName & " per installare.")
-            Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
-            Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie " & ÜbersetzterName & " neu, um es zu installieren.")
-        Else
-            Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
-            Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie " & ÜbersetzterName & " neu, um es zu installieren.")
-        End If
+        ÜbersetzterProgrammName = ÜbersetzterName
+        Select Case Sprache.ToLower
+            Case "german"
+                Übersetzen.Load("German", My.Resources.German)
+            Case "english"
+                Übersetzen.Load("English", My.Resources.English)
+            Case "french"
+                Übersetzen.Load("French", My.Resources.French)
+            Case Else
+                Übersetzen = New dllSprache.clsÜbersetzen("xxx", My.Resources.German)
+        End Select
+
+        'Übersetzen.Ausdrücke = New dllSprache.clsAusdrücke
+        ' Übersetzen.Ausdrücke.Add("ProgrammName", ÜbersetzterName)
+        'If Sprache.ToLower = "german" Then
+        '    Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie " & ÜbersetzterName & " neu, um es zu installieren.")
+        '    Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
+        '    Übersetzen.Ausdrücke.Add("msgUpdateVorhanden", "Ein Update auf Version {0} ist vorhanden.{1}Wollen Sie dieses jetzt herunterladen?")
+        '    Übersetzen.Ausdrücke.Add("msgUpdateVorhandenAdmin", "Ein Update auf Version {0} ist vorhanden.{1}Melden Sie sich als Administrator an, um es herunterzuladen.")
+        '    Übersetzen.Ausdrücke.Add("msgKeinUpdate", "Kein Update vorhanden")
+        '    Übersetzen.Ausdrücke.Add("msgFehlerUpdateSuchen", "Fehler beim Updatesuchen: {0}")
+        '    Übersetzen.Ausdrücke.Add("lblAktuelleDatei", "Aktuelle Datei: {0}")
+        '    Übersetzen.Ausdrücke.Add("UpdateFertigstellen", "Fertigstellen...")
+        '    Übersetzen.Ausdrücke.Add("msgUpdateErfolgreich", "Update erfolgreich heruntergeladen!{0}Um das Update zu installieren müssen Sie " & ÜbersetzterName & " neustarten.{0}Soll automatisch neu gestartet werden?")
+        '    Übersetzen.Ausdrücke.Add("msgFehlerUpdate", "Fehler beim Updaten: {0}")
+        '    Übersetzen.Ausdrücke.Add("UpdateHistory", "Update history")
+        '    Übersetzen.Ausdrücke.Add("Updates", "Updates:")
+        '    Übersetzen.Ausdrücke.Add("Schließen", "Schlie&ßen")
+        '    Übersetzen.Ausdrücke.Add("VersionErfolgreichInstalliert", "{0}: Version {1} erfolgreich installiert.")
+        'ElseIf Sprache.ToLower = "english" Then
+        'Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "You have already downloaded an update.{0} Restart " & ÜbersetzterName & " to install it.")
+        'Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
+        'Übersetzen.Ausdrücke.Add("msgUpdateVorhanden", "Update to version {0} is available.{1}Do you want to download it now?")
+        'Übersetzen.Ausdrücke.Add("msgUpdateVorhandenAdmin", "Update to version {0} is available.{1}Logon as administrator to download it.")
+        'Übersetzen.Ausdrücke.Add("msgKeinUpdate", "No update available")
+        'Übersetzen.Ausdrücke.Add("msgFehlerUpdateSuchen", "Error while searching updates: {0}")
+        'Übersetzen.Ausdrücke.Add("lblAktuelleDatei", "Current file: {0}")
+        'Übersetzen.Ausdrücke.Add("UpdateFertigstellen", "Finalising...")
+        'Übersetzen.Ausdrücke.Add("msgUpdateErfolgreich", "Update downloaded successfully!{0}To install the update you have to restart " & ÜbersetzterName & ".{0}Restart now?")
+        'Übersetzen.Ausdrücke.Add("msgFehlerUpdate", "Error while Updating: {0}")
+        'Übersetzen.Ausdrücke.Add("UpdateHistory", "Update history")
+        'Übersetzen.Ausdrücke.Add("Updates", "Updates:")
+        'Übersetzen.Ausdrücke.Add("Schließen", "Clo&se")
+        'Übersetzen.Ausdrücke.Add("VersionErfolgreichInstalliert", "{0}: version {1} successfully installed.")
+        'ElseIf Sprache.ToLower = "french" Then
+        'Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Il y a déjà une mise à jour.{0} Redémarrez " & ÜbersetzterName & " pour l'installer.")
+        'Übersetzen.Ausdrücke.Add("Update", "Mise à jour de " & ÜbersetzterName)
+        'Übersetzen.Ausdrücke.Add("msgUpdateVorhanden", "Une mise à jour à version {0} est disponible.{1}Voulez vous la télécharger maintenant?")
+        'Übersetzen.Ausdrücke.Add("msgUpdateVorhandenAdmin", "Une mise à jour à version {0} est disponible.{1}Entre comme administrateur pour télécharger la.")
+        'Übersetzen.Ausdrücke.Add("msgKeinUpdate", "Il n'y a pas de mise à jour.")
+        'Übersetzen.Ausdrücke.Add("msgFehlerUpdateSuchen", "Erreur à chercher une mise à jour: {0}")
+        'Übersetzen.Ausdrücke.Add("lblAktuelleDatei", "Fichier actuel: {0}")
+        'Übersetzen.Ausdrücke.Add("UpdateFertigstellen", "Terminer...")
+        'Übersetzen.Ausdrücke.Add("msgUpdateErfolgreich", "Mise à jour téléchargé avec succès!{0}Pour installer la mise à jour vous devez redémarrer " & ÜbersetzterName & ".{0}Redémarrer automatiquement?")
+        'Übersetzen.Ausdrücke.Add("msgFehlerUpdate", "Erreur au téléchargement de la mise à jour: {0}")
+        'Übersetzen.Ausdrücke.Add("UpdateHistory", "L'histoire des mises à jour")
+        'Übersetzen.Ausdrücke.Add("Updates", "Les mises à jour:")
+        'Übersetzen.Ausdrücke.Add("Schließen", "Fer&mer")
+        'Übersetzen.Ausdrücke.Add("VersionErfolgreichInstalliert", "{0}: version {1} installé avec succès.")
+        'ElseIf Sprache.ToLower = "italian" Then
+        'Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Gia esiste un aggoirnamento, inizzializza il " & ÜbersetzterName & " per installare.")
+        'Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
+        'Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie " & ÜbersetzterName & " neu, um es zu installieren.")
+        'Else
+        'Übersetzen.Ausdrücke.Add("Update", ÜbersetzterName & " Update")
+        'Übersetzen.Ausdrücke.Add("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie " & ÜbersetzterName & " neu, um es zu installieren.")
+        'End If
     End Sub
 
     ''' <summary>
@@ -114,7 +128,7 @@
         If Not (GeradeUpdaten) Then
             If System.IO.File.Exists(ProgrammPfad & "/Update/Versionen.lst") Then
                 'bereits ein Update vorhanden
-                If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie das Programm neu, um es zu installieren.", Environment.NewLine), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 GeradeUpdaten = True
                 Dim tmpUpdateSuche As String = SucheUpdate(ZeigeFehler)
@@ -125,13 +139,13 @@
                     Try
                         System.IO.File.Create(ProgrammPfad & "/tmp.d", 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
                     Catch 'wenn keine Schreibrechte im Programmverzeichnis
-                        MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhandenAdmin", "Ein Update auf Version {0} ist vorhanden.{1}Melden Sie sich als Administrator an, um es herunterzuladen.", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhandenAdmin", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                         GeradeUpdaten = False
                         Exit Sub
                     End Try
                     Try
                         'Updatefrage
-                        If MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhanden", "Ein Update auf Version {0} ist vorhanden.{1}Wollen Sie dieses jetzt herunterladen?", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = DialogResult.Yes Then
+                        If MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhanden", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = DialogResult.Yes Then
                             If LadeUpdate(True) Then
                                 If GoogleStatistik Then
                                     Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
@@ -140,8 +154,8 @@
                                         SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/update.htm", "", "Updaten", tmpString, "de", ProgrammVersion, ProgrammName & "Update", "update.mal-was-anderes.de", "UA-2276175-1")
                                     End If
                                 End If
-                                If MessageBox.Show(Übersetzen.Übersetze("msgUpdateErfolgreich", "Update erfolgreich heruntergeladen!{0}Um das Update zu installieren müssen Sie " & ProgrammName & " neustarten.{0}Soll automatisch neu gestartet werden?", Environment.NewLine), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
-                                    InstalliereUpdate()
+                                If MessageBox.Show(Übersetzen.Übersetze("msgUpdateErfolgreich", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
+                                    InstalliereUpdate(True)
                                 End If
                             Else
                                 If GoogleStatistik Then
@@ -170,7 +184,7 @@
                             SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", "", "KeinsVorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                         End If
                     End If
-                    If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgKeinUpdate", "Kein Update vorhanden"), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgKeinUpdate"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End If
             End If
             GeradeUpdaten = False
@@ -187,7 +201,7 @@
     Function SucheUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
         If System.IO.File.Exists(ProgrammPfad & "/Update/Versionen.lst") Then
             'bereits ein Update vorhanden
-            If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie das Programm neu, um es zu installieren.", Environment.NewLine), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return "XXX"
         Else
             GeradeUpdaten = True
@@ -211,7 +225,7 @@
                     tmpFehler &= UpdateServer(i) & ": " & ex.Message & Environment.NewLine
                 End Try
             Next i
-            If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdateSuchen", "Fehler beim Updatesuchen: {0}", Environment.NewLine & tmpFehler), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
 
             Return "XXX"
 Suche:
@@ -228,7 +242,7 @@ Suche:
         If ZuAktualisierendeDateien.Count > 0 Then
             If System.IO.File.Exists(ProgrammPfad & "/Update/Versionen.lst") Then
                 'bereits ein Update vorhanden
-                If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", "Es ist bereits ein Update vorhanden!{0}Starten Sie das Programm neu, um es zu installieren.", Environment.NewLine), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 Dim tmpUpdateForm As New frmUpdate
                 Try
@@ -236,7 +250,7 @@ Suche:
                     IO.Directory.CreateDirectory(ProgrammPfad & "/Update/") 'Verzeichnis für Update erstellen
                     If MitUI Then tmpUpdateForm.Show()
                     For i As Int32 = 0 To ZuAktualisierendeDateien.Count - 1 'Dateien herunterladen
-                        If MitUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("lblAktuelleDatei", "Aktuelle Datei: {0}", ZuAktualisierendeDateien(i).Name), i, ZuAktualisierendeDateien.Count - 1, Übersetzen.Übersetze("Update", "Update"))
+                        If MitUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("lblAktuelleDatei", ZuAktualisierendeDateien(i).Name), i, ZuAktualisierendeDateien.Count - 1, Übersetzen.Übersetze("Update", ÜbersetzterProgrammName))
                         Application.DoEvents()
                         Try
                             Try
@@ -247,11 +261,11 @@ Suche:
                             End Try
                         Catch ex As Exception
                             Console.Error.WriteLine(AktuellerServer & ZuAktualisierendeDateien(i).Name & ": " & ex.Message)
-                            MessageBox.Show(ex.Message, Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            MessageBox.Show(ex.Message, Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                         End Try
                     Next i
 
-                    If MitUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("UpdateFertigstellen", "Fertigstellen..."), 1, 1, Übersetzen.Übersetze("Update", "Update"))
+                    If MitUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("UpdateFertigstellen"), 1, 1, Übersetzen.Übersetze("Update", ÜbersetzterProgrammName))
                     Application.DoEvents()
                     'Versionen.lst herunterladen, Update.exe verschieben
                     Entkomprimieren(Client.OpenRead(AktuellerServer & "Versionen.lst.kom"), ProgrammPfad & "/Update/Versionen.lst")
@@ -263,7 +277,7 @@ Suche:
 
                     Return True
                 Catch ex As Exception 'Fehler beim Update herunterladen
-                    If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdate", "Fehler beim Updaten: {0}", Environment.NewLine & ex.Message), Übersetzen.Übersetze("Update", "Update"), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdate", Environment.NewLine & ex.Message), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
             End If
         End If
@@ -303,7 +317,6 @@ Suche:
         Writer.Write(tmp, 0, tmp.GetUpperBound(0))
         Writer.Close()
     End Sub
-
 
     Sub SendeAnGoogle(ByVal Datei As String, ByVal Kodierung As String, ByVal Auflösung As String, ByVal Farbtiefe As String, ByVal Sprache As String, ByVal Flashversion As String, ByVal Titel As String, ByVal Host As String, ByVal UACode As String)
         '0zufall        '1uhrzeit        '2datei        '3kodierung        '4auflösung        '5farbtiefe        '6sprache
@@ -351,12 +364,15 @@ Suche:
         End Try
     End Function
 
-    Function InstalliereUpdate() As Boolean 'Wenn update vorhande true sonst false
+    Function InstalliereUpdate(ByVal EreignisAufrufen As Boolean) As Boolean 'Wenn update vorhande true sonst false
         If System.IO.File.Exists(ProgrammPfad & "/Update/Versionen.lst") Then
-            Dim Manual As New System.Threading.ManualResetEvent(False)
-            RaiseEvent Neustarten(Manual)
-            Manual.WaitOne(60000, False)
-            If Environment.OSVersion.Platform = PlatformID.Unix Then
+            If EreignisAufrufen Then
+                Dim Manual As New System.Threading.ManualResetEvent(False)
+                RaiseEvent Neustarten(Manual)
+                Manual.WaitOne(60000, False)
+            End If
+            If IsRunningOnMono() Then 'todo:mono pfad finden 
+
                 Process.Start("mono """ & ProgrammPfad & "/Update.exe""" & " """ & ProgrammName & """ """ & ProgrammExe & """")
             Else
                 Process.Start("""" & ProgrammPfad & "/Update.exe""", """" & ProgrammName & """ """ & ProgrammExe & """")
@@ -364,6 +380,10 @@ Suche:
             Application.Exit()
             Return True
         End If
+    End Function
+
+    Public Function IsRunningOnMono() As Boolean
+        Return Type.GetType("Mono.Runtime") IsNot Nothing
     End Function
 
     Friend Function SucheNeueDateien(ByVal LokaleVersionen As VersionenDatei, ByVal UpdateVersionen As VersionenDatei) As Dateien

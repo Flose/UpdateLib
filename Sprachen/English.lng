@@ -1,0 +1,16 @@
+﻿1
+SprachenName=English
+msgUpdateBereitsVorhanden=You have already downloaded an update.{0} Restart {1} to install it.
+Update={0} update
+msgUpdateVorhanden=Update to version {0} is available.{1}Do you want to download it now?
+msgUpdateVorhandenAdmin=Update to version {0} is available.{1}Logon as administrator to download it.
+msgKeinUpdate=No update available
+msgFehlerUpdateSuchen=Error while searching updates: {0}
+lblAktuelleDatei=Current file: {0}
+UpdateFertigstellen=Finalising...
+msgUpdateErfolgreich=Update downloaded successfully!{0}To install the update you have to restart {1}.{0}Restart now?
+msgFehlerUpdate=Error while Updating: {0}
+UpdateHistory=Update history
+Updates=Updates:
+Schließen=Clo&se
+VersionErfolgreichInstalliert={0}: version {1} successfully installed.

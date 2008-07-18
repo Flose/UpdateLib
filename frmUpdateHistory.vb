@@ -10,7 +10,7 @@
             Do Until Reader.Peek = -1
                 Try
                     tmp = Reader.ReadLine().Split("|")
-                    lstUpdates.Items.Add(Übersetzen.Übersetze("VersionErfolgreichInstalliert", "{0}: Version {1} erfolgreich installiert.", CDate(tmp(0)).ToShortDateString, tmp(1)))
+                    lstUpdates.Items.Add(Übersetzen.Übersetze("VersionErfolgreichInstalliert", CDate(tmp(0)).ToShortDateString, tmp(1)))
                 Catch
                 End Try
             Loop

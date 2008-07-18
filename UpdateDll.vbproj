@@ -118,6 +118,9 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="Sprachen\English.lng" />
+    <None Include="Sprachen\French.lng" />
+    <None Include="Sprachen\German.lng" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dllSprache\dllSprache.vbproj">

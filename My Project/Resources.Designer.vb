@@ -59,5 +59,58 @@ Namespace My.Resources
                 resourceCulture = value
             End Set
         End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Zeichenfolge, die 1
+        '''SprachenName=English
+        '''msgUpdateBereitsVorhanden=You have already downloaded an update.{0} Restart {1} to install it.
+        '''Update={0} update
+        '''msgUpdateVorhanden=Update to version {0} is available.{1}Do you want to download it now?
+        '''msgUpdateVorhandenAdmin=Update to version {0} is available.{1}Logon as administrator to download it.
+        '''msgKeinUpdate=No update available
+        '''msgFehlerUpdateSuchen=Error while searching updates: {0}
+        '''lblAktuelleDatei=Current file: {0}
+        '''UpdateFertigstellen=Finalising...
+        '''msgUpdateErfolgr [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        '''</summary>
+        Friend ReadOnly Property English() As String
+            Get
+                Return ResourceManager.GetString("English", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Zeichenfolge, die 1
+        '''SprachenName=Français
+        '''msgUpdateBereitsVorhanden=Il y a déjà une mise à jour.{0} Redémarrez {1} pour l&apos;installer.
+        '''Update=Mise à jour de {0}
+        '''msgUpdateVorhanden=Une mise à jour à version {0} est disponible.{1}Voulez vous la télécharger maintenant?
+        '''msgUpdateVorhandenAdmin=Une mise à jour à version {0} est disponible.{1}Entre comme administrateur pour la télécharger.
+        '''msgKeinUpdate=Il n&apos;y a pas de mise à jour.
+        '''msgFehlerUpdateSuchen=Erreur à chercher une mise à jour: {0}
+        '''lblAktuelleDatei=Fichier actuel:  [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        '''</summary>
+        Friend ReadOnly Property French() As String
+            Get
+                Return ResourceManager.GetString("French", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Zeichenfolge, die 1
+        '''SprachenName=Deutsch
+        '''msgUpdateBereitsVorhanden=Es ist bereits ein Update vorhanden!{0}Starten Sie {1} neu, um es zu installieren.
+        '''Update={0} Update
+        '''msgUpdateVorhanden=Ein Update auf Version {0} ist vorhanden.{1}Wollen Sie dieses jetzt herunterladen?
+        '''msgUpdateVorhandenAdmin=Ein Update auf Version {0} ist vorhanden.{1}Melden Sie sich als Administrator an, um es herunterzuladen.
+        '''msgKeinUpdate=Kein Update vorhanden
+        '''msgFehlerUpdateSuchen=Fehler beim Updatesuchen: {0}
+        '''lblAktuelleDatei=Aktuelle Datei: {0 [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        '''</summary>
+        Friend ReadOnly Property German() As String
+            Get
+                Return ResourceManager.GetString("German", resourceCulture)
+            End Get
+        End Property
     End Module
 End Namespace
