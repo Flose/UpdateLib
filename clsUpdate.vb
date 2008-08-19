@@ -226,7 +226,12 @@
                 End Try
             Next i
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-
+            If GoogleStatistik Then
+                Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
+                If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
+                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatefehler.htm", "", "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                End If
+            End If
             Return "XXX"
 Suche:
             ZuAktualisierendeDateien = SucheNeueDateien(LokaleVersionen, UpdateVersionen)
@@ -371,8 +376,7 @@ Suche:
                 RaiseEvent Neustarten(Manual)
                 Manual.WaitOne(60000, False)
             End If
-            If IsRunningOnMono() Then 'todo:mono pfad finden 
-
+            If IsRunningOnMono() Then
                 Process.Start("mono """ & ProgrammPfad & "/Update.exe""" & " """ & ProgrammName & """ """ & ProgrammExe & """")
             Else
                 Process.Start("""" & ProgrammPfad & "/Update.exe""", """" & ProgrammName & """ """ & ProgrammExe & """")
