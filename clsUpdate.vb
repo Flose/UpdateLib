@@ -289,10 +289,12 @@ Suche:
         Return False
     End Function
 
-    Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String) As Boolean
+    Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String, ByVal Version As Version) As Boolean
         Try
             Dim tmpRegistry As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
             tmpRegistry.SetValue("DisplayName", VersionsText)
+            tmpRegistry.SetValue("DisplayVersion", Version.ToString(4))
+            tmpRegistry.Close()
             Return True
         Catch
             Return False
@@ -300,27 +302,68 @@ Suche:
     End Function
 
     Sub Entkomprimieren(ByVal Stream As IO.Stream, ByVal DateiNach As String) 'geht nicht anders, da gzip.length nicht unterstützt wird:-(
-        Dim tmp() As Byte
-        Dim Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
-
-        Dim offset As Integer = 0
-        Dim totalCount As Integer = 0
-        While True
-            ReDim Preserve tmp(totalCount + 4000)
-            Dim bytesRead As Integer = Gzip.Read(tmp, offset, 4000)
-            If bytesRead = 0 Then
-                Exit While
-            End If
-            offset += bytesRead
-            totalCount += bytesRead
-            If (totalCount Mod 80000) = 0 Then Application.DoEvents()
-        End While
-        ReDim Preserve tmp(totalCount)
-        Gzip.Close()
         System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DateiNach))
-        Dim Writer As New System.IO.FileStream(DateiNach, IO.FileMode.OpenOrCreate, IO.FileAccess.Write)
-        Writer.Write(tmp, 0, tmp.GetUpperBound(0))
-        Writer.Close()
+        Try
+            Dim tmpProcess As New Process
+            tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+            tmpProcess.StartInfo.FileName = "gunzip"
+            tmpProcess.Start()
+            Dim tmpName As String = System.IO.Path.GetTempFileName
+            Dim tmp As Byte()
+            If Stream.CanSeek Then
+                ReDim tmp(Stream.Length - 1)
+                Stream.Read(tmp, 0, Stream.Length)
+            Else
+                Dim offset As Integer = 0
+                Dim totalCount As Integer = 0
+                While True
+                    ReDim Preserve tmp(totalCount + 5000)
+                    Dim bytesRead As Integer = Stream.Read(tmp, offset, 5000)
+                    If bytesRead = 0 Then
+                        Exit While
+                    End If
+                    offset += bytesRead
+                    totalCount += bytesRead
+                    'If (totalCount Mod 60000) = 0 Then Application.DoEvents()
+                End While
+                ReDim Preserve tmp(totalCount - 1)
+            End If
+            Dim Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
+            Writer.Write(tmp, 0, tmp.Length)
+            Writer.Close()
+            'tmpProcess.StartInfo.UseShellExecute = False
+            'tmpProcess.StartInfo.RedirectStandardOutput = True
+            tmpProcess = New Process
+            tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+            tmpProcess.StartInfo.Arguments = "-qf """ & tmpName & ".gz" & """"
+            tmpProcess.StartInfo.FileName = "gunzip"
+            tmpProcess.Start()
+            tmpProcess.WaitForExit(5000)
+
+            My.Computer.FileSystem.MoveFile(tmpName, DateiNach, True)
+            Stream.Close()
+        Catch
+            Dim tmp() As Byte
+            Dim Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
+
+            Dim offset As Integer = 0
+            Dim totalCount As Integer = 0
+            While True
+                ReDim Preserve tmp(totalCount + 4000)
+                Dim bytesRead As Integer = Gzip.Read(tmp, offset, 4000)
+                If bytesRead = 0 Then
+                    Exit While
+                End If
+                offset += bytesRead
+                totalCount += bytesRead
+                'If (totalCount Mod 80000) = 0 Then Application.DoEvents()
+            End While
+            ReDim Preserve tmp(totalCount)
+            Gzip.Close()
+            Dim Writer As New System.IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
+            Writer.Write(tmp, 0, tmp.GetUpperBound(0))
+            Writer.Close()
+        End Try
     End Sub
 
     Sub SendeAnGoogle(ByVal Datei As String, ByVal Kodierung As String, ByVal Auflösung As String, ByVal Farbtiefe As String, ByVal Sprache As String, ByVal Flashversion As String, ByVal Titel As String, ByVal Host As String, ByVal UACode As String)
