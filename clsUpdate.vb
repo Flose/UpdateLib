@@ -414,6 +414,13 @@ Suche:
 
     Function InstalliereUpdate(ByVal EreignisAufrufen As Boolean) As Boolean 'Wenn update vorhande true sonst false
         If System.IO.File.Exists(ProgrammPfad & "/Update/Versionen.lst") Then
+            Try
+                System.IO.File.Create(ProgrammPfad & "/tmp.d" & (New Random).Next(0, 10), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
+            Catch 'wenn keine Schreibrechte im Programmverzeichnis
+                MessageBox.Show(Übersetzen.Übersetze("msgUpdateInstallierenAdmin"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Application.Exit()
+                Return True
+            End Try
             If EreignisAufrufen Then
                 Dim Manual As New System.Threading.ManualResetEvent(False)
                 RaiseEvent Neustarten(Manual)
