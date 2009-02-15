@@ -24,7 +24,7 @@ Public Class frmUpdate
                     ElseIf tmpKategorienIndex = -2 Then
                         'Dateien zum Löschen
                         If DateienZumLöschen Is Nothing Then ReDim DateienZumLöschen(0) Else ReDim Preserve DateienZumLöschen(DateienZumLöschen.Length)
-                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = Application.StartupPath & "/" & tmp
+                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = Environment.CurrentDirectory & "/" & tmp
                     ElseIf tmpKategorienIndex > -1 Then
                         'Dateien in Kategorien
                     End If
@@ -41,12 +41,7 @@ Public Class frmUpdate
             Me.Show()
             lblDatei.Text = "Updaten..."
 
-            'My.Computer.FileSystem.MoveDirectory(Application.StartupPath & "/Update/", Application.StartupPath & "/", True)
-            VerschiebeVerzeichnis(Application.StartupPath & "/Update/", Application.StartupPath & "/")
-            'Try
-            '    My.Computer.FileSystem.MoveFile(Application.StartupPath & "/Update/Versionen.lst", Application.StartupPath & "/Versionen.lst", True)
-            'Catch
-            'End Try
+            VerschiebeVerzeichnis(Application.StartupPath & "/Update/", Environment.CurrentDirectory & "/")
 
             If DateienZumLöschen IsNot Nothing Then
                 For i As Int16 = 0 To DateienZumLöschen.GetUpperBound(0)
@@ -55,23 +50,33 @@ Public Class frmUpdate
                     Catch
                         Try
                             System.IO.Directory.Delete(DateienZumLöschen(i))
-                        Catch 
+                        Catch
                         End Try
                     End Try
                 Next i
             End If
 
+            'alle alten update-*.exe löschen
+            For Each file As String In System.IO.Directory.GetFiles(Application.StartupPath, "Update-*.exe")
+                If file <> Application.ExecutablePath Then
+                    Try
+                        System.IO.File.Delete(file)
+                    Catch
+                    End Try
+                End If
+            Next
+
             Try
-                Dim UpdateWriter As New System.IO.StreamWriter(Application.StartupPath & "/UpdateHistory.txt", True)
+                Dim UpdateWriter As New System.IO.StreamWriter(Environment.CurrentDirectory & "/UpdateHistory.txt", True)
                 UpdateWriter.WriteLine(Now & "|" & tmpVersion)
                 UpdateWriter.Close()
             Catch
             End Try
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             If Environment.OSVersion.Platform = PlatformID.Unix Then
-                Process.Start("mono """ & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
+                Process.Start("mono """ & Environment.CurrentDirectory & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
             Else
-                Process.Start("""" & Application.StartupPath & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
+                Process.Start("""" & Environment.CurrentDirectory & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
             End If
         End If
         End
