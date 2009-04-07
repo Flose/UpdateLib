@@ -231,7 +231,7 @@ Suche:
                     'Client.DownloadFile(AktuellerServer & "Update.lst", Programmpfad & "/Update/Update.lst")
 
                     Dim t As Int16 = 0
-                    Do 'todo
+                    Do
                         t += 1
                     Loop While System.IO.File.Exists(UpdatePfad & "../Update-" & t & ".exe")
                     If System.IO.File.Exists(UpdatePfad & "Update.exe") Then
@@ -389,7 +389,7 @@ Suche:
                 Else
                     MessageBox.Show(Übersetzen.Übersetze("msgUpdateInstallierenAdmin"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                     'Application.Exit()
-                    Return False 'todo schauen
+                    Return False
                 End If
             End Try
 
@@ -472,7 +472,7 @@ Class VersionenDatei
     Sub Öffnen(ByVal Datei As String, ByVal IstLokal As Boolean)
         Dim Stream As System.IO.Stream
         If IstLokal Then
-            Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read)
+            Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
         Else
             Dim Client As New System.Net.WebClient
 
