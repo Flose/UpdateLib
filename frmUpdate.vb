@@ -1,12 +1,17 @@
 Public Class frmUpdate
     Friend ReleasNotesUrl As String
-
+    Dim InstallationsPfad As String
     Private Sub frmUpdate_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
             Me.Text = System.String.Format(Me.Text, System.Environment.GetCommandLineArgs(1))
 
             Dim DateienZumLöschen() As String = Nothing
             Dim tmpVersion As String = "0"
+            If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
+                InstallationsPfad = Environment.CurrentDirectory & "/"
+            Else
+                InstallationsPfad = Application.StartupPath & "/"
+            End If
             If System.IO.File.Exists(Application.StartupPath & "/Update/Versionen.lst") Then
                 'Releasenotes, Version, Löschen aus Versionen.lst lesen
                 Dim tmp As String, tmpKategorienIndex As Int16
@@ -24,7 +29,7 @@ Public Class frmUpdate
                     ElseIf tmpKategorienIndex = -2 Then
                         'Dateien zum Löschen
                         If DateienZumLöschen Is Nothing Then ReDim DateienZumLöschen(0) Else ReDim Preserve DateienZumLöschen(DateienZumLöschen.Length)
-                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = Environment.CurrentDirectory & "/" & tmp
+                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = InstallationsPfad & tmp
                     ElseIf tmpKategorienIndex > -1 Then
                         'Dateien in Kategorien
                     End If
@@ -41,7 +46,8 @@ Public Class frmUpdate
             Me.Show()
             lblDatei.Text = "Updaten..."
 
-            VerschiebeVerzeichnis(Application.StartupPath & "/Update/", Environment.CurrentDirectory & "/")
+
+            VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
 
             If DateienZumLöschen IsNot Nothing Then
                 For i As Int16 = 0 To DateienZumLöschen.GetUpperBound(0)
@@ -67,16 +73,16 @@ Public Class frmUpdate
             Next
 
             Try
-                Dim UpdateWriter As New System.IO.StreamWriter(Environment.CurrentDirectory & "/UpdateHistory.txt", True)
+                Dim UpdateWriter As New System.IO.StreamWriter(InstallationsPfad & "UpdateHistory.txt", True)
                 UpdateWriter.WriteLine(Now & "|" & tmpVersion)
                 UpdateWriter.Close()
             Catch
             End Try
             MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             If Environment.OSVersion.Platform = PlatformID.Unix Then
-                Process.Start("mono """ & Environment.CurrentDirectory & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
+                Process.Start("mono """ & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
             Else
-                Process.Start("""" & Environment.CurrentDirectory & "/" & System.Environment.GetCommandLineArgs(2).Trim & """")
+                Process.Start("""" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
             End If
         End If
         End
