@@ -309,26 +309,27 @@ Suche:
             My.Computer.FileSystem.MoveFile(tmpName, DateiNach, True)
             Stream.Close()
         Catch
-            Dim tmp() As Byte
+            Dim tmp(4000) As Byte
             Dim Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
 
-            Dim offset As Integer = 0
-            Dim totalCount As Integer = 0
+            'Dim offset As Integer = 0
+            'Dim totalCount As Integer = 0
+            Dim Writer As New System.IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
             While True
-                ReDim Preserve tmp(totalCount + 4000)
-                Dim bytesRead As Integer = Gzip.Read(tmp, offset, 4000)
+                'ReDim Preserve tmp(totalCount + 4000)
+                Dim bytesRead As Integer = Gzip.Read(tmp, 0, 4000)
                 If bytesRead = 0 Then
                     Exit While
                 End If
-                offset += bytesRead
-                totalCount += bytesRead
+                Writer.Write(tmp, 0, bytesRead)
+
+                'offset += bytesRead
+                'totalCount += bytesRead
                 'If (totalCount Mod 80000) = 0 Then Application.DoEvents()
             End While
-            ReDim Preserve tmp(totalCount)
-            Gzip.Close()
-            Dim Writer As New System.IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
-            Writer.Write(tmp, 0, tmp.GetUpperBound(0))
             Writer.Close()
+            'ReDim Preserve tmp(totalCount)
+            Gzip.Close()
         End Try
     End Sub
 
