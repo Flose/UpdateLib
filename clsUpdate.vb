@@ -1,14 +1,14 @@
 ﻿Public Class Update
     Dim UpdateServer() As String
-    Dim InstallierteKategorien() As String = Nothing
+    Dim InstallierteKategorien() As String '= Nothing
     Dim Übersetzen As New dllSprache.clsÜbersetzen("xxx", My.Resources.German)
 
     Dim ÜbersetzterProgrammName As String
 
-    Event Neustarten(ByRef Manual As System.Threading.ManualResetEvent)
+    Event Neustarten(ByVal Manual As System.Threading.ManualResetEvent)
 
     Dim ZuAktualisierendeDateien As Dateien, AktuellerServer As String
-    Dim ProgrammName, ProgrammExe, ProgrammPfad, ProgrammVersion, ProgrammSprache As String
+    Dim ProgrammName, ProgrammExe, ProgrammPfad, ProgrammVersion As String ', ProgrammSprache
     Public GeradeUpdaten As Boolean
     ''' <summary>
     ''' Gibt an ob Updatesuchen/Update Information zu Statistikzwecken an Google Analytics gesendet werden sollen
@@ -34,14 +34,13 @@
         End If
 
         'UpdateServer setzen
-        Dim UpdateReader As System.IO.StreamReader = Nothing
+        'Dim UpdateReader As System.IO.StreamReader
         Try
-            UpdateReader = New System.IO.StreamReader(UpdateServerDatei, True)
-            UpdateServer = UpdateReader.ReadToEnd.Split(New Char() {Chr(10), Chr(13)}, StringSplitOptions.RemoveEmptyEntries)
+            Using UpdateReader As New System.IO.StreamReader(UpdateServerDatei, True)
+                UpdateServer = UpdateReader.ReadToEnd.Split(New Char() {ChrW(10), ChrW(13)}, StringSplitOptions.RemoveEmptyEntries)
+            End Using
         Catch
             UpdateServer = StandardUpdateServer
-        Finally
-            If UpdateReader IsNot Nothing Then UpdateReader.Close()
         End Try
 
         'Installierte Kategorien rausfinden
@@ -50,9 +49,9 @@
             Dim Reader As New IO.StreamReader(ProgrammPfad & "/Kategorien.ini", True)
             Do Until Reader.Peek = -1
                 tmp = Reader.ReadLine
-                If tmp.IndexOf("=") > -1 AndAlso tmp.Substring(tmp.IndexOf("=") + 1).Trim.ToLower = "true" Then
+                If tmp.IndexOf("="c) > -1 AndAlso tmp.Substring(tmp.IndexOf("="c) + 1).Trim.ToLower = "true" Then
                     If InstallierteKategorien Is Nothing Then ReDim InstallierteKategorien(0) Else ReDim Preserve InstallierteKategorien(InstallierteKategorien.Length)
-                    InstallierteKategorien(InstallierteKategorien.GetUpperBound(0)) = tmp.Substring(0, tmp.IndexOf("=")).Trim.ToLower
+                    InstallierteKategorien(InstallierteKategorien.GetUpperBound(0)) = tmp.Substring(0, tmp.IndexOf("="c)).Trim.ToLower
                 End If
             Loop
             Reader.Close()
@@ -78,17 +77,18 @@
     ''' </summary>
     ''' <remarks></remarks>
     Sub UpdateSuchenInstallieren(Optional ByVal ZeigeFehler As Object = True) 'zeigefehler as object um in eigenem thread zu starten
+        Dim zZeigeFehler As Boolean = CBool(ZeigeFehler)
         If Not (GeradeUpdaten) Then
             If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe").Length > 0 Then
                 'bereits ein Update vorhanden
-                If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                If zZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 GeradeUpdaten = True
-                Dim tmpUpdateSuche As String = SucheUpdate(ZeigeFehler)
+                Dim tmpUpdateSuche As String = SucheUpdate(zZeigeFehler)
                 If tmpUpdateSuche = "XXX" Then 'Sucht Schon Update, oder Update fehler oder update schon heruntergeladen
                     GeradeUpdaten = False
                     Exit Sub
-                ElseIf tmpUpdateSuche <> "" Then 'Update vorhanden
+                ElseIf Not String.IsNullOrEmpty(tmpUpdateSuche) Then 'Update vorhanden
                     'Try
                     '    System.IO.File.Create(ProgrammPfad & "/tmp.d", 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
                     'Catch 'wenn keine Schreibrechte im Programmverzeichnis
@@ -104,8 +104,8 @@
                                 If GoogleStatistik Then
                                     Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
                                     If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installiert") Then
-                                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", "", "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
-                                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/update.htm", "", "Updaten", tmpString, "de", ProgrammVersion, ProgrammName & "Update", "update.mal-was-anderes.de", "UA-2276175-1")
+                                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/update.htm", String.Empty, "Updaten", tmpString, "de", ProgrammVersion, ProgrammName & "Update", "update.mal-was-anderes.de", "UA-2276175-1")
                                     End If
                                 End If
                                 If MessageBox.Show(Übersetzen.Übersetze("msgUpdateErfolgreich", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
@@ -115,7 +115,7 @@
                                 If GoogleStatistik Then
                                     Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
                                     If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
-                                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", "", "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                                     End If
                                 End If
                             End If
@@ -123,7 +123,7 @@
                             If GoogleStatistik Then
                                 Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
                                 If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden nicht installiert") Then
-                                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", "", "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                                 End If
                             End If
                         End If
@@ -135,10 +135,10 @@
                     Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "portable" Else tmpString = "normal"
                     If GoogleStatistik Then
                         If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht nicht gefunden") Then
-                            SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", "", "KeinsVorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                            SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "KeinsVorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                         End If
                     End If
-                    If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgKeinUpdate"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    If zZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgKeinUpdate"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End If
             End If
             GeradeUpdaten = False
@@ -150,7 +150,7 @@
     ''' Sucht nach Updates
     ''' </summary>
     ''' <param name="ZeigeFehler">Ob fehler angezeigt werden sollen</param>
-    ''' <returns>Gibt die neuere Version des Updates zurück andernfalls ""</returns>
+    ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
     ''' <remarks></remarks>
     Function SucheUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
         If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe").Length > 0 Then
@@ -166,10 +166,10 @@
             Catch ex As Exception
                 Console.Error.WriteLine("Versionen.lst: " & ex.Message)
             End Try
-            If LokaleVersionen.Version <> "" Then ProgrammVersion = LokaleVersionen.Version
-            Dim tmpFehler As String = ""
+            If Not String.IsNullOrEmpty(LokaleVersionen.Version) Then ProgrammVersion = LokaleVersionen.Version
+            Dim tmpFehler As String = String.Empty
             'Update versionsdatei öffnen:
-            For i As Int16 = 0 To UpdateServer.GetUpperBound(0)
+            For i As Int32 = 0 To UpdateServer.GetUpperBound(0)
                 Try
                     UpdateVersionen.Öffnen(UpdateServer(i) & "Versionen.lst.kom", False)
                     AktuellerServer = UpdateServer(i)
@@ -183,7 +183,7 @@
             If GoogleStatistik Then
                 Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
                 If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
-                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatefehler.htm", "", "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatefehler.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                 End If
             End If
             Return "XXX"
@@ -192,7 +192,7 @@ Suche:
             If ZuAktualisierendeDateien.Count > 0 Then 'Update vorhanden
                 Return UpdateVersionen.Version
             Else
-                Return ""
+                Return String.Empty
             End If
         End If
     End Function
@@ -230,7 +230,7 @@ Suche:
                     Entkomprimieren(Client.OpenRead(AktuellerServer & "Versionen.lst.kom"), UpdatePfad & "Versionen.lst")
                     'Client.DownloadFile(AktuellerServer & "Update.lst", Programmpfad & "/Update/Update.lst")
 
-                    Dim t As Int16 = 0
+                    Dim t As Int32
                     Do
                         t += 1
                     Loop While System.IO.File.Exists(UpdatePfad & "../Update-" & t & ".exe")
@@ -255,7 +255,7 @@ Suche:
         Return False
     End Function
 
-    Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String, ByVal Version As Version) As Boolean
+    Shared Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String, ByVal Version As Version) As Boolean
         Try
             Dim tmpRegistry As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
             tmpRegistry.SetValue("DisplayName", VersionsText)
@@ -267,7 +267,7 @@ Suche:
         End Try
     End Function
 
-    Sub Entkomprimieren(ByVal Stream As IO.Stream, ByVal DateiNach As String) 'geht nicht anders, da gzip.length nicht unterstützt wird:-(
+    Shared Sub Entkomprimieren(ByVal Stream As IO.Stream, ByVal DateiNach As String) 'geht nicht anders, da gzip.length nicht unterstützt wird:-(
         System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DateiNach))
         Try
             Dim tmpProcess As New Process
@@ -277,8 +277,8 @@ Suche:
             Dim tmpName As String = System.IO.Path.GetTempFileName
             Dim tmp As Byte()
             If Stream.CanSeek Then
-                ReDim tmp(Stream.Length - 1)
-                Stream.Read(tmp, 0, Stream.Length)
+                ReDim tmp(CInt(Stream.Length - 1))
+                Stream.Read(tmp, 0, CInt(Stream.Length))
             Else
                 Dim offset As Integer = 0
                 Dim totalCount As Integer = 0
@@ -332,7 +332,7 @@ Suche:
         End Try
     End Sub
 
-    Sub SendeAnGoogle(ByVal Datei As String, ByVal Kodierung As String, ByVal Auflösung As String, ByVal Farbtiefe As String, ByVal Sprache As String, ByVal Flashversion As String, ByVal Titel As String, ByVal Host As String, ByVal UACode As String)
+    Shared Sub SendeAnGoogle(ByVal Datei As String, ByVal Kodierung As String, ByVal Auflösung As String, ByVal Farbtiefe As String, ByVal Sprache As String, ByVal Flashversion As String, ByVal Titel As String, ByVal Host As String, ByVal UACode As String)
         '0zufall        '1uhrzeit        '2datei        '3kodierung        '4auflösung        '5farbtiefe        '6sprache
         '7flashversion        '8Titel        '9host        '10UA-Code UA-2276175-1
         Try
@@ -405,7 +405,7 @@ Suche:
                 '    pi.FileName = "mono """ & UpdatePfad & "../Update.exe""" & " """ & ProgrammName & """ """ & ProgrammExe & """"
                 '    Process.Start(pi)
                 'Else
-                Dim tmpneusteÄnderung As New Date(0), tmpDatei As String
+                Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
                 For Each file As String In System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe")
                     If System.IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
                         tmpneusteÄnderung = System.IO.File.GetLastWriteTime(file)
@@ -426,25 +426,25 @@ Suche:
         End If
     End Function
 
-    Public Function IsRunningOnMono() As Boolean
+    Public Shared Function IsRunningOnMono() As Boolean
         Return (Type.GetType("Mono.Runtime") IsNot Nothing)
     End Function
 
     Friend Function SucheNeueDateien(ByVal LokaleVersionen As VersionenDatei, ByVal UpdateVersionen As VersionenDatei) As Dateien
         Dim tmpDateien As New Dateien
         If UpdateVersionen.InterneVersion > LokaleVersionen.InterneVersion Then
-            For i As Int16 = 0 To UpdateVersionen.Kategorien.Count - 1
+            For i As Int32 = 0 To UpdateVersionen.Kategorien.Count - 1
                 If InstallierteKategorien Is Nothing OrElse UpdateVersionen.Kategorien(i).Pflicht OrElse Array.IndexOf(InstallierteKategorien, UpdateVersionen.Kategorien(i).Name) > -1 Then
                     If LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name) > -1 Then 'Lokale Versionen sind vorhanden
                         '=> neuere Versionen suchen
-                        For j As Int16 = 0 To UpdateVersionen.Kategorien(i).Dateien.Count - 1
+                        For j As Int32 = 0 To UpdateVersionen.Kategorien(i).Dateien.Count - 1
                             If LokaleVersionen.Kategorien(LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name)).Dateien.IndexOf(UpdateVersionen.Kategorien(i).Dateien(j).Name) = -1 OrElse UpdateVersionen.Kategorien(i).Dateien(j).InterneVersion > LokaleVersionen.Kategorien(LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name)).Dateien(LokaleVersionen.Kategorien(LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name)).Dateien.IndexOf(UpdateVersionen.Kategorien(i).Dateien(j).Name)).InterneVersion OrElse (Not System.IO.File.Exists(ProgrammPfad & "/" & UpdateVersionen.Kategorien(i).Dateien(j).Name)) Then
                                 tmpDateien.Add(UpdateVersionen.Kategorien(i).Dateien(j).Name, UpdateVersionen.Kategorien(i).Dateien(j).InterneVersion)
                             End If
                         Next j
                     Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
                         '=> alle aus dieser Kategorie aktualisieren
-                        For j As Int16 = 0 To UpdateVersionen.Kategorien(i).Dateien.Count - 1
+                        For j As Int32 = 0 To UpdateVersionen.Kategorien(i).Dateien.Count - 1
                             tmpDateien.Add(UpdateVersionen.Kategorien(i).Dateien(j).Name, UpdateVersionen.Kategorien(i).Dateien(j).InterneVersion)
                         Next j
                     End If
@@ -466,7 +466,8 @@ Suche:
 End Class
 
 Class VersionenDatei
-    Friend Version As String = 0, InterneVersion As Int32 = 0, ReleasNotesUrl As String
+    Friend Version As String, InterneVersion As Int32
+    Dim ReleasNotesUrl As String
     Friend Kategorien As New Kategorien
 
     Sub Öffnen(ByVal Datei As String, ByVal IstLokal As Boolean)
@@ -485,23 +486,23 @@ Class VersionenDatei
             End Try
         End If
 
-        Dim tmpKategorienIndex As Int16 = -1, tmp As String
+        Dim tmpKategorienIndex As Int32 = -1, tmp As String
         Dim Reader As New System.IO.StreamReader(Stream, True)
-        Dim UpdateVersion As Byte = Reader.ReadLine
+        Reader.ReadLine() 'UpdateVersion
         Version = Reader.ReadLine
-        InterneVersion = Reader.ReadLine
+        InterneVersion = CInt(Reader.ReadLine)
         ReleasNotesUrl = Reader.ReadLine
         Do Until Reader.Peek = -1
             tmp = Reader.ReadLine
             If tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "K:" Then
-                tmpKategorienIndex = Kategorien.Add(tmp.Substring(2, tmp.IndexOf(":", 2) - 2), tmp.Substring(tmp.IndexOf(":", 2) + 1))
+                tmpKategorienIndex = Kategorien.Add(tmp.Substring(2, tmp.IndexOf(":"c, 2) - 2), CBool(tmp.Substring(tmp.IndexOf(":"c, 2) + 1)))
             ElseIf tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "D:" Then
                 tmpKategorienIndex = -2
             ElseIf tmpKategorienIndex = -2 Then
                 'Dateien zum Löschen
             ElseIf tmpKategorienIndex > -1 Then
                 'Dateien in Kategorien
-                Kategorien(tmpKategorienIndex).Dateien.Add(tmp, Reader.ReadLine)
+                Kategorien(tmpKategorienIndex).Dateien.Add(tmp, CInt(Reader.ReadLine))
             End If
         Loop
         Try 'für linux
@@ -515,16 +516,16 @@ End Class
 Class Kategorien
     Friend kKategorie() As Kategorie
 
-    Default Property Kategorie(ByVal Index As Int16) As Kategorie
+    Default ReadOnly Property Kategorie(ByVal Index As Int32) As Kategorie
         Get
             Return kKategorie(Index)
         End Get
-        Set(ByVal value As Kategorie)
-            kKategorie(Index) = value
-        End Set
+        'Set(ByVal value As Kategorie)
+        '    kKategorie(Index) = value
+        'End Set
     End Property
 
-    Function Add(ByVal Name As String, ByVal Pflicht As Boolean)
+    Function Add(ByVal Name As String, ByVal Pflicht As Boolean) As Int32
         Name = Name.Trim.ToLower
         If IndexOf(Name) = -1 Then
             ReDim Preserve kKategorie(Count)
@@ -535,14 +536,14 @@ Class Kategorien
         End If
     End Function
 
-    Function IndexOf(ByVal Name As String)
-        For i As Int16 = 0 To Count - 1
+    Function IndexOf(ByVal Name As String) As Int32
+        For i As Int32 = 0 To Count - 1
             If kKategorie(i).Name = Name Then Return i
         Next i
         Return -1
     End Function
 
-    ReadOnly Property Count() As Int16
+    ReadOnly Property Count() As Int32
         Get
             If kKategorie Is Nothing Then Return 0 Else Return kKategorie.Length
         End Get
@@ -562,34 +563,34 @@ End Class
 Class Dateien
     Friend dDatei() As Datei
 
-    Default Property Datei(ByVal Index As Int16) As Datei
+    Default ReadOnly Property Datei(ByVal Index As Int32) As Datei
         Get
             Return dDatei(Index)
         End Get
-        Set(ByVal value As Datei)
-            dDatei(Index) = value
-        End Set
+        'Set(ByVal value As Datei)
+        '    dDatei(Index) = value
+        'End Set
     End Property
 
-    Function Add(ByVal Name As String, ByVal InterneVersion As Int32)
+    Function Add(ByVal Name As String, ByVal InterneVersion As Int32) As Int32
         If IndexOf(Name) = -1 Then
             ReDim Preserve dDatei(Count)
-            dDatei(Count - 1) = New Datei(Name.Replace("\", "/"), InterneVersion)
+            dDatei(Count - 1) = New Datei(Name.Replace("\"c, "/"c), InterneVersion)
             Return Count - 1
         Else
             Return IndexOf(Name)
         End If
     End Function
 
-    Function IndexOf(ByVal Name As String)
-        Name = Name.Trim.ToLower.Replace("\", "/")
-        For i As Int16 = 0 To Count - 1
+    Function IndexOf(ByVal Name As String) As Int32
+        Name = Name.Trim.ToLower.Replace("\"c, "/"c)
+        For i As Int32 = 0 To Count - 1
             If dDatei(i).Name.Trim.ToLower = Name Then Return i
         Next i
         Return -1
     End Function
 
-    ReadOnly Property Count() As Int16
+    ReadOnly Property Count() As Int32
         Get
             If dDatei Is Nothing Then Return 0 Else Return dDatei.Length
         End Get

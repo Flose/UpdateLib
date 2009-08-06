@@ -9,7 +9,7 @@
             Dim tmp() As String
             Do Until Reader.Peek = -1
                 Try
-                    tmp = Reader.ReadLine().Split("|")
+                    tmp = Reader.ReadLine().Split("|"c)
                     lstUpdates.Items.Add(Übersetzen.Übersetze("VersionErfolgreichInstalliert", CDate(tmp(0)).ToShortDateString, tmp(1)))
                 Catch
                 End Try
