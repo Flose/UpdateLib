@@ -256,13 +256,19 @@ Suche:
     End Function
 
     Shared Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String, ByVal Version As Version) As Boolean
+        Dim tmpRegistry As Microsoft.Win32.RegistryKey
         Try
-            Dim tmpRegistry As Microsoft.Win32.RegistryKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
-            tmpRegistry.SetValue("DisplayName", VersionsText)
-            tmpRegistry.SetValue("DisplayVersion", Version.ToString(4))
+            tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", False)
+            If CStr(tmpRegistry.GetValue("DisplayName")) <> VersionsText OrElse CStr(tmpRegistry.GetValue("DisplayVersion")) = Version.ToString(4) Then
+                tmpRegistry.Close()
+                tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
+                tmpRegistry.SetValue("DisplayName", VersionsText)
+                tmpRegistry.SetValue("DisplayVersion", Version.ToString(4))
+            End If
             tmpRegistry.Close()
             Return True
         Catch
+            If tmpRegistry IsNot Nothing Then tmpRegistry.Close()
             Return False
         End Try
     End Function
@@ -388,7 +394,7 @@ Suche:
                 If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
                     pi.Verb = "runas"
                 Else
-                    MessageBox.Show(Übersetzen.Übersetze("msgUpdateInstallierenAdmin"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    MessageBox.Show(Übersetzen.Übersetze("msgUpdateInstallierenAdmin", ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                     'Application.Exit()
                     Return False
                 End If
