@@ -5,7 +5,7 @@ Public Class frmUpdate
         If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
             Me.Text = System.String.Format(Me.Text, System.Environment.GetCommandLineArgs(1))
 
-            Dim DateienZumLöschen() As String = Nothing
+            Dim DateienZumLöschen() As String
             Dim tmpVersion As String = "0"
             If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
                 InstallationsPfad = Environment.CurrentDirectory & "/"
@@ -50,7 +50,7 @@ Public Class frmUpdate
             VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
 
             If DateienZumLöschen IsNot Nothing Then
-                For i As Int16 = 0 To DateienZumLöschen.GetUpperBound(0)
+                For i As Int32 = 0 To DateienZumLöschen.GetUpperBound(0)
                     Try
                         System.IO.File.Delete(DateienZumLöschen(i))
                     Catch

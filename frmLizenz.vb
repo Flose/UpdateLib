@@ -36,7 +36,7 @@ Public Class frmLizenz
             Next
         Catch
         End Try
-        Dim tmpIndex As Int16 = cmbSprachen.Items.IndexOf(My.Application.Culture.NativeName.Substring(0, My.Application.Culture.EnglishName.IndexOf(" (") + 1))
+        Dim tmpIndex As Int32 = cmbSprachen.Items.IndexOf(My.Application.Culture.NativeName.Substring(0, My.Application.Culture.EnglishName.IndexOf(" (") + 1))
         If tmpIndex = -1 Then
             cmbSprachen.SelectedIndex = 0
         Else
