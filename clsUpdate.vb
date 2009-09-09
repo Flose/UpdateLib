@@ -67,6 +67,10 @@
                 Übersetzen.Load("English", My.Resources.English)
             Case "french"
                 Übersetzen.Load("French", My.Resources.French)
+            Case "spanish"
+                Übersetzen.Load("Spanish", My.Resources.Spanish)
+            Case "bavarian"
+                Übersetzen.Load("Bavarian", My.Resources.Bavarian)
             Case Else
                 Übersetzen = New dllSprache.clsÜbersetzen("xxx", My.Resources.English)
         End Select

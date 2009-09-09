@@ -1,0 +1,16 @@
+﻿1
+SprachenName=Español
+msgUpdateBereitsVorhanden=Ya existe una actualización!{0}Reiniciar {1} para instalar.
+Update={0} actualización
+msgUpdateVorhanden=Una actualización a la versión {0} existe.{1}Desea bajarla?
+msgUpdateInstallierenAdmin=Ha bajado una actualización pero no esta instalada.\n\nInicie el programa de administrador para instalar la actualización.
+msgKeinUpdate=No hay actualización
+msgFehlerUpdateSuchen=Fallo en la búsqueda de actualización: {0}
+lblAktuelleDatei=Archivo actual: {0}
+UpdateFertigstellen=Terminar...
+msgUpdateErfolgreich=Actualización con éxito!{0}Para instalar debe {1} iniciar de nuevo.{0}Iniciar automáticamente?
+msgFehlerUpdate=Fallo en la actualización: {0}
+UpdateHistory=Historia de actualización
+Updates=Actualizaciones:
+Schließen=&Cerrar
+VersionErfolgreichInstalliert={0}:Versión {1} instalada con éxito.

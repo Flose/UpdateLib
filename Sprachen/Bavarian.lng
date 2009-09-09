@@ -1,0 +1,16 @@
+﻿1
+SprachenName=Boarisch
+msgUpdateBereitsVorhanden=Es gibt scho a Update!{0}Zum Installiern, muasst as {1} Programm neistartn.
+Update=Neie Version vom {0} Programm
+msgUpdateVorhanden=Es gibt a Update auf Version {0}.{1}Mogst des jetz obalon?
+msgUpdateInstallierenAdmin=Sie hom grod a Update obaglon.\n\nStartens as {0} Programm ois Admin ums Update zum installiern.
+msgKeinUpdate=Koa neie Version do
+msgFehlerUpdateSuchen=Fella beim Updatesuacha: {0}
+lblAktuelleDatei=Datei: {0}
+UpdateFertigstellen=Fertigmacha...
+msgUpdateErfolgreich=Update erfolgreich obaglon!{0}Ums Update jetz zum Installieren, muast as {1} Programm neistartn.{0}Soi jetz automatisch neigstart wean?
+msgFehlerUpdate=Fella beim updatn: {0}
+UpdateHistory=Update gschicht
+Updates=Neie Versionen, de wo installiert worn san:
+Schließen=Zua&macha
+VersionErfolgreichInstalliert={0}: Version {1} erfolgreich installierd.
