@@ -1,17 +1,17 @@
 Public Class frmUpdate
     Friend ReleasNotesUrl As String
-    Dim InstallationsPfad As String
+    Friend InstallationsPfad As String
     Private Sub frmUpdate_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
             Me.Text = System.String.Format(Me.Text, System.Environment.GetCommandLineArgs(1))
 
-            Dim DateienZumLöschen() As String
             Dim tmpVersion As String = "0"
             If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
                 InstallationsPfad = Environment.CurrentDirectory & "/"
             Else
                 InstallationsPfad = Application.StartupPath & "/"
             End If
+            Dim DateienZumLöschen As New List(Of String)
             If System.IO.File.Exists(Application.StartupPath & "/Update/Versionen.lst") Then
                 'Releasenotes, Version, Löschen aus Versionen.lst lesen
                 Dim tmp As String, tmpKategorienIndex As Int16
@@ -28,8 +28,7 @@ Public Class frmUpdate
                         tmpKategorienIndex = -2
                     ElseIf tmpKategorienIndex = -2 Then
                         'Dateien zum Löschen
-                        If DateienZumLöschen Is Nothing Then ReDim DateienZumLöschen(0) Else ReDim Preserve DateienZumLöschen(DateienZumLöschen.Length)
-                        DateienZumLöschen(DateienZumLöschen.GetUpperBound(0)) = InstallationsPfad & tmp
+                        DateienZumLöschen.Add(InstallationsPfad & tmp)
                     ElseIf tmpKategorienIndex > -1 Then
                         'Dateien in Kategorien
                     End If
@@ -49,17 +48,17 @@ Public Class frmUpdate
 
             VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
 
-            If DateienZumLöschen IsNot Nothing Then
-                For i As Int32 = 0 To DateienZumLöschen.GetUpperBound(0)
+            If DateienZumLöschen.Count > 0 Then
+                For Each file As String In DateienZumLöschen
                     Try
-                        System.IO.File.Delete(DateienZumLöschen(i))
+                        System.IO.File.Delete(file)
                     Catch
                         Try
-                            System.IO.Directory.Delete(DateienZumLöschen(i))
+                            System.IO.Directory.Delete(file)
                         Catch
                         End Try
                     End Try
-                Next i
+                Next
             End If
 
             'alle alten update-*.exe löschen
@@ -71,6 +70,11 @@ Public Class frmUpdate
                     End Try
                 End If
             Next
+
+            Try
+                System.IO.File.Copy(Application.ExecutablePath, InstallationsPfad & "Update.exe", True)
+            Catch
+            End Try
 
             Try
                 Dim UpdateWriter As New System.IO.StreamWriter(InstallationsPfad & "UpdateHistory.txt", True)
