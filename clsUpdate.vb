@@ -1,7 +1,7 @@
 ﻿Public Class Update
     Dim UpdateServer() As String
     Dim InstallierteKategorien() As String '= Nothing
-    Dim Übersetzen As New dllSprache.clsÜbersetzen("xxx", My.Resources.German)
+    Dim Übersetzen As New dllSprache.clsÜbersetzen(String.Empty, My.Resources.English)
 
     Dim ÜbersetzterProgrammName As String
 
@@ -18,6 +18,7 @@
     Public Delegate Sub UpdateSuchenInstallierenCallback(ByVal ZeigeFehler As Boolean, ByVal MitUI As Boolean)
     Dim UpdatePfad As String
     Public Daten As String
+    Dim UpdateServerDatei As String, StandardUpdateServer() As String
 
     Sub New(ByVal Name As String, ByVal Exe As String, ByVal Version As String, ByVal Pfad As String, ByVal UpdateServerDatei As String, ByVal StandardUpdateServer() As String, ByVal Daten As String)
         ProgrammPfad = Pfad
@@ -26,35 +27,13 @@
         'ProgrammSprache = Sprache
         ProgrammVersion = Version
         Me.Daten = Daten
+        Me.UpdateServerDatei = UpdateServerDatei
+        Me.StandardUpdateServer = StandardUpdateServer
         'UpdatePfad festlegen
         If System.IO.File.Exists(ProgrammPfad & "/Portable") Then
             UpdatePfad = ProgrammPfad & "/Update/"
         Else
             UpdatePfad = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "/Flo & Seb Engineering/" & ProgrammName & "/Update/"
-        End If
-
-        'UpdateServer setzen
-        'Dim UpdateReader As System.IO.StreamReader
-        Try
-            Using UpdateReader As New System.IO.StreamReader(UpdateServerDatei, True)
-                UpdateServer = UpdateReader.ReadToEnd.Split(New Char() {ChrW(10), ChrW(13)}, StringSplitOptions.RemoveEmptyEntries)
-            End Using
-        Catch
-            UpdateServer = StandardUpdateServer
-        End Try
-
-        'Installierte Kategorien rausfinden
-        If System.IO.File.Exists(ProgrammPfad & "/Kategorien.ini") Then
-            Dim tmp As String
-            Dim Reader As New IO.StreamReader(ProgrammPfad & "/Kategorien.ini", True)
-            Do Until Reader.Peek = -1
-                tmp = Reader.ReadLine
-                If tmp.IndexOf("="c) > -1 AndAlso tmp.Substring(tmp.IndexOf("="c) + 1).Trim.ToLower = "true" Then
-                    If InstallierteKategorien Is Nothing Then ReDim InstallierteKategorien(0) Else ReDim Preserve InstallierteKategorien(InstallierteKategorien.Length)
-                    InstallierteKategorien(InstallierteKategorien.GetUpperBound(0)) = tmp.Substring(0, tmp.IndexOf("="c)).Trim.ToLower
-                End If
-            Loop
-            Reader.Close()
         End If
     End Sub
 
@@ -71,8 +50,11 @@
                 Übersetzen.Load("Spanish", My.Resources.Spanish)
             Case "bavarian"
                 Übersetzen.Load("Bavarian", My.Resources.Bavarian)
+            Case "dutch"
+                Übersetzen.Load("Dutch", My.Resources.Dutch)
             Case Else
-                Übersetzen = New dllSprache.clsÜbersetzen("xxx", My.Resources.English)
+                Übersetzen.Load(String.Empty, String.Empty)
+                'Übersetzen = New dllSprache.clsÜbersetzen(String.Empty, My.Resources.English)
         End Select
     End Sub
 
@@ -149,7 +131,6 @@
         End If
     End Sub
 
-
     ''' <summary>
     ''' Sucht nach Updates
     ''' </summary>
@@ -163,6 +144,33 @@
             Return "XXX"
         Else
             GeradeUpdaten = True
+            If UpdateServer Is Nothing Then
+                'UpdateServer setzen
+                Try
+                    Using UpdateReader As New System.IO.StreamReader(UpdateServerDatei, True)
+                        UpdateServer = UpdateReader.ReadToEnd.Split(New Char() {ChrW(10), ChrW(13)}, StringSplitOptions.RemoveEmptyEntries)
+                    End Using
+                    If UpdateServer.Length = 0 Then
+                        UpdateServer = StandardUpdateServer
+                    End If
+                Catch
+                    UpdateServer = StandardUpdateServer
+                End Try
+                'Installierte Kategorien rausfinden
+                If System.IO.File.Exists(ProgrammPfad & "/Kategorien.ini") Then
+                    Dim tmp As String
+                    Using Reader As New IO.StreamReader(ProgrammPfad & "/Kategorien.ini", True)
+                        Do Until Reader.Peek = -1
+                            tmp = Reader.ReadLine
+                            If tmp.IndexOf("="c) > -1 AndAlso String.Compare(tmp.Substring(tmp.IndexOf("="c) + 1).Trim, "true", True) = 0 Then
+                                If InstallierteKategorien Is Nothing Then ReDim InstallierteKategorien(0) Else ReDim Preserve InstallierteKategorien(InstallierteKategorien.Length)
+                                InstallierteKategorien(InstallierteKategorien.GetUpperBound(0)) = tmp.Substring(0, tmp.IndexOf("="c)).Trim.ToLower
+                            End If
+                        Loop
+                    End Using
+                End If
+            End If
+
             Dim LokaleVersionen, UpdateVersionen As New VersionenDatei
 
             Try
@@ -249,7 +257,7 @@ Suche:
                         Catch
                         End Try
                     End If
-                    If MitUI Then tmpUpdateForm.Close() : tmpUpdateForm = Nothing
+                    If MitUI Then tmpUpdateForm.Close() : tmpUpdateForm.Dispose() : tmpUpdateForm = Nothing
                     Return True
                 Catch ex As Exception 'Fehler beim Update herunterladen
                     If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdate", Environment.NewLine & ex.Message), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -278,69 +286,60 @@ Suche:
     End Function
 
     Shared Sub Entkomprimieren(ByVal Stream As IO.Stream, ByVal DateiNach As String) 'geht nicht anders, da gzip.length nicht unterstützt wird:-(
+        Static UseGUnzip As Boolean
         System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DateiNach))
-        Try
-            Dim tmpProcess As New Process
-            tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
-            tmpProcess.StartInfo.FileName = "gunzip"
-            tmpProcess.Start()
-            Dim tmpName As String = System.IO.Path.GetTempFileName
-            Dim tmp As Byte()
-            If Stream.CanSeek Then
-                ReDim tmp(CInt(Stream.Length - 1))
-                Stream.Read(tmp, 0, CInt(Stream.Length))
-            Else
-                Dim offset As Integer = 0
-                Dim totalCount As Integer = 0
-                While True
-                    ReDim Preserve tmp(totalCount + 5000)
-                    Dim bytesRead As Integer = Stream.Read(tmp, offset, 5000)
-                    If bytesRead = 0 Then
-                        Exit While
-                    End If
-                    offset += bytesRead
-                    totalCount += bytesRead
-                    'If (totalCount Mod 60000) = 0 Then Application.DoEvents()
-                End While
-                ReDim Preserve tmp(totalCount - 1)
-            End If
-            Dim Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
-            Writer.Write(tmp, 0, tmp.Length)
-            Writer.Close()
-            'tmpProcess.StartInfo.UseShellExecute = False
-            'tmpProcess.StartInfo.RedirectStandardOutput = True
-            tmpProcess = New Process
-            tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
-            tmpProcess.StartInfo.Arguments = "-qf """ & tmpName & ".gz" & """"
-            tmpProcess.StartInfo.FileName = "gunzip"
-            tmpProcess.Start()
-            tmpProcess.WaitForExit(5000)
-
-            My.Computer.FileSystem.MoveFile(tmpName, DateiNach, True)
-            Stream.Close()
-        Catch
-            Dim tmp(4000) As Byte
-            Dim Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
-
-            'Dim offset As Integer = 0
-            'Dim totalCount As Integer = 0
-            Dim Writer As New System.IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
-            While True
-                'ReDim Preserve tmp(totalCount + 4000)
-                Dim bytesRead As Integer = Gzip.Read(tmp, 0, 4000)
-                If bytesRead = 0 Then
-                    Exit While
+        Dim tmp As Byte()
+        If UseGUnzip Then
+            Try
+                Dim tmpProcess As New Process
+                tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                tmpProcess.StartInfo.FileName = "gunzip"
+                tmpProcess.Start() 'test ob gunzip verfügbar
+                Dim tmpName As String = System.IO.Path.GetTempFileName
+                If Stream.CanSeek Then
+                    ReDim tmp(CInt(Stream.Length - 1))
+                    Stream.Read(tmp, 0, CInt(Stream.Length))
+                    Dim Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
+                    Writer.Write(tmp, 0, tmp.Length)
+                    Writer.Close()
+                Else
+                    'Dim offset As Integer = 0
+                    'Dim totalCount As Integer = 0
+                    Using Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
+                        ReDim tmp(4999)
+                        Dim bytesRead As Integer = Stream.Read(tmp, 0, 5000)
+                        While bytesRead > 0
+                            Writer.Write(tmp, 0, bytesRead)
+                            bytesRead = Stream.Read(tmp, 0, 5000)
+                        End While
+                    End Using
                 End If
-                Writer.Write(tmp, 0, bytesRead)
+                'tmpProcess.StartInfo.UseShellExecute = False
+                'tmpProcess.StartInfo.RedirectStandardOutput = True
+                tmpProcess = New Process
+                tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
+                tmpProcess.StartInfo.Arguments = "-qf """ & tmpName & ".gz" & """"
+                tmpProcess.StartInfo.FileName = "gunzip"
+                tmpProcess.Start()
+                tmpProcess.WaitForExit(5000)
 
-                'offset += bytesRead
-                'totalCount += bytesRead
-                'If (totalCount Mod 80000) = 0 Then Application.DoEvents()
-            End While
-            Writer.Close()
-            'ReDim Preserve tmp(totalCount)
-            Gzip.Close()
-        End Try
+                My.Computer.FileSystem.MoveFile(tmpName, DateiNach, True)
+                Stream.Close()
+                Exit Sub
+            Catch
+                UseGUnzip = False
+            End Try
+        End If
+        ReDim tmp(4999)
+        Using Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
+            Using Writer As New System.IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
+                Dim bytesRead As Integer = Gzip.Read(tmp, 0, 5000)
+                While bytesRead > 0
+                    Writer.Write(tmp, 0, bytesRead)
+                    bytesRead = Gzip.Read(tmp, 0, 5000)
+                End While
+            End Using
+        End Using 'gzip
     End Sub
 
     Shared Sub SendeAnGoogle(ByVal Datei As String, ByVal Kodierung As String, ByVal Auflösung As String, ByVal Farbtiefe As String, ByVal Sprache As String, ByVal Flashversion As String, ByVal Titel As String, ByVal Host As String, ByVal UACode As String)
@@ -354,7 +353,6 @@ Suche:
                 client.Proxy = Nothing
                 client.OpenRead(String.Format("http://www.google-analytics.com/__utm.gif?utmwv=1&utmn={0}&utmcs={3}&utmsr={4}&utmsc={5}&utmul={6}&utmje=1&utmfl={7}&utmcn=1&utmdt={8}&utmhn={9}&utmr=-&utmp={2}&utmac={10}&utmcc=__utma%3D81541394.{0}.{1}.{1}.{1}.1%3B%2B__utmb%3D81541394%3B%2B__utmc%3D81541394%3B%2B__utmz%3D81541394.{1}.1.1.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B", rnd.NextDouble * 2147483647, Int(Date.UtcNow.Subtract(New Date(1970, 1, 1)).Ticks / 10000000), Datei, Kodierung, Auflösung, Farbtiefe, Sprache, Flashversion, Titel, Host, UACode)).Close()
             End Try
-            client.Dispose()
         Catch
         End Try
     End Sub
@@ -382,7 +380,6 @@ Suche:
                 client.Proxy = Nothing
                 client.OpenRead(String.Format("http://{5}/update.php?programm={0}&version={1}&pn={2}&typ={3}&platform={4}&lang={6}&dat={7}", Programmname, Version, PN, Typ, My.Computer.Info.OSPlatform, Server, My.Application.Culture.Name, Daten)).Close()
             End Try
-            client.Dispose()
             Return True
         Catch
             Return False
@@ -443,36 +440,39 @@ Suche:
 
     Friend Function SucheNeueDateien(ByVal LokaleVersionen As VersionenDatei, ByVal UpdateVersionen As VersionenDatei) As Dateien
         Dim tmpDateien As New Dateien
+        Dim LokalVersionKategorieIndex As Int32
         If UpdateVersionen.InterneVersion > LokaleVersionen.InterneVersion Then
             For i As Int32 = 0 To UpdateVersionen.Kategorien.Count - 1
-                If InstallierteKategorien Is Nothing OrElse UpdateVersionen.Kategorien(i).Pflicht OrElse Array.IndexOf(InstallierteKategorien, UpdateVersionen.Kategorien(i).Name) > -1 Then
-                    If LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name) > -1 Then 'Lokale Versionen sind vorhanden
-                        '=> neuere Versionen suchen
-                        For j As Int32 = 0 To UpdateVersionen.Kategorien(i).Dateien.Count - 1
-                            If LokaleVersionen.Kategorien(LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name)).Dateien.IndexOf(UpdateVersionen.Kategorien(i).Dateien(j).Name) = -1 OrElse UpdateVersionen.Kategorien(i).Dateien(j).InterneVersion > LokaleVersionen.Kategorien(LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name)).Dateien(LokaleVersionen.Kategorien(LokaleVersionen.Kategorien.IndexOf(UpdateVersionen.Kategorien(i).Name)).Dateien.IndexOf(UpdateVersionen.Kategorien(i).Dateien(j).Name)).InterneVersion OrElse (Not System.IO.File.Exists(ProgrammPfad & "/" & UpdateVersionen.Kategorien(i).Dateien(j).Name)) Then
-                                tmpDateien.Add(UpdateVersionen.Kategorien(i).Dateien(j).Name, UpdateVersionen.Kategorien(i).Dateien(j).InterneVersion)
-                            End If
-                        Next j
-                    Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
-                        '=> alle aus dieser Kategorie aktualisieren
-                        For j As Int32 = 0 To UpdateVersionen.Kategorien(i).Dateien.Count - 1
-                            tmpDateien.Add(UpdateVersionen.Kategorien(i).Dateien(j).Name, UpdateVersionen.Kategorien(i).Dateien(j).InterneVersion)
-                        Next j
+                With UpdateVersionen.Kategorien(i)
+                    If InstallierteKategorien Is Nothing OrElse .Pflicht OrElse Array.IndexOf(InstallierteKategorien, .Name) > -1 Then
+                        LokalVersionKategorieIndex = LokaleVersionen.Kategorien.IndexOf(.Name)
+                        If LokalVersionKategorieIndex > -1 Then 'Lokale Versionen sind vorhanden
+                            '=> neuere Versionen suchen
+                            For j As Int32 = 0 To .Dateien.Count - 1
+                                If LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name) = -1 OrElse .Dateien(j).InterneVersion > LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien(LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse (Not System.IO.File.Exists(ProgrammPfad & "/" & .Dateien(j).Name)) Then
+                                    tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
+                                End If
+                            Next j
+                        Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
+                            '=> alle aus dieser Kategorie aktualisieren
+                            For j As Int32 = 0 To .Dateien.Count - 1
+                                tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
+                            Next j
+                        End If
                     End If
-                End If
+                End With
             Next i
         End If
         Return tmpDateien
     End Function
 
     Sub ZeigeUpdateHistory(Optional ByVal ParentForm As Form = Nothing)
-        Dim tmpHistory As New frmUpdateHistory
-        tmpHistory.Programmpfad = ProgrammPfad
-        tmpHistory.Übersetzen = Übersetzen
-        If ParentForm Is Nothing Then tmpHistory.StartPosition = FormStartPosition.CenterScreen
-        tmpHistory.ShowDialog(ParentForm)
-        tmpHistory.Dispose()
-        tmpHistory = Nothing
+        Using tmpHistory As New frmUpdateHistory
+            tmpHistory.Programmpfad = ProgrammPfad
+            tmpHistory.Übersetzen = Übersetzen
+            If ParentForm Is Nothing Then tmpHistory.StartPosition = FormStartPosition.CenterScreen
+            tmpHistory.ShowDialog(ParentForm)
+        End Using
     End Sub
 End Class
 
@@ -487,7 +487,6 @@ Class VersionenDatei
             Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
         Else
             Dim Client As New System.Net.WebClient
-
             'Stream = Client.OpenRead(Datei)
             Try
                 Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
@@ -511,6 +510,7 @@ Class VersionenDatei
                 tmpKategorienIndex = -2
             ElseIf tmpKategorienIndex = -2 Then
                 'Dateien zum Löschen
+                'Löschen macht Update.exe
             ElseIf tmpKategorienIndex > -1 Then
                 'Dateien in Kategorien
                 Kategorien(tmpKategorienIndex).Dateien.Add(tmp, CInt(Reader.ReadLine))

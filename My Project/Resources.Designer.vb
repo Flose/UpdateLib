@@ -80,6 +80,31 @@ Namespace My.Resources
         
         '''<summary>
         '''  Sucht eine lokalisierte Zeichenfolge, die 1
+        '''SprachenName=Nederlands
+        '''msgUpdateBereitsVorhanden=
+        '''Update={0} Update
+        '''msgUpdateVorhanden=
+        '''msgUpdateInstallierenAdmin=
+        '''msgKeinUpdate=Geen updates beschikbaar
+        '''msgFehlerUpdateSuchen=Fout bij het zoeken naar updates: {0}
+        '''lblAktuelleDatei=Huidig bestand: {0}
+        '''UpdateFertigstellen=
+        '''msgUpdateErfolgreich=
+        '''msgFehlerUpdate=Fout bij het updaten: {0}
+        '''UpdateHistory=Update geschiedenis
+        '''Updates=Updates:
+        '''Schließen=&amp;Sluiten
+        '''VersionErfolgreichInstalliert={0}: Versie {1} succesvol geïnstalleerd.
+        ''' ähnelt.
+        '''</summary>
+        Friend ReadOnly Property Dutch() As String
+            Get
+                Return ResourceManager.GetString("Dutch", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Zeichenfolge, die 1
         '''SprachenName=English
         '''msgUpdateBereitsVorhanden=You have already downloaded an update.{0} Restart {1} to install it.
         '''Update={0} update

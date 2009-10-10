@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8B448F7D-259C-4605-B46D-DC64D010A75C}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -138,6 +138,7 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="Sprachen\Bavarian.lng" />
+    <None Include="Sprachen\Dutch.lng" />
     <None Include="Sprachen\English.lng" />
     <None Include="Sprachen\French.lng" />
     <None Include="Sprachen\German.lng" />
