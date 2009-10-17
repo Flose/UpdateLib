@@ -1,0 +1,16 @@
+﻿1
+SprachenName=Português
+msgUpdateBereitsVorhanden=Você já baixou uma atualização.{0}Reinicie {1} para instalá-la.
+Update={0} atualização
+msgUpdateVorhanden=Atualização para a versão {0} está disponível.{1}Você quer baixá-la agora?
+msgUpdateInstallierenAdmin=Você baixou uma atualização mas ela ainda não foi instalada.\n\n Inicie {0} como administrador para instalar a atualização.
+msgKeinUpdate=Nenhuma atualização disponível.
+msgFehlerUpdateSuchen=Erro durante a procura por atualizações: {0}
+lblAktuelleDatei=Arquivo atual: {0}
+UpdateFertigstellen=Finalizando...
+msgUpdateErfolgreich=Atualização baixada com sucesso!{0}Para instalar a atualização você precisa reiniciar {1}.{0}Reiniciar agora?
+msgFehlerUpdate=Erro durante a atualização: {0}
+UpdateHistory=Histórico das atualizações
+Updates=Atualizações:
+Schließen=&Fechar
+VersionErfolgreichInstalliert={0}: Versão {1} instalada com sucesso.

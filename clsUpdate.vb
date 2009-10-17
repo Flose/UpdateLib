@@ -24,7 +24,6 @@
         ProgrammPfad = Pfad
         ProgrammName = Name
         ProgrammExe = Exe
-        'ProgrammSprache = Sprache
         ProgrammVersion = Version
         Me.Daten = Daten
         Me.UpdateServerDatei = UpdateServerDatei
@@ -52,9 +51,10 @@
                 Übersetzen.Load("Bavarian", My.Resources.Bavarian)
             Case "dutch"
                 Übersetzen.Load("Dutch", My.Resources.Dutch)
+            Case "portuguese"
+                Übersetzen.Load("Portuguese", My.Resources.Portuguese)
             Case Else
                 Übersetzen.Load(String.Empty, String.Empty)
-                'Übersetzen = New dllSprache.clsÜbersetzen(String.Empty, My.Resources.English)
         End Select
     End Sub
 

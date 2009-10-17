@@ -156,6 +156,23 @@ Namespace My.Resources
         
         '''<summary>
         '''  Sucht eine lokalisierte Zeichenfolge, die 1
+        '''SprachenName=Português
+        '''msgUpdateBereitsVorhanden=Você já baixou uma atualização.{0}Reinicie {1} para instalá-la.
+        '''Update={0} atualização
+        '''msgUpdateVorhanden=Atualização para a versão {0} está disponível.{1}Você quer baixá-la agora?
+        '''msgUpdateInstallierenAdmin=Você baixou uma atualização mas ela ainda não foi instalada.\n\n Inicie {0} como administrador para instalar a atualização.
+        '''msgKeinUpdate=Nenhuma atualização disponível.
+        '''msgFehlerUpdateSuchen=Erro durante a procura por atualizações: {0}
+        '''lblAktue [Rest der Zeichenfolge wurde abgeschnitten]&quot;; ähnelt.
+        '''</summary>
+        Friend ReadOnly Property Portuguese() As String
+            Get
+                Return ResourceManager.GetString("Portuguese", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Sucht eine lokalisierte Zeichenfolge, die 1
         '''SprachenName=Español
         '''msgUpdateBereitsVorhanden=Ya existe una actualización!{0}Reiniciar {1} para instalar.
         '''Update={0} actualización
