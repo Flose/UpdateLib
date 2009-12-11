@@ -467,11 +467,9 @@ Suche:
     End Function
 
     Sub ZeigeUpdateHistory(Optional ByVal ParentForm As Form = Nothing)
-        Using tmpHistory As New frmUpdateHistory
-            tmpHistory.Programmpfad = ProgrammPfad
-            tmpHistory.Übersetzen = Übersetzen
-            If ParentForm Is Nothing Then tmpHistory.StartPosition = FormStartPosition.CenterScreen
-            tmpHistory.ShowDialog(ParentForm)
+        Using frmH As New frmUpdateHistory(Übersetzen, ProgrammPfad)
+            If ParentForm Is Nothing Then frmH.StartPosition = FormStartPosition.CenterScreen
+            frmH.ShowDialog(ParentForm)
         End Using
     End Sub
 End Class

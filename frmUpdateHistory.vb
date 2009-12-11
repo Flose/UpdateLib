@@ -1,20 +1,23 @@
 ﻿Public Class frmUpdateHistory
-    Friend Übersetzen As dllSprache.clsÜbersetzen, Programmpfad As String
 
-    Private Sub frmUpdateHistory_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Public Sub New(ByVal Übersetzen As dllSprache.clsÜbersetzen, ByVal Programmpfad As String)
+        ' Dieser Aufruf ist für den Windows Form-Designer erforderlich.
+        InitializeComponent()
+
+        ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
         Übersetzen.ÜbersetzeControl(Me)
         lstUpdates.Items.Clear()
         If System.IO.File.Exists(Programmpfad & "/UpdateHistory.txt") Then
-            Dim Reader As New System.IO.StreamReader(Programmpfad & "/UpdateHistory.txt")
-            Dim tmp() As String
-            Do Until Reader.Peek = -1
-                Try
-                    tmp = Reader.ReadLine().Split("|"c)
-                    lstUpdates.Items.Add(Übersetzen.Übersetze("VersionErfolgreichInstalliert", CDate(tmp(0)).ToShortDateString, tmp(1)))
-                Catch
-                End Try
-            Loop
-            Reader.Close()
+            Using Reader As New System.IO.StreamReader(Programmpfad & "/UpdateHistory.txt")
+                Dim tmp() As String
+                Do Until Reader.Peek = -1
+                    Try
+                        tmp = Reader.ReadLine().Split("|"c)
+                        lstUpdates.Items.Add(Übersetzen.Übersetze("VersionErfolgreichInstalliert", CDate(tmp(0)).ToShortDateString, tmp(1)))
+                    Catch
+                    End Try
+                Loop
+            End Using
         End If
     End Sub
 
