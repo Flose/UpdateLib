@@ -1,6 +1,6 @@
 ﻿Public Class Update
     Dim UpdateServer() As String
-    Dim InstallierteKategorien() As String '= Nothing
+    Dim InstallierteKategorien() As String
     Dim Übersetzen As New dllSprache.clsÜbersetzen(String.Empty, My.Resources.English)
 
     Dim ÜbersetzterProgrammName As String
@@ -34,28 +34,19 @@
         Else
             UpdatePfad = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "/Flo & Seb Engineering/" & ProgrammName & "/Update/"
         End If
+        Übersetzen.Sprachen.Add("German", "Deutsch", My.Resources.German)
+        Übersetzen.Sprachen.Add("English", "English", My.Resources.English)
+        Übersetzen.Sprachen.Add("French", "Français", My.Resources.French)
+        Übersetzen.Sprachen.Add("Spanish", "Español", My.Resources.Spanish)
+        Übersetzen.Sprachen.Add("Bavarian", "Boarisch", My.Resources.Bavarian)
+        Übersetzen.Sprachen.Add("Dutch", "Nederlands", My.Resources.Dutch)
+        Übersetzen.Sprachen.Add("Portuguese", "Português", My.Resources.Portuguese)
     End Sub
 
     Sub Übersetze(ByVal Sprache As String, ByVal ÜbersetzterName As String)
         ÜbersetzterProgrammName = ÜbersetzterName
-        Select Case Sprache.ToLower
-            Case "german"
-                Übersetzen.Load("German", My.Resources.German)
-            Case "english"
-                Übersetzen.Load("English", My.Resources.English)
-            Case "french"
-                Übersetzen.Load("French", My.Resources.French)
-            Case "spanish"
-                Übersetzen.Load("Spanish", My.Resources.Spanish)
-            Case "bavarian"
-                Übersetzen.Load("Bavarian", My.Resources.Bavarian)
-            Case "dutch"
-                Übersetzen.Load("Dutch", My.Resources.Dutch)
-            Case "portuguese"
-                Übersetzen.Load("Portuguese", My.Resources.Portuguese)
-            Case Else
-                Übersetzen.Load(String.Empty, String.Empty)
-        End Select
+        Sprache = Übersetzen.ÜberprüfeSprache(Sprache)
+        Übersetzen.Load(Sprache)
     End Sub
 
     ''' <summary>
@@ -75,14 +66,6 @@
                     GeradeUpdaten = False
                     Exit Sub
                 ElseIf Not String.IsNullOrEmpty(tmpUpdateSuche) Then 'Update vorhanden
-                    'Try
-                    '    System.IO.File.Create(ProgrammPfad & "/tmp.d", 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
-                    'Catch 'wenn keine Schreibrechte im Programmverzeichnis
-                    '    MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhandenAdmin", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
-                    '    GeradeUpdaten = False
-                    '    Exit Sub
-                    'End Try
-
                     Try
                         'Updatefrage
                         If MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhanden", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = DialogResult.Yes Then
@@ -240,7 +223,6 @@ Suche:
                     Application.DoEvents()
                     'Versionen.lst herunterladen, Update.exe verschieben
                     Entkomprimieren(Client.OpenRead(AktuellerServer & "Versionen.lst.kom"), UpdatePfad & "Versionen.lst")
-                    'Client.DownloadFile(AktuellerServer & "Update.lst", Programmpfad & "/Update/Update.lst")
 
                     Dim t As Int32
                     Do
@@ -303,8 +285,6 @@ Suche:
                     Writer.Write(tmp, 0, tmp.Length)
                     Writer.Close()
                 Else
-                    'Dim offset As Integer = 0
-                    'Dim totalCount As Integer = 0
                     Using Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
                         ReDim tmp(4999)
                         Dim bytesRead As Integer = Stream.Read(tmp, 0, 5000)
@@ -314,8 +294,6 @@ Suche:
                         End While
                     End Using
                 End If
-                'tmpProcess.StartInfo.UseShellExecute = False
-                'tmpProcess.StartInfo.RedirectStandardOutput = True
                 tmpProcess = New Process
                 tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 tmpProcess.StartInfo.Arguments = "-qf """ & tmpName & ".gz" & """"
@@ -396,7 +374,6 @@ Suche:
                     pi.Verb = "runas"
                 Else
                     MessageBox.Show(Übersetzen.Übersetze("msgUpdateInstallierenAdmin", ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
-                    'Application.Exit()
                     Return False
                 End If
             End Try
@@ -409,10 +386,6 @@ Suche:
 
             pi.WorkingDirectory = Application.StartupPath
             Try
-                'If IsRunningOnMono() Then
-                '    pi.FileName = "mono """ & UpdatePfad & "../Update.exe""" & " """ & ProgrammName & """ """ & ProgrammExe & """"
-                '    Process.Start(pi)
-                'Else
                 Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
                 For Each file As String In System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe")
                     If System.IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
@@ -423,7 +396,6 @@ Suche:
                 pi.FileName = """" & tmpDatei & """"
                 pi.Arguments = """" & ProgrammName & """ """ & ProgrammExe & """"
                 Process.Start(pi)
-                'End If
                 Application.Exit()
                 Return True
             Catch
@@ -485,7 +457,6 @@ Class VersionenDatei
             Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
         Else
             Dim Client As New System.Net.WebClient
-            'Stream = Client.OpenRead(Datei)
             Try
                 Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
             Catch
@@ -529,9 +500,6 @@ Class Kategorien
         Get
             Return kKategorie(Index)
         End Get
-        'Set(ByVal value As Kategorie)
-        '    kKategorie(Index) = value
-        'End Set
     End Property
 
     Function Add(ByVal Name As String, ByVal Pflicht As Boolean) As Int32
