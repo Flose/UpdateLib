@@ -249,14 +249,18 @@ Suche:
         Dim tmpRegistry As Microsoft.Win32.RegistryKey
         Try
             tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", False)
-            If CStr(tmpRegistry.GetValue("DisplayName")) <> VersionsText OrElse CStr(tmpRegistry.GetValue("DisplayVersion")) = Version.ToString(4) Then
+            If tmpRegistry IsNot Nothing Then
+                If CStr(tmpRegistry.GetValue("DisplayName")) <> VersionsText OrElse CStr(tmpRegistry.GetValue("DisplayVersion")) = Version.ToString(4) Then
+                    tmpRegistry.Close()
+                    tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
+                    tmpRegistry.SetValue("DisplayName", VersionsText)
+                    tmpRegistry.SetValue("DisplayVersion", Version.ToString(4))
+                End If
                 tmpRegistry.Close()
-                tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
-                tmpRegistry.SetValue("DisplayName", VersionsText)
-                tmpRegistry.SetValue("DisplayVersion", Version.ToString(4))
+                Return True
+            Else
+                Return False
             End If
-            tmpRegistry.Close()
-            Return True
         Catch
             If tmpRegistry IsNot Nothing Then tmpRegistry.Close()
             Return False
