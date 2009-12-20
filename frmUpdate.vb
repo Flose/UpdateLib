@@ -1,6 +1,7 @@
 Public Class frmUpdate
     Friend ReleasNotesUrl As String
     Friend InstallationsPfad As String
+
     Private Sub frmUpdate_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
             Me.Text = System.String.Format(Me.Text, System.Environment.GetCommandLineArgs(1))
@@ -35,7 +36,6 @@ Public Class frmUpdate
                 Loop
                 Reader.Close()
             End If
-
 
             If System.IO.Directory.GetFiles(Application.StartupPath & "/Update/", "Lizenz-*.txt").Length > 0 Then
                 If frmLizenz.ShowDialog(Me) <> Windows.Forms.DialogResult.OK Then
