@@ -1,4 +1,4 @@
-Public Class frmUpdate
+ï»¿Public Class frmUpdate
     Friend ReleasNotesUrl As String
     Friend InstallationsPfad As String
 
@@ -12,9 +12,9 @@ Public Class frmUpdate
             Else
                 InstallationsPfad = Application.StartupPath & "/"
             End If
-            Dim DateienZumLöschen As New List(Of String)
+            Dim DateienZumLÃ¶schen As New List(Of String)
             If System.IO.File.Exists(Application.StartupPath & "/Update/Versionen.lst") Then
-                'Releasenotes, Version, Löschen aus Versionen.lst lesen
+                'Releasenotes, Version, LÃ¶schen aus Versionen.lst lesen
                 Dim tmp As String, tmpKategorienIndex As Int16
                 Dim Reader As New System.IO.StreamReader(Application.StartupPath & "/Update/Versionen.lst")
                 tmp = Reader.ReadLine
@@ -28,8 +28,8 @@ Public Class frmUpdate
                     ElseIf tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "D:" Then
                         tmpKategorienIndex = -2
                     ElseIf tmpKategorienIndex = -2 Then
-                        'Dateien zum Löschen
-                        DateienZumLöschen.Add(InstallationsPfad & tmp)
+                        'Dateien zum LÃ¶schen
+                        DateienZumLÃ¶schen.Add(InstallationsPfad & tmp)
                     ElseIf tmpKategorienIndex > -1 Then
                         'Dateien in Kategorien
                     End If
@@ -48,8 +48,8 @@ Public Class frmUpdate
 
             VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
 
-            If DateienZumLöschen.Count > 0 Then
-                For Each file As String In DateienZumLöschen
+            If DateienZumLÃ¶schen.Count > 0 Then
+                For Each file As String In DateienZumLÃ¶schen
                     Try
                         System.IO.File.Delete(file)
                     Catch
@@ -61,7 +61,7 @@ Public Class frmUpdate
                 Next
             End If
 
-            'alle alten update-*.exe löschen
+            'alle alten update-*.exe lÃ¶schen
             For Each file As String In System.IO.Directory.GetFiles(Application.StartupPath, "Update-*.exe")
                 If file <> Application.ExecutablePath Then
                     Try
@@ -99,7 +99,7 @@ NochMal:
             Try
                 My.Computer.FileSystem.MoveFile(Datei, Nach & System.IO.Path.GetFileName(Datei), True)
             Catch ex As Exception
-                Dim tmpResult As DialogResult = MessageBox.Show("Fehler beim Aktualisieren der Datei " & System.IO.Path.GetFileName(Datei) & ":" & Environment.NewLine & ex.Message & Environment.NewLine & Environment.NewLine & "Überprüfen Sie ob das Programm noch läuft!", "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
+                Dim tmpResult As DialogResult = MessageBox.Show("Fehler beim Aktualisieren der Datei " & System.IO.Path.GetFileName(Datei) & ":" & Environment.NewLine & ex.Message & Environment.NewLine & Environment.NewLine & "ÃœberprÃ¼fen Sie ob das Programm noch lÃ¤uft!", "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
                 If tmpResult = Windows.Forms.DialogResult.Abort Then
                     End
                 ElseIf tmpResult = Windows.Forms.DialogResult.Retry Then

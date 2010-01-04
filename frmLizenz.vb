@@ -1,4 +1,4 @@
-Public Class frmLizenz
+﻿Public Class frmLizenz
     Dim tmpLizenzen As New List(Of String)
 
     Private Sub frmLizenz_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
