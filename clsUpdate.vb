@@ -19,6 +19,7 @@
     Dim UpdatePfad As String
     Public Daten As String
     Dim UpdateServerDatei As String, StandardUpdateServer() As String
+    Dim Portable As Boolean
 
     Sub New(ByVal Name As String, ByVal Exe As String, ByVal Version As String, ByVal Pfad As String, ByVal UpdateServerDatei As String, ByVal StandardUpdateServer() As String, ByVal Daten As String)
         ProgrammPfad = Pfad
@@ -29,10 +30,11 @@
         Me.UpdateServerDatei = UpdateServerDatei
         Me.StandardUpdateServer = StandardUpdateServer
         'UpdatePfad festlegen
-        If System.IO.File.Exists(ProgrammPfad & "/Portable") Then
-            UpdatePfad = ProgrammPfad & "/Update/"
+        Portable = System.IO.File.Exists(System.IO.Path.Combine(ProgrammPfad, "Portable"))
+        If Portable Then
+            UpdatePfad = ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Update" & System.IO.Path.DirectorySeparatorChar
         Else
-            UpdatePfad = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & "/Flo & Seb Engineering/" & ProgrammName & "/Update/"
+            UpdatePfad = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & System.IO.Path.DirectorySeparatorChar & "Flo & Seb Engineering" & System.IO.Path.DirectorySeparatorChar & ProgrammName & System.IO.Path.DirectorySeparatorChar & "Update" & System.IO.Path.DirectorySeparatorChar
         End If
         'Sprachen laden
         Übersetzen.Sprachen.Add("German", "Deutsch", My.Resources.German)
@@ -68,7 +70,7 @@
                     If MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhanden", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = DialogResult.Yes Then
                         If LadeUpdate(True) Then
                             If GoogleStatistik Then
-                                Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
+                                Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
                                 If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installiert") Then
                                     SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                                     SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/update.htm", String.Empty, "Updaten", tmpString, "de", ProgrammVersion, ProgrammName & "Update", "update.mal-was-anderes.de", "UA-2276175-1")
@@ -79,7 +81,7 @@
                             End If
                         Else 'laden fehlgeschlagen
                             If GoogleStatistik Then
-                                Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
+                                Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
                                 If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
                                     SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                                 End If
@@ -87,7 +89,7 @@
                         End If
                     Else
                         If GoogleStatistik Then
-                            Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
+                            Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
                             If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden nicht installiert") Then
                                 SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                             End If
@@ -98,7 +100,7 @@
                 End Try
             Else 'Kein Update vorhanden
                 'Statistik:
-                Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "portable" Else tmpString = "normal"
+                Dim tmpString As String : If Portable Then tmpString = "portable" Else tmpString = "normal"
                 If GoogleStatistik Then
                     If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht nicht gefunden") Then
                         SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "KeinsVorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
@@ -117,7 +119,7 @@
     ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
     ''' <remarks></remarks>
     Private Function SucheUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
-        If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe").Length > 0 Then
+        If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe").Length > 0 Then
             'bereits ein Update vorhanden
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return "XXX"
@@ -136,9 +138,9 @@
                     UpdateServer = StandardUpdateServer
                 End Try
                 'Installierte Kategorien rausfinden
-                If System.IO.File.Exists(ProgrammPfad & "/Kategorien.ini") Then
+                If System.IO.File.Exists(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Kategorien.ini") Then
                     Dim tmp As String
-                    Using Reader As New IO.StreamReader(ProgrammPfad & "/Kategorien.ini", True)
+                    Using Reader As New IO.StreamReader(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Kategorien.ini", True)
                         Do Until Reader.Peek = -1
                             tmp = Reader.ReadLine
                             If tmp.IndexOf("="c) > -1 AndAlso String.Compare(tmp.Substring(tmp.IndexOf("="c) + 1).Trim, "true", True) = 0 Then
@@ -153,7 +155,7 @@
             Dim LokaleVersionen, UpdateVersionen As New VersionenDatei
 
             Try
-                LokaleVersionen.Öffnen(ProgrammPfad & "/Versionen.lst", True) 'Lokale Versionen datei öffnen
+                LokaleVersionen.Öffnen(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Versionen.lst", True) 'Lokale Versionen datei öffnen
             Catch ex As Exception
                 Console.Error.WriteLine("Versionen.lst: " & ex.Message)
             End Try
@@ -172,7 +174,7 @@
             Next i
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             If GoogleStatistik Then
-                Dim tmpString As String : If System.IO.File.Exists(ProgrammPfad & "/Portable") Then tmpString = "Portable" Else tmpString = "Normal"
+                Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
                 If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
                     SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatefehler.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                 End If
@@ -190,7 +192,7 @@ Suche:
 
     Function LadeUpdate(ByVal MitUI As Boolean) As Boolean
         If ZuAktualisierendeDateien.Count > 0 Then
-            If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe").Length > 0 Then
+            If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe").Length > 0 Then
                 'bereits ein Update vorhanden
                 If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
@@ -223,15 +225,15 @@ Suche:
                         Dim t As Int32
                         Do
                             t += 1
-                        Loop While System.IO.File.Exists(UpdatePfad & "../Update-" & t & ".exe")
+                        Loop While System.IO.File.Exists(UpdatePfad & ".." & System.IO.Path.DirectorySeparatorChar & "Update-" & t & ".exe")
                         If System.IO.File.Exists(UpdatePfad & "Update.exe") Then
                             Try
-                                My.Computer.FileSystem.MoveFile(UpdatePfad & "Update.exe", UpdatePfad & "../Update-" & t & ".exe", True)
+                                My.Computer.FileSystem.MoveFile(UpdatePfad & "Update.exe", UpdatePfad & ".." & System.IO.Path.DirectorySeparatorChar & "Update-" & t & ".exe", True)
                             Catch
                             End Try
                         Else
                             Try
-                                System.IO.File.Copy(Application.StartupPath & "/Update.exe", UpdatePfad & "../Update-" & t & ".exe")
+                                System.IO.File.Copy(Application.StartupPath & System.IO.Path.DirectorySeparatorChar & "Update.exe", UpdatePfad & ".." & System.IO.Path.DirectorySeparatorChar & "Update-" & t & ".exe")
                             Catch
                             End Try
                         End If
@@ -365,10 +367,10 @@ Suche:
     End Function
 
     Function InstalliereUpdate(ByVal EreignisAufrufen As Boolean) As Boolean 'Wenn update vorhande true sonst false
-        If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe").Length > 0 Then
+        If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe").Length > 0 Then
             Dim pi As New System.Diagnostics.ProcessStartInfo
             Try
-                System.IO.File.Create(ProgrammPfad & "/tmp.d" & (New Random).Next(0, 10), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
+                System.IO.File.Create(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "tmp.d" & (New Random).Next(0, 10), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
             Catch 'wenn keine Schreibrechte im Programmverzeichnis
                 If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
                     pi.Verb = "runas"
@@ -387,7 +389,7 @@ Suche:
             pi.WorkingDirectory = Application.StartupPath
             Try
                 Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
-                For Each file As String In System.IO.Directory.GetFiles(UpdatePfad & "../", "Update-*.exe")
+                For Each file As String In System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe")
                     If System.IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
                         tmpneusteÄnderung = System.IO.File.GetLastWriteTime(file)
                         tmpDatei = file
@@ -421,7 +423,7 @@ Suche:
                         If LokalVersionKategorieIndex > -1 Then 'Lokale Versionen sind vorhanden
                             '=> neuere Versionen suchen
                             For j As Int32 = 0 To .Dateien.Count - 1
-                                If LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name) = -1 OrElse .Dateien(j).InterneVersion > LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien(LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse (Not System.IO.File.Exists(ProgrammPfad & "/" & .Dateien(j).Name)) Then
+                                If LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name) = -1 OrElse .Dateien(j).InterneVersion > LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien(LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse (Not System.IO.File.Exists(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & .Dateien(j).Name)) Then
                                     tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
                                 End If
                             Next j
@@ -538,37 +540,24 @@ Friend Class Kategorie
 End Class
 
 Friend Class Dateien
-    Friend dDatei() As Datei
+    Inherits List(Of Datei)
 
-    Default ReadOnly Property Datei(ByVal Index As Int32) As Datei
-        Get
-            Return dDatei(Index)
-        End Get
-    End Property
-
-    Function Add(ByVal Name As String, ByVal InterneVersion As Int32) As Int32
+    Overloads Function Add(ByVal Name As String, ByVal InterneVersion As Int32) As Int32
         If IndexOf(Name) = -1 Then
-            ReDim Preserve dDatei(Count)
-            dDatei(Count - 1) = New Datei(Name.Replace("\"c, "/"c), InterneVersion)
+            MyBase.Add(New Datei(Name.Replace("\"c, "/"c), InterneVersion))
             Return Count - 1
         Else
             Return IndexOf(Name)
         End If
     End Function
 
-    Function IndexOf(ByVal Name As String) As Int32
+    Overloads Function IndexOf(ByVal Name As String) As Int32
         Name = Name.Trim.ToLower.Replace("\"c, "/"c)
         For i As Int32 = 0 To Count - 1
-            If dDatei(i).Name.Trim.ToLower = Name Then Return i
+            If MyBase.Item(i).Name.Trim.ToLower = Name Then Return i
         Next i
         Return -1
     End Function
-
-    ReadOnly Property Count() As Int32
-        Get
-            If dDatei Is Nothing Then Return 0 Else Return dDatei.Length
-        End Get
-    End Property
 End Class
 
 Friend Class Datei
