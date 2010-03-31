@@ -53,6 +53,7 @@
                 If System.IO.Directory.GetFiles(UpdatePfad, "Lizenz-*.txt").Length > 0 Then
                     If frmLizenz.ShowDialog() <> Windows.Forms.DialogResult.OK Then
                         Application.Exit()
+                        Exit Sub
                     End If
                 End If
                 Threading.ThreadPool.QueueUserWorkItem(AddressOf ZeigeForm)
