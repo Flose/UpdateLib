@@ -397,6 +397,8 @@ Suche:
                 Next
                 pi.FileName = """" & tmpDatei & """"
                 pi.Arguments = """" & ProgrammName & """ """ & ProgrammExe & """"
+                Dim tmpAufruf As String = pi.FileName & " " & pi.Arguments
+                Console.WriteLine("Wenn das Update nicht starten sollte, führen Sie folgenden Befehl aus:" & Environment.NewLine & tmpAufruf & Environment.NewLine & "Wenn Sie Mono benützen müssen Sie folgenden Befehl ausführen:" & Environment.NewLine & "mono " & tmpAufruf)
                 Process.Start(pi)
                 Application.Exit()
                 Return True
