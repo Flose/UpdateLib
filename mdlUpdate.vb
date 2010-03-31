@@ -95,7 +95,9 @@
                 End Try
                 MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 If Environment.OSVersion.Platform = PlatformID.Unix Then
-                    Process.Start("mono """ & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
+                    Dim StarProgramm As New Diagnostics.ProcessStartInfo("mono", "" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & "")
+                    StarProgramm.UseShellExecute = False
+                    Process.Start(StarProgramm)
                 Else
                     Process.Start("""" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
                 End If
