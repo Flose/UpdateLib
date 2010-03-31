@@ -7,10 +7,10 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B2F19971-9B22-4835-A3B4-C5F4362B2D3E}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <StartupObject>Update.My.MyApplication</StartupObject>
+    <StartupObject>Sub Main</StartupObject>
     <RootNamespace>Update</RootNamespace>
     <AssemblyName>Update</AssemblyName>
-    <MyType>WindowsForms</MyType>
+    <MyType>WindowsFormsWithCustomSubMain</MyType>
     <ApplicationIcon>Phone and Modem Settings %28nonXP%29.ico</ApplicationIcon>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

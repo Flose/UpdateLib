@@ -2,98 +2,102 @@
     Friend ReleasNotesUrl As String
     Friend InstallationsPfad As String
 
-    Sub ZeigeForm(ByVal Text As String)
-
+    Sub ZeigeForm(ByVal obj As Object)
+        frmUpdate.Show()
     End Sub
 
-    Private Sub Main()
-        If System.Environment.GetCommandLineArgs.GetUpperBound(0) > 1 Then
-            ZeigeForm(System.String.Format([frmUpdate].Text, System.Environment.GetCommandLineArgs(1)))
-
-            Dim tmpVersion As String = "0"
-            If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
-                InstallationsPfad = Environment.CurrentDirectory & "/"
+    Sub Main()
+        Application.EnableVisualStyles()
+        Application.SetCompatibleTextRenderingDefault(False)
+        If Not System.IO.Directory.Exists(IO.Path.Combine(Application.StartupPath, "Update")) Then
+            MessageBox.Show("Es ist kein Update vorhanden, das installiert werden könnte", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Else
+            If System.Environment.GetCommandLineArgs.Length < 3 Then
+                MessageBox.Show("Update.exe benötigt folgende Parameter:" & Environment.NewLine & "Update.exe [Programmname] [Ausführbahre .exe Datei]", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Else
-                InstallationsPfad = Application.StartupPath & "/"
-            End If
-            Dim DateienZumLöschen As New List(Of String)
-            If System.IO.File.Exists(Application.StartupPath & "/Update/Versionen.lst") Then
-                'Releasenotes, Version, Löschen aus Versionen.lst lesen
-                Dim tmp As String, tmpKategorienIndex As Int16
-                Dim Reader As New System.IO.StreamReader(Application.StartupPath & "/Update/Versionen.lst")
-                tmp = Reader.ReadLine
-                tmpVersion = Reader.ReadLine()
-                tmp = Reader.ReadLine
-                ReleasNotesUrl = Reader.ReadLine.Trim
-                Do Until Reader.Peek = -1
-                    tmp = Reader.ReadLine
-                    If tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "K:" Then
-                        tmpKategorienIndex = 3
-                    ElseIf tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "D:" Then
-                        tmpKategorienIndex = -2
-                    ElseIf tmpKategorienIndex = -2 Then
-                        'Dateien zum Löschen
-                        DateienZumLöschen.Add(InstallationsPfad & tmp)
-                    ElseIf tmpKategorienIndex > -1 Then
-                        'Dateien in Kategorien
-                    End If
-                Loop
-                Reader.Close()
-            End If
-
-            If System.IO.Directory.GetFiles(Application.StartupPath & "/Update/", "Lizenz-*.txt").Length > 0 Then
-                If frmLizenz.ShowDialog(Me) <> Windows.Forms.DialogResult.OK Then
-                    End
+                Dim tmpVersion As String = "0"
+                If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
+                    InstallationsPfad = Environment.CurrentDirectory & "/"
+                Else
+                    InstallationsPfad = Application.StartupPath & "/"
                 End If
-            End If
-            Me.Show()
-            lblDatei.Text = "Updaten..."
+                Dim DateienZumLöschen As New List(Of String)
+                If System.IO.File.Exists(Application.StartupPath & "/Update/Versionen.lst") Then
+                    'Releasenotes, Version, Löschen aus Versionen.lst lesen
+                    Dim tmp As String, tmpKategorienIndex As Int16
+                    Using Reader As New System.IO.StreamReader(Application.StartupPath & "/Update/Versionen.lst")
+                        tmp = Reader.ReadLine
+                        tmpVersion = Reader.ReadLine()
+                        tmp = Reader.ReadLine
+                        ReleasNotesUrl = Reader.ReadLine.Trim
+                        Do Until Reader.Peek = -1
+                            tmp = Reader.ReadLine
+                            If tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "K:" Then
+                                tmpKategorienIndex = 3
+                            ElseIf tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "D:" Then
+                                tmpKategorienIndex = -2
+                            ElseIf tmpKategorienIndex = -2 Then
+                                'Dateien zum Löschen
+                                DateienZumLöschen.Add(InstallationsPfad & tmp)
+                            ElseIf tmpKategorienIndex > -1 Then
+                                'Dateien in Kategorien
+                            End If
+                        Loop
+                    End Using
+                End If
 
+                If System.IO.Directory.GetFiles(Application.StartupPath & "/Update/", "Lizenz-*.txt").Length > 0 Then
+                    If frmLizenz.ShowDialog() <> Windows.Forms.DialogResult.OK Then
+                        Application.Exit()
+                    End If
+                End If
+                Threading.ThreadPool.QueueUserWorkItem(AddressOf ZeigeForm)
 
-            VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
-
-            If DateienZumLöschen.Count > 0 Then
-                For Each file As String In DateienZumLöschen
-                    Try
-                        System.IO.File.Delete(file)
-                    Catch
+                VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
+                If DateienZumLöschen.Count > 0 Then
+                    For Each file As String In DateienZumLöschen
                         Try
-                            System.IO.Directory.Delete(file)
+                            System.IO.File.Delete(file)
+                        Catch
+                            Try
+                                System.IO.Directory.Delete(file)
+                            Catch
+                            End Try
+                        End Try
+                    Next
+                End If
+
+                'alle alten update-*.exe löschen
+                For Each file As String In System.IO.Directory.GetFiles(Application.StartupPath, "Update-*.exe")
+                    If file <> Application.ExecutablePath Then
+                        Try
+                            System.IO.File.Delete(file)
                         Catch
                         End Try
-                    End Try
+                    End If
                 Next
-            End If
-
-            'alle alten update-*.exe löschen
-            For Each file As String In System.IO.Directory.GetFiles(Application.StartupPath, "Update-*.exe")
-                If file <> Application.ExecutablePath Then
+                If Application.ExecutablePath <> InstallationsPfad & "Update.exe" Then
                     Try
-                        System.IO.File.Delete(file)
+                        System.IO.File.Copy(Application.ExecutablePath, InstallationsPfad & "Update.exe", True)
                     Catch
                     End Try
                 End If
-            Next
 
-            Try
-                System.IO.File.Copy(Application.ExecutablePath, InstallationsPfad & "Update.exe", True)
-            Catch
-            End Try
-
-            Try
-                Dim UpdateWriter As New System.IO.StreamWriter(InstallationsPfad & "UpdateHistory.txt", True)
-                UpdateWriter.WriteLine(Now & "|" & tmpVersion)
-                UpdateWriter.Close()
-            Catch
-            End Try
-            MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            If Environment.OSVersion.Platform = PlatformID.Unix Then
-                Process.Start("mono """ & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
-            Else
-                Process.Start("""" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
-            End If
+                Try
+                    Using UpdateWriter As New System.IO.StreamWriter(InstallationsPfad & "UpdateHistory.txt", True)
+                        UpdateWriter.WriteLine(Now & "|" & tmpVersion)
+                    End Using
+                Catch
+                End Try
+                MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                If Environment.OSVersion.Platform = PlatformID.Unix Then
+                    Process.Start("mono """ & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
+                Else
+                    Process.Start("""" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
+                End If
+                End If
         End If
-        End
+        Application.Exit()
     End Sub
 
     Sub VerschiebeVerzeichnis(ByVal Von As String, ByVal Nach As String)

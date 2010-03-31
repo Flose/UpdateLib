@@ -1,7 +1,11 @@
 ﻿Public Class frmLizenz
     Dim tmpLizenzen As New List(Of String)
 
-    Private Sub frmLizenz_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Public Sub New()
+        ' Dieser Aufruf ist für den Windows Form-Designer erforderlich.
+        InitializeComponent()
+        ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
+
         lblReleasenotes.Text = System.String.Format(lblReleasenotes.Text, System.Environment.GetCommandLineArgs(1))
         Dim tmpReader As System.IO.StreamReader
         'Lizenzen aus Update verzeichnis(haben vorrang)
@@ -18,7 +22,7 @@
         Dim tmpDatei As String
         'Lizenzen aus hauptverzeichnis
         Try
-            For Each Datei As String In System.IO.Directory.GetFiles(frmUpdate.InstallationsPfad, "Lizenz-*.txt")
+            For Each Datei As String In System.IO.Directory.GetFiles(InstallationsPfad, "Lizenz-*.txt")
                 Try
                     tmpDatei = System.IO.Path.GetFileName(Datei)
                     If Not tmpLizenzen.Contains(tmpDatei) Then '=>Datei nicht in update verzeichnis
@@ -39,7 +43,7 @@
             cmbSprachen.SelectedIndex = tmpIndex
         End If
         'Releasenotes
-        If String.IsNullOrEmpty(frmUpdate.ReleasNotesUrl) Then
+        If String.IsNullOrEmpty(ReleasNotesUrl) Then
             lblReleasenotes.Visible = False
         End If
     End Sub
@@ -52,8 +56,8 @@
                     Reader.ReadLine()
                     txtLizenz.Text = Reader.ReadToEnd
                     Reader.Close()
-                ElseIf System.IO.File.Exists(frmUpdate.InstallationsPfad & tmpLizenzen(cmbSprachen.SelectedIndex)) Then
-                    Dim Reader As New System.IO.StreamReader(frmUpdate.InstallationsPfad & tmpLizenzen(cmbSprachen.SelectedIndex), True)
+                ElseIf System.IO.File.Exists(InstallationsPfad & tmpLizenzen(cmbSprachen.SelectedIndex)) Then
+                    Dim Reader As New System.IO.StreamReader(InstallationsPfad & tmpLizenzen(cmbSprachen.SelectedIndex), True)
                     Reader.ReadLine()
                     txtLizenz.Text = Reader.ReadToEnd
                     Reader.Close()
@@ -68,7 +72,7 @@
 
     Private Sub lblReleasenotes_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles lblReleasenotes.LinkClicked
         Try
-            Process.Start(frmUpdate.ReleasNotesUrl) '"http://www.mal-was-anderes.de/programme/karteikasten/releasenotes.txt")
+            Process.Start(ReleasNotesUrl) '"http://www.mal-was-anderes.de/programme/karteikasten/releasenotes.txt")
         Catch
         End Try
         lblReleasenotes.LinkVisited = True
