@@ -395,11 +395,26 @@ Suche:
                         tmpDatei = file
                     End If
                 Next
-                pi.FileName = """" & tmpDatei & """"
-                pi.Arguments = """" & ProgrammName & """ """ & ProgrammExe & """"
-                Dim tmpAufruf As String = pi.FileName & " " & pi.Arguments
-                Console.WriteLine("Wenn das Update nicht starten sollte, führen Sie folgenden Befehl aus:" & Environment.NewLine & tmpAufruf & Environment.NewLine & "Wenn Sie Mono benützen müssen Sie folgenden Befehl ausführen:" & Environment.NewLine & "mono " & tmpAufruf)
-                Process.Start(pi)
+                Dim UpdateProgrammEXE As String = """" & tmpDatei & """"
+                If Environment.OSVersion.Platform = PlatformID.Unix Then
+                    pi.FileName = "mono"
+                    pi.Arguments = UpdateProgrammEXE & " """ & ProgrammName & """ """ & ProgrammExe & """"
+                    pi.UseShellExecute = False
+                    Try
+                        Process.Start(pi)
+                    Catch ex As Exception
+                        MessageBox.Show("Fehler beim Ausführen von 'mono " & pi.Arguments & "':" & Environment.NewLine & ex.Message) 'TODO übersetzen
+                    End Try
+                    Console.WriteLine("Wenn das Update nicht starten sollte, führen Sie folgenden Befehl aus:" & Environment.NewLine & "mono " & pi.Arguments)
+                Else
+                    pi.FileName = UpdateProgrammEXE
+                    pi.Arguments = """" & ProgrammName & """ """ & ProgrammExe & """"
+                    Try
+                        Process.Start(pi)
+                    Catch ex As Exception
+                        MessageBox.Show("Fehler beim Ausführen von '" & pi.FileName & " " & pi.Arguments & "':" & Environment.NewLine & ex.Message)
+                    End Try
+                End If
                 Application.Exit()
                 Return True
             Catch
