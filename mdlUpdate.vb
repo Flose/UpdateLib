@@ -9,16 +9,18 @@
     Sub Main()
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
-        If Not System.IO.Directory.Exists(IO.Path.Combine(Application.StartupPath, "Update")) Then
-            MessageBox.Show("Es ist kein Update vorhanden, das installiert werden könnte", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        If System.Environment.GetCommandLineArgs.Length < 3 Then
+            MessageBox.Show("Update.exe benötigt folgende Parameter:" & Environment.NewLine & "Update.exe [Programmname] [Ausführbahre .exe Datei]", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
-            If System.Environment.GetCommandLineArgs.Length < 3 Then
-                MessageBox.Show("Update.exe benötigt folgende Parameter:" & Environment.NewLine & "Update.exe [Programmname] [Ausführbahre .exe Datei]", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            If Not System.IO.Directory.Exists(IO.Path.Combine(Application.StartupPath, "Update")) Then
+                MessageBox.Show("Es ist kein Update vorhanden, das installiert werden könnte!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Else
                 Dim tmpVersion As String = "0"
                 If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
+                    'Seit UpdateDLL 1.4 werden Updates in %ProgramData% gespeichert
                     InstallationsPfad = Environment.CurrentDirectory & "/"
                 Else
+                    'Davor im Programmpfad
                     InstallationsPfad = Application.StartupPath & "/"
                 End If
                 Dim DateienZumLöschen As New List(Of String)
@@ -95,7 +97,7 @@
                 Else
                     Process.Start("""" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
                 End If
-                End If
+            End If
         End If
         Application.Exit()
     End Sub
