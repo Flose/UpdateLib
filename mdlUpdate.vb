@@ -3,10 +3,6 @@
     Friend InstallationsPfad As String
     Friend UpdatePfad As String
 
-    Sub ZeigeForm(ByVal obj As Object)
-        frmUpdate.Show()
-    End Sub
-
     Sub Main()
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
@@ -56,7 +52,8 @@
                         Exit Sub
                     End If
                 End If
-                Threading.ThreadPool.QueueUserWorkItem(AddressOf ZeigeForm)
+                frmUpdate.Show()
+                Application.DoEvents()
 
                 VerschiebeVerzeichnis(UpdatePfad, InstallationsPfad)
                 If DateienZumLöschen.Count > 0 Then
