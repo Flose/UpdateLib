@@ -92,12 +92,21 @@
                 Catch
                 End Try
                 MessageBox.Show("Update wurde erfolgreich installiert.", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Dim ProgrammEXE As String = """" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """"
                 If Environment.OSVersion.Platform = PlatformID.Unix Then
-                    Dim StarProgramm As New Diagnostics.ProcessStartInfo("mono", "" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & "")
+                    Dim StarProgramm As New Diagnostics.ProcessStartInfo("mono", ProgrammEXE)
                     StarProgramm.UseShellExecute = False
-                    Process.Start(StarProgramm)
+                    Try
+                        Process.Start(StarProgramm)
+                    Catch ex As Exception
+                        MessageBox.Show("Fehler beim Ausführen von 'mono " & ProgrammEXE & "':" & Environment.NewLine & ex.Message)
+                    End Try
                 Else
-                    Process.Start("""" & InstallationsPfad & System.Environment.GetCommandLineArgs(2).Trim & """")
+                    Try
+                        Process.Start(ProgrammEXE)
+                    Catch ex As Exception
+                        MessageBox.Show("Fehler beim Ausführen von " & ProgrammEXE & ":" & Environment.NewLine & ex.Message)
+                    End Try
                 End If
             End If
         End If
