@@ -19,6 +19,7 @@ Partial Class frmUpdate
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmUpdate))
         Me.lblDatei = New System.Windows.Forms.Label
         Me.SuspendLayout()
         '
@@ -41,13 +42,13 @@ Partial Class frmUpdate
         Me.ControlBox = False
         Me.Controls.Add(Me.lblDatei)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmUpdate"
-        Me.ShowInTaskbar = False
+        Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Update von {0}"
-        Me.TopMost = True
         Me.ResumeLayout(False)
 
     End Sub
