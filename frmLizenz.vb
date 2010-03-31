@@ -10,7 +10,7 @@
         Dim tmpReader As System.IO.StreamReader
         'Lizenzen aus Update verzeichnis(haben vorrang)
         Try
-            For Each Datei As String In System.IO.Directory.GetFiles(Application.StartupPath & "/Update/", "Lizenz-*.txt")
+            For Each Datei As String In System.IO.Directory.GetFiles(UpdatePfad, "Lizenz-*.txt")
                 tmpReader = New IO.StreamReader(Datei)
                 cmbSprachen.Items.Add(tmpReader.ReadLine)
                 tmpReader.Close()
@@ -51,8 +51,8 @@
     Private Sub cmbSprachen_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbSprachen.SelectedIndexChanged
         If cmbSprachen.SelectedIndex > -1 Then
             Try
-                If System.IO.File.Exists(Application.StartupPath & "/Update/" & tmpLizenzen(cmbSprachen.SelectedIndex)) Then
-                    Dim Reader As New System.IO.StreamReader(Application.StartupPath & "/Update/" & tmpLizenzen(cmbSprachen.SelectedIndex), True)
+                If System.IO.File.Exists(UpdatePfad & tmpLizenzen(cmbSprachen.SelectedIndex)) Then
+                    Dim Reader As New System.IO.StreamReader(UpdatePfad & tmpLizenzen(cmbSprachen.SelectedIndex), True)
                     Reader.ReadLine()
                     txtLizenz.Text = Reader.ReadToEnd
                     Reader.Close()

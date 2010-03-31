@@ -1,6 +1,7 @@
 ﻿Module mdlUpdate
     Friend ReleasNotesUrl As String
     Friend InstallationsPfad As String
+    Friend UpdatePfad As String
 
     Sub ZeigeForm(ByVal obj As Object)
         frmUpdate.Show()
@@ -12,22 +13,23 @@
         If System.Environment.GetCommandLineArgs.Length < 3 Then
             MessageBox.Show("Update.exe benötigt folgende Parameter:" & Environment.NewLine & "Update.exe [Programmname] [Ausführbahre .exe Datei]", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Else
-            If Not System.IO.Directory.Exists(IO.Path.Combine(Application.StartupPath, "Update")) Then
+            UpdatePfad = IO.Path.Combine(Application.StartupPath, "Update") & IO.Path.DirectorySeparatorChar
+            If Not System.IO.Directory.Exists(UpdatePfad) Then
                 MessageBox.Show("Es ist kein Update vorhanden, das installiert werden könnte!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Else
                 Dim tmpVersion As String = "0"
-                If System.IO.File.Exists(Environment.CurrentDirectory & "/UpdateDll.dll") Then
+                If System.IO.File.Exists(IO.Path.Combine(Environment.CurrentDirectory, "UpdateDll.dll")) Then
                     'Seit UpdateDLL 1.4 werden Updates in %ProgramData% gespeichert
-                    InstallationsPfad = Environment.CurrentDirectory & "/"
+                    InstallationsPfad = Environment.CurrentDirectory & IO.Path.DirectorySeparatorChar
                 Else
                     'Davor im Programmpfad
-                    InstallationsPfad = Application.StartupPath & "/"
+                    InstallationsPfad = Application.StartupPath & IO.Path.DirectorySeparatorChar
                 End If
                 Dim DateienZumLöschen As New List(Of String)
-                If System.IO.File.Exists(Application.StartupPath & "/Update/Versionen.lst") Then
+                If System.IO.File.Exists(UpdatePfad & "Versionen.lst") Then
                     'Releasenotes, Version, Löschen aus Versionen.lst lesen
                     Dim tmp As String, tmpKategorienIndex As Int16
-                    Using Reader As New System.IO.StreamReader(Application.StartupPath & "/Update/Versionen.lst")
+                    Using Reader As New System.IO.StreamReader(UpdatePfad & "Versionen.lst")
                         tmp = Reader.ReadLine
                         tmpVersion = Reader.ReadLine()
                         tmp = Reader.ReadLine
@@ -48,14 +50,14 @@
                     End Using
                 End If
 
-                If System.IO.Directory.GetFiles(Application.StartupPath & "/Update/", "Lizenz-*.txt").Length > 0 Then
+                If System.IO.Directory.GetFiles(UpdatePfad, "Lizenz-*.txt").Length > 0 Then
                     If frmLizenz.ShowDialog() <> Windows.Forms.DialogResult.OK Then
                         Application.Exit()
                     End If
                 End If
                 Threading.ThreadPool.QueueUserWorkItem(AddressOf ZeigeForm)
 
-                VerschiebeVerzeichnis(Application.StartupPath & "/Update/", InstallationsPfad)
+                VerschiebeVerzeichnis(UpdatePfad, InstallationsPfad)
                 If DateienZumLöschen.Count > 0 Then
                     For Each file As String In DateienZumLöschen
                         Try
@@ -107,7 +109,7 @@
         For Each Datei As String In System.IO.Directory.GetFiles(Von)
 NochMal:
             Try
-                My.Computer.FileSystem.MoveFile(Datei, Nach & System.IO.Path.GetFileName(Datei), True)
+                My.Computer.FileSystem.MoveFile(Datei, IO.Path.Combine(Nach, System.IO.Path.GetFileName(Datei)), True)
             Catch ex As Exception
                 Dim tmpResult As DialogResult = MessageBox.Show("Fehler beim Aktualisieren der Datei " & System.IO.Path.GetFileName(Datei) & ":" & Environment.NewLine & ex.Message & Environment.NewLine & Environment.NewLine & "Überprüfen Sie ob das Programm noch läuft!", "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
                 If tmpResult = Windows.Forms.DialogResult.Abort Then
@@ -120,7 +122,7 @@ NochMal:
             End Try
         Next
         For Each Pfad As String In System.IO.Directory.GetDirectories(Von)
-            VerschiebeVerzeichnis(Pfad & "/", Nach & Pfad.Substring(Pfad.LastIndexOf("/") + 1) & "/")
+            VerschiebeVerzeichnis(Pfad, IO.Path.Combine(Nach, Pfad.Substring(Pfad.LastIndexOf(IO.Path.DirectorySeparatorChar) + 1)))
         Next
         Threading.Thread.Sleep(100) 'sonst manchmal dateihandle noch nicht weg
         Try
