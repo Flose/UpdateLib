@@ -400,19 +400,19 @@ Suche:
                     pi.FileName = "mono"
                     pi.Arguments = UpdateProgrammEXE & " """ & ProgrammName & """ """ & ProgrammExe & """"
                     pi.UseShellExecute = False
+                    Console.WriteLine(Übersetzen.Übersetze("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
                     Try
                         Process.Start(pi)
                     Catch ex As Exception
-                        MessageBox.Show("Fehler beim Ausführen von 'mono " & pi.Arguments & "':" & Environment.NewLine & ex.Message) 'TODO übersetzen
+                        MessageBox.Show(Übersetzen.Übersetze("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                     End Try
-                    Console.WriteLine("Wenn das Update nicht starten sollte, führen Sie folgenden Befehl aus:" & Environment.NewLine & "mono " & pi.Arguments)
                 Else
                     pi.FileName = UpdateProgrammEXE
                     pi.Arguments = """" & ProgrammName & """ """ & ProgrammExe & """"
                     Try
                         Process.Start(pi)
                     Catch ex As Exception
-                        MessageBox.Show("Fehler beim Ausführen von '" & pi.FileName & " " & pi.Arguments & "':" & Environment.NewLine & ex.Message)
+                        MessageBox.Show(Übersetzen.Übersetze("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                     End Try
                 End If
                 Application.Exit()
