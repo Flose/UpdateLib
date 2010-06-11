@@ -80,7 +80,7 @@ Partial Class frmUpdateHistory
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents lstUpdates As System.Windows.Forms.ListBox
-    Friend WithEvents cmdSchließen As System.Windows.Forms.Button
+    Private WithEvents Label1 As System.Windows.Forms.Label
+    Private WithEvents lstUpdates As System.Windows.Forms.ListBox
+    Private WithEvents cmdSchließen As System.Windows.Forms.Button
 End Class

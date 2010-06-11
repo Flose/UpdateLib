@@ -1,6 +1,5 @@
-﻿Public Class frmUpdateHistory
-
-    Public Sub New(ByVal Übersetzen As dllSprache.clsÜbersetzen, ByVal Programmpfad As String)
+﻿Friend Class frmUpdateHistory
+    Friend Sub New(ByVal Übersetzen As dllSprache.clsÜbersetzen, ByVal Programmpfad As String)
         ' Dieser Aufruf ist für den Windows Form-Designer erforderlich.
         InitializeComponent()
 

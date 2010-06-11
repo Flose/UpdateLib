@@ -84,7 +84,7 @@ Partial Class frmUpdate
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents lblAktuelleDatei As System.Windows.Forms.Label
-    Friend WithEvents pgbUpdate As System.Windows.Forms.ProgressBar
-    Friend WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
+    Private WithEvents lblAktuelleDatei As System.Windows.Forms.Label
+    Private WithEvents pgbUpdate As System.Windows.Forms.ProgressBar
+    Private WithEvents TableLayoutPanel1 As System.Windows.Forms.TableLayoutPanel
 End Class
