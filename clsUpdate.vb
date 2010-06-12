@@ -247,12 +247,26 @@ Suche:
         Return False
     End Function
 
+    Public Shared Function GetVersionsText(ByVal Version As Version, Optional ByVal ZeigeRevision As Boolean = True) As String
+        Dim VersionText As String
+        If ZeigeRevision = False OrElse Version.Revision = 0 Then
+            If Version.Build = 0 Then
+                VersionText = Version.ToString(2)
+            Else
+                VersionText = Version.ToString(3)
+            End If
+        Else
+            VersionText = Version.ToString(4)
+        End If
+        Return VersionText
+    End Function
+
     Shared Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String, ByVal Version As Version) As Boolean
         Dim tmpRegistry As Microsoft.Win32.RegistryKey
         Try
             tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", False)
             If tmpRegistry IsNot Nothing Then
-                If CStr(tmpRegistry.GetValue("DisplayName")) <> VersionsText OrElse CStr(tmpRegistry.GetValue("DisplayVersion")) = Version.ToString(4) Then
+                If CStr(tmpRegistry.GetValue("DisplayName")) <> VersionsText OrElse CStr(tmpRegistry.GetValue("DisplayVersion")) <> GetVersionsText(Version) Then
                     tmpRegistry.Close()
                     tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", True)
                     tmpRegistry.SetValue("DisplayName", VersionsText)
