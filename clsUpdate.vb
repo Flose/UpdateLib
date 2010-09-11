@@ -30,11 +30,11 @@
         Me.UpdateServerDatei = UpdateServerDatei
         Me.StandardUpdateServer = StandardUpdateServer
         'UpdatePfad festlegen
-        Portable = System.IO.File.Exists(System.IO.Path.Combine(ProgrammPfad, "Portable"))
+        Portable = IO.File.Exists(IO.Path.Combine(ProgrammPfad, "Portable"))
         If Portable Then
             UpdatePfad = IO.Path.Combine(ProgrammPfad, "Update")
         Else
-            UpdatePfad = IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Flo & Seb Engineering" & System.IO.Path.DirectorySeparatorChar & ProgrammName & System.IO.Path.DirectorySeparatorChar & "Update")
+            UpdatePfad = IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Flo & Seb Engineering" & IO.Path.DirectorySeparatorChar & ProgrammName & IO.Path.DirectorySeparatorChar & "Update")
         End If
         'Sprachen laden
         Übersetzen.Sprachen.Add("German", "Deutsch", My.Resources.German)
@@ -119,7 +119,7 @@
     ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
     ''' <remarks></remarks>
     Private Function SucheUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
-        If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
+        If IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
             'bereits ein Update vorhanden
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return "XXX"
@@ -128,7 +128,7 @@
             If UpdateServer Is Nothing Then
                 'UpdateServer setzen
                 Try
-                    Using UpdateReader As New System.IO.StreamReader(UpdateServerDatei, True)
+                    Using UpdateReader As New IO.StreamReader(UpdateServerDatei, True)
                         UpdateServer = UpdateReader.ReadToEnd.Split(New Char() {ChrW(10), ChrW(13)}, StringSplitOptions.RemoveEmptyEntries)
                     End Using
                     If UpdateServer.Length = 0 Then
@@ -138,7 +138,7 @@
                     UpdateServer = StandardUpdateServer
                 End Try
                 'Installierte Kategorien rausfinden
-                If System.IO.File.Exists(IO.Path.Combine(ProgrammPfad, "Kategorien.ini")) Then
+                If IO.File.Exists(IO.Path.Combine(ProgrammPfad, "Kategorien.ini")) Then
                     Dim tmp As String
                     Using Reader As New IO.StreamReader(IO.Path.Combine(ProgrammPfad, "Kategorien.ini"), True)
                         Do Until Reader.Peek = -1
@@ -192,7 +192,7 @@ Suche:
 
     Function LadeUpdate(ByVal MitUI As Boolean) As Boolean
         If ZuAktualisierendeDateien.Count > 0 Then
-            If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
+            If IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
                 'bereits ein Update vorhanden
                 If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
@@ -226,15 +226,15 @@ Suche:
                         Do
                             t += 1
                             tmpNeuFile = IO.Path.Combine(IO.Path.Combine(UpdatePfad, ".."), "Update-" & t & ".exe")
-                        Loop While System.IO.File.Exists(tmpNeuFile)
-                        If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Update.exe")) Then
+                        Loop While IO.File.Exists(tmpNeuFile)
+                        If IO.File.Exists(IO.Path.Combine(UpdatePfad, "Update.exe")) Then
                             Try
                                 My.Computer.FileSystem.MoveFile(IO.Path.Combine(UpdatePfad, "Update.exe"), tmpNeuFile, True)
                             Catch
                             End Try
                         Else
                             Try
-                                System.IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
+                                IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
                             Catch
                             End Try
                         End If
@@ -286,7 +286,7 @@ Suche:
 
     Private Shared Sub Entkomprimieren(ByVal Stream As IO.Stream, ByVal DateiNach As String) 'geht nicht anders, da gzip.length nicht unterstützt wird:-(
         Static UseGUnzip As Boolean = True
-        System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(DateiNach))
+        IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(DateiNach))
         Dim tmp As Byte()
         If UseGUnzip Then
             Try
@@ -294,15 +294,15 @@ Suche:
                 tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 tmpProcess.StartInfo.FileName = "gunzip"
                 tmpProcess.Start() 'test ob gunzip verfügbar
-                Dim tmpName As String = System.IO.Path.GetTempFileName
+                Dim tmpName As String = IO.Path.GetTempFileName
                 If Stream.CanSeek Then
                     ReDim tmp(CInt(Stream.Length - 1))
                     Stream.Read(tmp, 0, CInt(Stream.Length))
-                    Dim Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
+                    Dim Writer As New IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
                     Writer.Write(tmp, 0, tmp.Length)
                     Writer.Close()
                 Else
-                    Using Writer As New System.IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
+                    Using Writer As New IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
                         ReDim tmp(4999)
                         Dim bytesRead As Integer = Stream.Read(tmp, 0, 5000)
                         While bytesRead > 0
@@ -326,8 +326,8 @@ Suche:
             End Try
         End If
         ReDim tmp(4999)
-        Using Gzip As New System.IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
-            Using Writer As New System.IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
+        Using Gzip As New IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
+            Using Writer As New IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
                 Dim bytesRead As Integer = Gzip.Read(tmp, 0, 5000)
                 While bytesRead > 0
                     Writer.Write(tmp, 0, bytesRead)
@@ -382,10 +382,10 @@ Suche:
     End Function
 
     Function InstalliereUpdate(ByVal EreignisAufrufen As Boolean) As Boolean 'Wenn update vorhande true sonst false
-        If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
+        If IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
             Dim pi As New System.Diagnostics.ProcessStartInfo
             Try
-                System.IO.File.Create(IO.Path.Combine(ProgrammPfad, "tmp.d" & (New Random).Next(0, 10)), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
+                IO.File.Create(IO.Path.Combine(ProgrammPfad, "tmp.d" & (New Random).Next(0, 10)), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
             Catch 'wenn keine Schreibrechte im Programmverzeichnis
                 If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
                     pi.Verb = "runas"
@@ -404,9 +404,9 @@ Suche:
             pi.WorkingDirectory = Application.StartupPath
             Try
                 Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
-                For Each file As String In System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe")
-                    If System.IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
-                        tmpneusteÄnderung = System.IO.File.GetLastWriteTime(file)
+                For Each file As String In IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe")
+                    If IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
+                        tmpneusteÄnderung = IO.File.GetLastWriteTime(file)
                         tmpDatei = file
                     End If
                 Next
@@ -458,7 +458,7 @@ Suche:
                             For j As Int32 = 0 To .Dateien.Count - 1
                                 If lokalDateien.IndexOf(.Dateien(j).Name) = -1 OrElse _
                                   .Dateien(j).InterneVersion > lokalDateien(lokalDateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse _
-                                  (Not System.IO.File.Exists(IO.Path.Combine(ProgrammPfad, .Dateien(j).Name))) Then
+                                  (Not IO.File.Exists(IO.Path.Combine(ProgrammPfad, .Dateien(j).Name))) Then
                                     tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
                                 End If
                             Next j
@@ -489,21 +489,21 @@ Friend Class VersionenDatei
     Friend Kategorien As New Kategorien
 
     Sub Öffnen(ByVal Datei As String, ByVal IstLokal As Boolean)
-        Dim Stream As System.IO.Stream
+        Dim Stream As IO.Stream
         If IstLokal Then
             Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
         Else
             Dim Client As New System.Net.WebClient
             Try
-                Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+                Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
             Catch
                 Client.Proxy = Nothing
-                Stream = New System.IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+                Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
             End Try
         End If
 
         Dim tmpKategorienIndex As Int32 = -1, tmp As String
-        Dim Reader As New System.IO.StreamReader(Stream, True)
+        Dim Reader As New IO.StreamReader(Stream, True)
         Reader.ReadLine() 'UpdateVersion
         Version = Reader.ReadLine
         InterneVersion = CInt(Reader.ReadLine)

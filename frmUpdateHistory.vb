@@ -6,8 +6,8 @@
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
         Übersetzen.ÜbersetzeControl(Me)
         lstUpdates.Items.Clear()
-        If System.IO.File.Exists(IO.Path.Combine(Programmpfad, "UpdateHistory.txt")) Then
-            Using Reader As New System.IO.StreamReader(IO.Path.Combine(Programmpfad, "UpdateHistory.txt"))
+        If IO.File.Exists(IO.Path.Combine(Programmpfad, "UpdateHistory.txt")) Then
+            Using Reader As New IO.StreamReader(IO.Path.Combine(Programmpfad, "UpdateHistory.txt"))
                 Dim tmp() As String
                 Do Until Reader.Peek = -1
                     Try
