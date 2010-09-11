@@ -32,9 +32,9 @@
         'UpdatePfad festlegen
         Portable = System.IO.File.Exists(System.IO.Path.Combine(ProgrammPfad, "Portable"))
         If Portable Then
-            UpdatePfad = ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Update" & System.IO.Path.DirectorySeparatorChar
+            UpdatePfad = IO.Path.Combine(ProgrammPfad, "Update")
         Else
-            UpdatePfad = System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) & System.IO.Path.DirectorySeparatorChar & "Flo & Seb Engineering" & System.IO.Path.DirectorySeparatorChar & ProgrammName & System.IO.Path.DirectorySeparatorChar & "Update" & System.IO.Path.DirectorySeparatorChar
+            UpdatePfad = IO.Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Flo & Seb Engineering" & System.IO.Path.DirectorySeparatorChar & ProgrammName & System.IO.Path.DirectorySeparatorChar & "Update")
         End If
         'Sprachen laden
         Übersetzen.Sprachen.Add("German", "Deutsch", My.Resources.German)
@@ -119,7 +119,7 @@
     ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
     ''' <remarks></remarks>
     Private Function SucheUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
-        If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe").Length > 0 Then
+        If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
             'bereits ein Update vorhanden
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return "XXX"
@@ -138,9 +138,9 @@
                     UpdateServer = StandardUpdateServer
                 End Try
                 'Installierte Kategorien rausfinden
-                If System.IO.File.Exists(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Kategorien.ini") Then
+                If System.IO.File.Exists(IO.Path.Combine(ProgrammPfad, "Kategorien.ini")) Then
                     Dim tmp As String
-                    Using Reader As New IO.StreamReader(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Kategorien.ini", True)
+                    Using Reader As New IO.StreamReader(IO.Path.Combine(ProgrammPfad, "Kategorien.ini"), True)
                         Do Until Reader.Peek = -1
                             tmp = Reader.ReadLine
                             If tmp.IndexOf("="c) > -1 AndAlso String.Compare(tmp.Substring(tmp.IndexOf("="c) + 1).Trim, "true", True) = 0 Then
@@ -155,7 +155,7 @@
             Dim LokaleVersionen, UpdateVersionen As New VersionenDatei
 
             Try
-                LokaleVersionen.Öffnen(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "Versionen.lst", True) 'Lokale Versionen datei öffnen
+                LokaleVersionen.Öffnen(IO.Path.Combine(ProgrammPfad, "Versionen.lst"), True) 'Lokale Versionen datei öffnen
             Catch ex As Exception
                 Console.Error.WriteLine("Versionen.lst: " & ex.Message)
             End Try
@@ -192,7 +192,7 @@ Suche:
 
     Function LadeUpdate(ByVal MitUI As Boolean) As Boolean
         If ZuAktualisierendeDateien.Count > 0 Then
-            If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe").Length > 0 Then
+            If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
                 'bereits ein Update vorhanden
                 If MitUI Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
@@ -206,10 +206,10 @@ Suche:
                                 Application.DoEvents()
                                 Try
                                     Try
-                                        Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), UpdatePfad & ZuAktualisierendeDateien(i).Name)
+                                        Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), IO.Path.Combine(UpdatePfad, ZuAktualisierendeDateien(i).Name))
                                     Catch
                                         Client.Proxy = Nothing
-                                        Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), UpdatePfad & ZuAktualisierendeDateien(i).Name)
+                                        Entkomprimieren(Client.OpenRead(AktuellerServer & ZuAktualisierendeDateien(i).Name & ".kom"), IO.Path.Combine(UpdatePfad, ZuAktualisierendeDateien(i).Name))
                                     End Try
                                 Catch ex As Exception
                                     Console.Error.WriteLine(AktuellerServer & ZuAktualisierendeDateien(i).Name & ": " & ex.Message)
@@ -219,21 +219,22 @@ Suche:
                             If MitUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("UpdateFertigstellen"), 1, 1, Übersetzen.Übersetze("Update", ÜbersetzterProgrammName))
                             Application.DoEvents()
                             'Versionen.lst herunterladen, Update.exe verschieben
-                            Entkomprimieren(Client.OpenRead(AktuellerServer & "Versionen.lst.kom"), UpdatePfad & "Versionen.lst")
+                            Entkomprimieren(Client.OpenRead(AktuellerServer & "Versionen.lst.kom"), IO.Path.Combine(UpdatePfad, "Versionen.lst"))
                         End Using
 
-                        Dim t As Int32
+                        Dim t As Int32, tmpNeuFile As String
                         Do
                             t += 1
-                        Loop While System.IO.File.Exists(UpdatePfad & ".." & System.IO.Path.DirectorySeparatorChar & "Update-" & t & ".exe")
-                        If System.IO.File.Exists(UpdatePfad & "Update.exe") Then
+                            tmpNeuFile = IO.Path.Combine(IO.Path.Combine(UpdatePfad, ".."), "Update-" & t & ".exe")
+                        Loop While System.IO.File.Exists(tmpNeuFile)
+                        If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Update.exe")) Then
                             Try
-                                My.Computer.FileSystem.MoveFile(UpdatePfad & "Update.exe", UpdatePfad & ".." & System.IO.Path.DirectorySeparatorChar & "Update-" & t & ".exe", True)
+                                My.Computer.FileSystem.MoveFile(IO.Path.Combine(UpdatePfad, "Update.exe"), tmpNeuFile, True)
                             Catch
                             End Try
                         Else
                             Try
-                                System.IO.File.Copy(Application.StartupPath & System.IO.Path.DirectorySeparatorChar & "Update.exe", UpdatePfad & ".." & System.IO.Path.DirectorySeparatorChar & "Update-" & t & ".exe")
+                                System.IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
                             Catch
                             End Try
                         End If
@@ -381,10 +382,10 @@ Suche:
     End Function
 
     Function InstalliereUpdate(ByVal EreignisAufrufen As Boolean) As Boolean 'Wenn update vorhande true sonst false
-        If System.IO.File.Exists(UpdatePfad & "Versionen.lst") AndAlso System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe").Length > 0 Then
+        If System.IO.File.Exists(IO.Path.Combine(UpdatePfad, "Versionen.lst")) AndAlso System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe").Length > 0 Then
             Dim pi As New System.Diagnostics.ProcessStartInfo
             Try
-                System.IO.File.Create(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & "tmp.d" & (New Random).Next(0, 10), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
+                System.IO.File.Create(IO.Path.Combine(ProgrammPfad, "tmp.d" & (New Random).Next(0, 10)), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
             Catch 'wenn keine Schreibrechte im Programmverzeichnis
                 If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
                     pi.Verb = "runas"
@@ -403,7 +404,7 @@ Suche:
             pi.WorkingDirectory = Application.StartupPath
             Try
                 Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
-                For Each file As String In System.IO.Directory.GetFiles(UpdatePfad & "..", "Update-*.exe")
+                For Each file As String In System.IO.Directory.GetFiles(IO.Path.Combine(UpdatePfad, ".."), "Update-*.exe")
                     If System.IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
                         tmpneusteÄnderung = System.IO.File.GetLastWriteTime(file)
                         tmpDatei = file
@@ -453,8 +454,11 @@ Suche:
                         LokalVersionKategorieIndex = LokaleVersionen.Kategorien.IndexOf(.Name)
                         If LokalVersionKategorieIndex > -1 Then 'Lokale Versionen sind vorhanden
                             '=> neuere Versionen suchen
+                            Dim lokalDateien As Dateien = LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien
                             For j As Int32 = 0 To .Dateien.Count - 1
-                                If LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name) = -1 OrElse .Dateien(j).InterneVersion > LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien(LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse (Not System.IO.File.Exists(ProgrammPfad & System.IO.Path.DirectorySeparatorChar & .Dateien(j).Name)) Then
+                                If lokalDateien.IndexOf(.Dateien(j).Name) = -1 OrElse _
+                                  .Dateien(j).InterneVersion > lokalDateien(lokalDateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse _
+                                  (Not System.IO.File.Exists(IO.Path.Combine(ProgrammPfad, .Dateien(j).Name))) Then
                                     tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
                                 End If
                             Next j
