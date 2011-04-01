@@ -263,7 +263,7 @@ Suche:
     End Function
 
     Shared Function SetzeVersionRegistry(ByVal AppID As String, ByVal VersionsText As String, ByVal Version As Version) As Boolean
-        Dim tmpRegistry As Microsoft.Win32.RegistryKey
+        Dim tmpRegistry As Microsoft.Win32.RegistryKey = Nothing
         Try
             tmpRegistry = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & AppID & "_is1", False)
             If tmpRegistry IsNot Nothing Then
