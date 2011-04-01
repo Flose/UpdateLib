@@ -293,6 +293,7 @@ Suche:
                 Dim tmpProcess As New Process
                 tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 tmpProcess.StartInfo.FileName = "gunzip"
+                tmpProcess.StartInfo.UseShellExecute = False
                 tmpProcess.Start() 'test ob gunzip verfügbar
                 Dim tmpName As String = IO.Path.GetTempFileName
                 If Stream.CanSeek Then
