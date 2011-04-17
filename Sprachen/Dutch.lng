@@ -1,15 +1,17 @@
 ﻿1
 SprachenName=Nederlands
-msgUpdateBereitsVorhanden=
+msgUpdateBereitsVorhanden=Er is een update beschikbaar!{0}Start {1} om het te installeren.
 Update={0} Update
-msgUpdateVorhanden=
-msgUpdateInstallierenAdmin=
+msgUpdateVorhanden=Update versie {0} is beschikbaar.{1}Wilt u het downloaden?
+msgUpdateInstallierenAdmin=U hebt een update gedownload maar nog niet geïnstalleerd.\n\n Start {0} als administrator om het te installeren.
 msgKeinUpdate=Geen updates beschikbaar
 msgFehlerUpdateSuchen=Fout bij het zoeken naar updates: {0}
 lblAktuelleDatei=Huidig bestand: {0}
-UpdateFertigstellen=
-msgUpdateErfolgreich=
+UpdateFertigstellen=Afwerken...
+msgUpdateErfolgreich=Downloading update succesvol!{0}Herstart {1} om update te installeren.{0}Nu herstarten?
 msgFehlerUpdate=Fout bij het updaten: {0}
+FehlerAusführen=
+MonoUpdateHinweis=
 UpdateHistory=Update geschiedenis
 Updates=Updates:
 Schließen=&Sluiten
