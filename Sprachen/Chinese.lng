@@ -1,0 +1,18 @@
+﻿1
+SprachenName=汉语
+msgUpdateBereitsVorhanden=你已下载了的更新。{0}重新启动{1}来安装它。
+Update={0}更新
+msgUpdateVorhanden=有一个更新版本{0}{1}你想现在就下载吗？
+msgUpdateInstallierenAdmin=您已下载了一个更新，但是你还没有安装了它。\n\n启动{0}以管理员身份来安装更新。
+msgKeinUpdate=现在没有更新
+msgFehlerUpdateSuchen=出错搜索更新的时候：{0}
+lblAktuelleDatei=当前文件：{0}
+UpdateFertigstellen=完成制订... ...
+msgUpdateErfolgreich=成功了下载更新！{0}若要安装此更新，您必须重新启动{1}{0}现在重新启动？
+msgFehlerUpdate=误差，更新的时候：{0}
+FehlerAusführen=尝试执行时发生错误'{0}'：\n\n{1}
+MonoUpdateHinweis=如果更新不启动，请运行以下命令：\n\n{0}
+UpdateHistory=更新的历史
+Updates=更新：
+Schließen=关&闭
+VersionErfolgreichInstalliert={0}版本{1}：安装成功。
