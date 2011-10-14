@@ -20,9 +20,9 @@ Partial Class frmUpdate
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmUpdate))
-        Me.lblAktuelleDatei = New System.Windows.Forms.Label
-        Me.pgbUpdate = New System.Windows.Forms.ProgressBar
-        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel
+        Me.lblAktuelleDatei = New System.Windows.Forms.Label()
+        Me.pgbUpdate = New System.Windows.Forms.ProgressBar()
+        Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.TableLayoutPanel1.SuspendLayout()
         Me.SuspendLayout()
         '
@@ -55,8 +55,8 @@ Partial Class frmUpdate
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(8, 8)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 2
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle)
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle)
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(298, 42)
         Me.TableLayoutPanel1.TabIndex = 2
         '

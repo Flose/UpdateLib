@@ -20,9 +20,9 @@ Partial Class frmUpdateHistory
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmUpdateHistory))
-        Me.Label1 = New System.Windows.Forms.Label
-        Me.lstUpdates = New System.Windows.Forms.ListBox
-        Me.cmdSchließen = New System.Windows.Forms.Button
+        Me.Label1 = New System.Windows.Forms.Label()
+        Me.lstUpdates = New System.Windows.Forms.ListBox()
+        Me.cmdSchließen = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'Label1
