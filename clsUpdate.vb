@@ -73,9 +73,9 @@
                         If LadeUpdate(True) Then
                             If GoogleStatistik Then
                                 Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
-                                If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installiert") Then
-                                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
-                                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/update.htm", String.Empty, "Updaten", tmpString, "de", ProgrammVersion, ProgrammName & "Update", "update.mal-was-anderes.de", "UA-2276175-1")
+                                If Not SendeStatistik(ProgrammName.ToLowerInvariant, ProgrammVersion, tmpString, "gesucht gefunden installiert") Then
+                                    SendeAnGoogle("/updates/" & ProgrammName.ToLowerInvariant & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                                    SendeAnGoogle("/updates/" & ProgrammName.ToLowerInvariant & "/update.htm", String.Empty, "Updaten", tmpString, "de", ProgrammVersion, ProgrammName & "Update", "update.mal-was-anderes.de", "UA-2276175-1")
                                 End If
                             End If
                             If MessageBox.Show(Übersetzen.Übersetze("msgUpdateErfolgreich", Environment.NewLine, ÜbersetzterProgrammName), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
@@ -84,16 +84,16 @@
                         Else 'laden fehlgeschlagen
                             If GoogleStatistik Then
                                 Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
-                                If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
-                                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                                If Not SendeStatistik(ProgrammName.ToLowerInvariant, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
+                                    SendeAnGoogle("/updates/" & ProgrammName.ToLowerInvariant & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                                 End If
                             End If
                         End If
                     Else
                         If GoogleStatistik Then
                             Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
-                            If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden nicht installiert") Then
-                                SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                            If Not SendeStatistik(ProgrammName.ToLowerInvariant, ProgrammVersion, tmpString, "gesucht gefunden nicht installiert") Then
+                                SendeAnGoogle("/updates/" & ProgrammName.ToLowerInvariant & "/updatesuchen.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                             End If
                         End If
                     End If
@@ -104,8 +104,8 @@
                 'Statistik:
                 Dim tmpString As String : If Portable Then tmpString = "portable" Else tmpString = "normal"
                 If GoogleStatistik Then
-                    If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht nicht gefunden") Then
-                        SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatesuchen.htm", String.Empty, "KeinsVorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                    If Not SendeStatistik(ProgrammName.ToLowerInvariant, ProgrammVersion, tmpString, "gesucht nicht gefunden") Then
+                        SendeAnGoogle("/updates/" & ProgrammName.ToLowerInvariant & "/updatesuchen.htm", String.Empty, "KeinsVorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                     End If
                 End If
                 If zZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgKeinUpdate"), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -145,9 +145,9 @@
                     Using Reader As New IO.StreamReader(IO.Path.Combine(ProgrammPfad, "Kategorien.ini"), True)
                         Do Until Reader.Peek = -1
                             tmp = Reader.ReadLine
-                            If tmp.IndexOf("="c) > -1 AndAlso String.Compare(tmp.Substring(tmp.IndexOf("="c) + 1).Trim, "true", True) = 0 Then
+                            If tmp.IndexOf("="c) > -1 AndAlso String.Compare(tmp.Substring(tmp.IndexOf("="c) + 1).Trim, "true", StringComparison.OrdinalIgnoreCase) = 0 Then
                                 If InstallierteKategorien Is Nothing Then ReDim InstallierteKategorien(0) Else ReDim Preserve InstallierteKategorien(InstallierteKategorien.Length)
-                                InstallierteKategorien(InstallierteKategorien.GetUpperBound(0)) = tmp.Substring(0, tmp.IndexOf("="c)).Trim.ToLower
+                                InstallierteKategorien(InstallierteKategorien.GetUpperBound(0)) = tmp.Substring(0, tmp.IndexOf("="c)).Trim.ToLowerInvariant
                             End If
                         Loop
                     End Using
@@ -177,8 +177,8 @@
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Übersetze("Update", ÜbersetzterProgrammName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             If GoogleStatistik Then
                 Dim tmpString As String : If Portable Then tmpString = "Portable" Else tmpString = "Normal"
-                If Not SendeStatistik(ProgrammName.ToLower, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
-                    SendeAnGoogle("/updates/" & ProgrammName.ToLower & "/updatefehler.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
+                If Not SendeStatistik(ProgrammName.ToLowerInvariant, ProgrammVersion, tmpString, "gesucht gefunden installieren fehler") Then
+                    SendeAnGoogle("/updates/" & ProgrammName.ToLowerInvariant & "/updatefehler.htm", String.Empty, "Vorhanden", tmpString, "de", ProgrammVersion, ProgrammName & "UpdateSuche", "update.mal-was-anderes.de", "UA-2276175-1")
                 End If
             End If
             Return "XXX"
@@ -543,7 +543,7 @@ Friend Class Kategorien
     End Property
 
     Function Add(ByVal Name As String, ByVal Pflicht As Boolean) As Int32
-        Name = Name.Trim.ToLower
+        Name = Name.Trim.ToLowerInvariant
         If IndexOf(Name) = -1 Then
             ReDim Preserve kKategorie(Count)
             kKategorie(Count - 1) = New Kategorie(Name, Pflicht)
@@ -590,9 +590,9 @@ Friend Class Dateien
     End Function
 
     Overloads Function IndexOf(ByVal Name As String) As Int32
-        Name = Name.Trim.ToLower.Replace("\"c, "/"c)
+        Name = Name.Trim.Replace("\"c, "/"c)
         For i As Int32 = 0 To Count - 1
-            If MyBase.Item(i).Name.Trim.ToLower = Name Then Return i
+            If String.Compare(MyBase.Item(i).Name.Trim, Name, StringComparison.OrdinalIgnoreCase) = 0 Then Return i
         Next i
         Return -1
     End Function
