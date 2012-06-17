@@ -10,10 +10,10 @@ Imports System.Runtime.InteropServices
 
 ' Die Werte der Assemblyattribute überprüfen
 
-<Assembly: AssemblyTitle("UpdateDll")> 
+<Assembly: AssemblyTitle("UpdateLib")> 
 <Assembly: AssemblyDescription("Updatefunktion für Programme")> 
 <Assembly: AssemblyCompany("Flo & Seb Engineering")> 
-<Assembly: AssemblyProduct("UpdateDll")> 
+<Assembly: AssemblyProduct("UpdateLib")> 
 <Assembly: AssemblyCopyright("© Flo & Seb Engineering 2007 - 2011")> 
 <Assembly: AssemblyTrademark("")> 
 

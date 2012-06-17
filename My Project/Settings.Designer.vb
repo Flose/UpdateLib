@@ -63,10 +63,10 @@ Namespace My
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute()>  _
     Friend Module MySettingsProperty
         
-        <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")>  _
-        Friend ReadOnly Property Settings() As Global.UpdateDll.My.MySettings
+        <Global.System.ComponentModel.Design.HelpKeywordAttribute("My.Settings")> _
+        Friend ReadOnly Property Settings() As Global.FloseCode.UpdateLib.My.MySettings
             Get
-                Return Global.UpdateDll.My.MySettings.Default
+                Return Global.FloseCode.UpdateLib.My.MySettings.Default
             End Get
         End Property
     End Module

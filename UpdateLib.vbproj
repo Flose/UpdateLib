@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8B448F7D-259C-4605-B46D-DC64D010A75C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>UpdateDll</RootNamespace>
-    <AssemblyName>UpdateDll</AssemblyName>
+    <RootNamespace>FloseCode.UpdateLib</RootNamespace>
+    <AssemblyName>UpdateLib</AssemblyName>
     <MyType>Console</MyType>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
