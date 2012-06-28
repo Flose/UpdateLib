@@ -139,9 +139,9 @@
     <None Include="Sprachen\Spanish.lng" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\dllSprache\dllSprache.vbproj">
+    <ProjectReference Include="..\..\dllSprache\TranslationLib.vbproj">
       <Project>{75824712-16D2-4E4D-A9FE-B52C4673AB38}</Project>
-      <Name>dllSprache</Name>
+      <Name>TranslationLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

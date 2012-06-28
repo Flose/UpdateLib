@@ -1,7 +1,7 @@
 ﻿Public Class Update
     Dim UpdateServer() As String
     Dim InstallierteKategorien() As String
-    Dim Übersetzen As New dllSprache.clsÜbersetzen(String.Empty, My.Resources.English)
+    Dim Übersetzen As New TranslationLib.clsÜbersetzen(String.Empty, My.Resources.English)
 
     Dim ÜbersetzterProgrammName As String
 
