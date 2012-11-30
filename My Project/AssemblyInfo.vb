@@ -14,7 +14,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Update durchführen")> 
 <Assembly: AssemblyCompany("Flo & Seb Engineering")> 
 <Assembly: AssemblyProduct("Update")> 
-<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2006-2010")> 
+<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2006-2012")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)> 
@@ -33,7 +33,7 @@ Imports System.Runtime.InteropServices
 ' übernehmen, indem Sie "*" eingeben:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.5.6.0")> 
-<Assembly: AssemblyFileVersion("1.5.6.0")> 
+<Assembly: AssemblyVersion("1.5.7.0")> 
+<Assembly: AssemblyFileVersion("1.5.7.0")> 
 
 <Assembly: NeutralResourcesLanguageAttribute("de-DE")> 

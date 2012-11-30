@@ -14,7 +14,8 @@
                 MessageBox.Show("Es ist kein Update vorhanden, das installiert werden könnte!", "Update", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Else
                 Dim tmpVersion As String = "0"
-                If System.IO.File.Exists(IO.Path.Combine(Environment.CurrentDirectory, "UpdateDll.dll")) Then
+                If System.IO.File.Exists(IO.Path.Combine(Environment.CurrentDirectory, "UpdateDll.dll")) OrElse _
+                   System.IO.File.Exists(IO.Path.Combine(Environment.CurrentDirectory, "TranslationLib.dll")) Then
                     'Seit UpdateDLL 1.4 werden Updates in %ProgramData% gespeichert
                     InstallationsPfad = Environment.CurrentDirectory & IO.Path.DirectorySeparatorChar
                 Else
