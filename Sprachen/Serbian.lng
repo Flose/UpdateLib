@@ -1,0 +1,18 @@
+﻿1
+SprachenName=Srpski
+msgUpdateBereitsVorhanden=Jedan Update postoji.{0}Restartujte{1}da bi ažurirali program
+Update={0} Ažuriranje
+msgUpdateVorhanden=Postoji jedan Update za verziju {0}.Želite li skinuti Update?
+msgUpdateInstallierenAdmin=Upravo ste skinuliUpdate ali ga još niste izvršili.\n\nPokrenite {0}program kao Administrator da bi izvršili Update
+msgKeinUpdate=Nema novih Update-a
+msgFehlerUpdateSuchen=Greška kod traženja Update-a: {0}
+lblAktuelleDatei=Aktuelni fajl: {0}
+UpdateFertigstellen=Završiti ...
+msgUpdateErfolgreich=Update je uspešno skinut!{0}Da bi ga izvršili morate  {1} restartovati.{0}Želite sada restartovati?
+msgFehlerUpdate=Greška kod ažuriranja: {0}
+FehlerAusführen=Greška kod izvodjenja '{0}':\n\n{1}
+MonoUpdateHinweis=Ukoliko se Update ne pokrene - izvršite komandu:\n\n{0}
+UpdateHistory=Istorija ažuriranja
+Updates=Ažuriranja:
+Schließen=Zatvori
+VersionErfolgreichInstalliert=Ažuriranje na{0}: Verziju {1} je bilo uspešno.

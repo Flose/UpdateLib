@@ -129,13 +129,16 @@
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
     <None Include="Sprachen\Bavarian.lng" />
+    <None Include="Sprachen\Bulgarian.lng" />
     <None Include="Sprachen\Chinese.lng" />
     <None Include="Sprachen\Dutch.lng" />
     <None Include="Sprachen\English.lng" />
     <None Include="Sprachen\French.lng" />
     <None Include="Sprachen\German.lng" />
+    <None Include="Sprachen\Greek.lng" />
     <None Include="Sprachen\Polish.lng" />
     <None Include="Sprachen\Portuguese.lng" />
+    <None Include="Sprachen\Serbian.lng" />
     <None Include="Sprachen\Spanish.lng" />
   </ItemGroup>
   <ItemGroup>
