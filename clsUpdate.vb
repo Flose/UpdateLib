@@ -49,6 +49,7 @@
         Übersetzen.Sprachen.Add("Serbian", "Srpski", My.Resources.Serbian)
         Übersetzen.Sprachen.Add("Greek", "Ελληνικά", My.Resources.Greek)
         Übersetzen.Sprachen.Add("Bulgarian", "Български", My.Resources.Bulgarian)
+        Übersetzen.Sprachen.Add("Danish", "Dansk", My.Resources.Danish)
     End Sub
 
     Sub Übersetze(ByVal Sprache As String, ByVal ÜbersetzterName As String)

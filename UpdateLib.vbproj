@@ -131,6 +131,7 @@
     <None Include="Sprachen\Bavarian.lng" />
     <None Include="Sprachen\Bulgarian.lng" />
     <None Include="Sprachen\Chinese.lng" />
+    <None Include="Sprachen\Danish.lng" />
     <None Include="Sprachen\Dutch.lng" />
     <None Include="Sprachen\English.lng" />
     <None Include="Sprachen\French.lng" />

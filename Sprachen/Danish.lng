@@ -1,0 +1,18 @@
+﻿1
+SprachenName=Dansk
+msgUpdateBereitsVorhanden=Du har allerede hentet en opdatering.{0}Genstart {1}for at installere.
+Update={0} opdater
+msgUpdateVorhanden=Opdatering til version {0}er nu tilgængelig.{1}Ønsker du at hente den nu?
+msgUpdateInstallierenAdmin=Du har hentet en opdatering men den er endnu ikke installeret.\n\n Start {0} som Administrator for at installere opdateringen.
+msgKeinUpdate=Ingen opdatering tilgængelig
+msgFehlerUpdateSuchen=Fejl under søgning efter opdatering: {0}
+lblAktuelleDatei=Aktuel fil: {0}
+UpdateFertigstellen=Færdigbehandler...
+msgUpdateErfolgreich=Opdatering hentet!{0}For at installere opdateringen må du genstarte din computer{1}.{0}Genstart nu?
+msgFehlerUpdate=Fejl under opdatering: {0}
+FehlerAusführen=Fejl under forsøg på at udføre "{0}":\n\n{1}
+MonoUpdateHinweis=Hvis opdateringen ikke starter, kør følgende kommando:\n\n{0}
+UpdateHistory=Opdater historie
+Updates=Opdateringer:
+Schließen=Lu&k
+VersionErfolgreichInstalliert={0}: version {1}blev succesfuldt installeret.
