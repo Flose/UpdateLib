@@ -1,0 +1,18 @@
+﻿1
+SprachenName=Suomi
+msgUpdateBereitsVorhanden=Olet jo ladannut päivityksen.{0}Uudelleenkäynnistä{1}asentaaksesi se.
+Update={0} päivitys
+msgUpdateVorhanden=Päivitys versioon {0} on saatavilla.{1}Haluatko ladata sen nyt?
+msgUpdateInstallierenAdmin=Olet ladannut päivityksen mutta et ole asentanut sitä vielä. Käynnistä {0} järjestelmänvalvojana asentaaksesi päivityksen.
+msgKeinUpdate=Ei päivityksiä saatavilla
+msgFehlerUpdateSuchen=Virhe päivityksiä etsiessä: {0}
+lblAktuelleDatei=Nykyinen kansio: {0}
+UpdateFertigstellen=Viimeistellään...
+msgUpdateErfolgreich=Päivitys ladattiin onnistuneesti!{0}Asentaaksesi päivityksen sinun täytyy käynnistää uudelleen. Käynistä uudelleen nyt?
+msgFehlerUpdate=Virhe päivityksen aikana: {0}
+FehlerAusführen=Virhe suorittaessa "{0}":\n\n{1}
+MonoUpdateHinweis=Jos päivitys ei käynnisty, aja seuraava komento:\n\n{0}
+UpdateHistory=Päivityshistoria
+Updates=Päivitykset:
+Schließen=Sulje
+VersionErfolgreichInstalliert={0}: versio {1} asennettu onnistuneesti.
