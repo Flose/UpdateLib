@@ -117,15 +117,21 @@
     Sub VerschiebeVerzeichnis(ByVal Von As String, ByVal Nach As String)
         System.IO.Directory.CreateDirectory(Nach)
         For Each Datei As String In System.IO.Directory.GetFiles(Von)
+            Dim retryCount = 0
 NochMal:
             Try
                 My.Computer.FileSystem.MoveFile(Datei, IO.Path.Combine(Nach, System.IO.Path.GetFileName(Datei)), True)
             Catch ex As Exception
+                If retryCount < 4 Then
+                    retryCount += 1
+                    Threading.Thread.Sleep(1000)
+                    GoTo NochMal
+                End If
                 Dim tmpResult As DialogResult = MessageBox.Show("Fehler beim Aktualisieren der Datei " & System.IO.Path.GetFileName(Datei) & ":" & Environment.NewLine & ex.Message & Environment.NewLine & Environment.NewLine & "Überprüfen Sie ob das Programm noch läuft!", "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
                 If tmpResult = Windows.Forms.DialogResult.Abort Then
                     End
                 ElseIf tmpResult = Windows.Forms.DialogResult.Retry Then
-                    GoTo Nochmal
+                    GoTo NochMal
                 ElseIf tmpResult = Windows.Forms.DialogResult.Ignore Then
                     'Nichts machen
                 End If

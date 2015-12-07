@@ -13,14 +13,14 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyTitle("Update")> 
 <Assembly: AssemblyDescription("Update durchführen")> 
 <Assembly: AssemblyCompany("Flo & Seb Engineering")> 
-<Assembly: AssemblyProduct("Update")> 
-<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2006-2012")> 
+<Assembly: AssemblyProduct("Update")>
+<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2006-2015")>
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)> 
 
 'Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
-<Assembly: Guid("7426721d-ec0d-4b64-92b0-e5c85537659d")> 
+<Assembly: Guid("7426721d-ec0d-4b64-92b0-e5c85537659d")>
 
 ' Versionsinformationen für eine Assembly bestehen aus den folgenden vier Werten:
 '
@@ -33,7 +33,7 @@ Imports System.Runtime.InteropServices
 ' übernehmen, indem Sie "*" eingeben:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.5.7.0")> 
-<Assembly: AssemblyFileVersion("1.5.7.0")> 
+<Assembly: AssemblyVersion("1.5.8.0")>
+<Assembly: AssemblyFileVersion("1.5.8.0")>
 
 <Assembly: NeutralResourcesLanguageAttribute("de-DE")> 
