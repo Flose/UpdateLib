@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -63,6 +63,10 @@
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="TranslationLib, Version=1.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\TranslationLib.1.5.4.0\lib\net20\TranslationLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -128,6 +132,7 @@
       <CustomToolNamespace>My</CustomToolNamespace>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="packages.config" />
     <None Include="Sprachen\Bavarian.lng" />
     <None Include="Sprachen\Bulgarian.lng" />
     <None Include="Sprachen\Chinese.lng" />
@@ -141,12 +146,6 @@
     <None Include="Sprachen\Portuguese.lng" />
     <None Include="Sprachen\Serbian.lng" />
     <None Include="Sprachen\Spanish.lng" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\dllSprache\TranslationLib.vbproj">
-      <Project>{75824712-16D2-4E4D-A9FE-B52C4673AB38}</Project>
-      <Name>TranslationLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -183,4 +182,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
+    <Exec Command="nuget pack UpdateLib.vbproj -Prop Configuration=Release">
+    </Exec>
+  </Target>
 </Project>
