@@ -7,7 +7,8 @@
     Dim filesToUpdate As Dateien
     Dim currentServer As String
 
-    Dim programName, programExe, programPath, programVersion As String
+    Dim programName, programExe, programPath As String
+    Dim programVersion As Version
     Dim uid As String
 
     Public Property ProductFlavor As String
@@ -52,7 +53,7 @@
         End Set
     End Property
 
-    Sub New(programName As String, programExe As String, programVersion As String, programPath As String, tempUpdatePath As String, updateServersFile As String, updateServers As ICollection(Of String), ByVal uid As String)
+    Sub New(programName As String, programExe As String, programVersion As Version, programPath As String, tempUpdatePath As String, updateServersFile As String, updateServers As ICollection(Of String), ByVal uid As String)
         Me.programExe = programExe
         Me.programName = programName
         Me.programVersion = programVersion
@@ -193,7 +194,12 @@
             Catch ex As Exception
                 Console.Error.WriteLine("Versionen.lst: " & ex.Message)
             End Try
-            If Not String.IsNullOrEmpty(LokaleVersionen.Version) Then programVersion = LokaleVersionen.Version
+            If Not String.IsNullOrEmpty(LokaleVersionen.Version) Then
+                Try
+                    programVersion = New Version(LokaleVersionen.Version)
+                Catch
+                End Try
+            End If
             Dim tmpFehler As String = String.Empty
             'Update versionsdatei öffnen:
             For Each server In updateServers
@@ -312,10 +318,21 @@ Suche:
     ''' HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$APPID
     ''' </summary>
     ''' <param name="appID"></param>
+    ''' <param name="displayVersion"></param>
+    ''' <returns></returns>
+    Public Function SetUninstallInfoInRegistry(appID As String) As Boolean
+        Return SetUninstallInfoInRegistry(appID, TranslatedProgramName + GetVersionsText(programVersion), programVersion)
+    End Function
+
+    ''' <summary>
+    ''' Update the application version in the Uninstall section of the Windows registry.
+    ''' HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$APPID
+    ''' </summary>
+    ''' <param name="appID"></param>
     ''' <param name="displayName"></param>
     ''' <param name="displayVersion"></param>
     ''' <returns></returns>
-    Shared Function SetUninstallInfoInRegistry(ByVal appID As String, ByVal displayName As String, ByVal displayVersion As Version) As Boolean
+    Private Shared Function SetUninstallInfoInRegistry(ByVal appID As String, ByVal displayName As String, ByVal displayVersion As Version) As Boolean
         Try
             Using readOnlyReg = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\" & appID, False)
                 If readOnlyReg Is Nothing Then
