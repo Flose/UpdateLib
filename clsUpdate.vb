@@ -329,7 +329,7 @@ Suche:
     ''' <param name="displayVersion"></param>
     ''' <returns></returns>
     Public Function SetUninstallInfoInRegistry(appID As String) As Boolean
-        Return SetUninstallInfoInRegistry(appID, TranslatedProgramName + GetVersionsText(programVersion), programVersion)
+        Return SetUninstallInfoInRegistry(appID, TranslatedProgramName + GetVersionsText(programVersion, False), programVersion)
     End Function
 
     ''' <summary>
