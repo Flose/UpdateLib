@@ -8,10 +8,9 @@
         lstUpdates.Items.Clear()
         If IO.File.Exists(IO.Path.Combine(Programmpfad, "UpdateHistory.txt")) Then
             Using Reader As New IO.StreamReader(IO.Path.Combine(Programmpfad, "UpdateHistory.txt"))
-                Dim tmp() As String
                 Do Until Reader.Peek = -1
                     Try
-                        tmp = Reader.ReadLine().Split("|"c)
+                        Dim tmp = Reader.ReadLine().Split("|"c)
                         lstUpdates.Items.Add(Übersetzen.Übersetze("VersionErfolgreichInstalliert", CDate(tmp(0)).ToShortDateString, tmp(1)))
                     Catch
                     End Try
