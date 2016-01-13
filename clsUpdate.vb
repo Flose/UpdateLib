@@ -14,6 +14,11 @@ Public Class Update
     Dim programVersion As Version
     Dim uid As String
 
+    ''' <summary>
+    ''' Optionally set the product flavor, i.e. Normal and Portable.
+    ''' This is only used for statistics.
+    ''' </summary>
+    ''' <returns></returns>
     Public Property ProductFlavor As String
 
     Dim isUpdating As Boolean
@@ -305,7 +310,7 @@ Suche:
     ''' <param name="version"></param>
     ''' <param name="showRevision"></param>
     ''' <returns></returns>
-    Public Shared Function GetVersionsText(ByVal version As Version, Optional ByVal showRevision As Boolean = True) As String
+    Private Shared Function GetVersionsText(ByVal version As Version, Optional ByVal showRevision As Boolean = True) As String
         If showRevision AndAlso version.Revision <> 0 Then
             Return version.ToString(4)
         End If
