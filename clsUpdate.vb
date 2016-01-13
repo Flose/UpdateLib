@@ -1,4 +1,7 @@
-﻿Public Class Update
+Imports System.Diagnostics
+Imports System.Windows.Forms
+
+Public Class Update
     Dim updateServers As New List(Of String)
     Dim updateServersFile As String
     Dim tempUpdatePath As String
@@ -146,7 +149,7 @@
 
     Private Sub ReadUpdateServersFile()
         Using UpdateReader As New IO.StreamReader(updateServersFile, True)
-            For Each s In UpdateReader.ReadToEnd.Split(New Char() {ChrW(10), ChrW(13)}, StringSplitOptions.RemoveEmptyEntries)
+            For Each s In UpdateReader.ReadToEnd.Split(New Char() {Convert.ToChar(10), Convert.ToChar(13)}, StringSplitOptions.RemoveEmptyEntries)
                 If Not updateServers.Contains(s) Then
                     updateServers.Add(s)
                 End If
@@ -423,8 +426,8 @@ Suche:
             Dim query As New Specialized.NameValueCollection
             query("programm") = programName.ToLowerInvariant
             query("version") = GetVersionsText(programVersion)
-            If productFlavor <> Nothing Then
-                query("pn") = productFlavor
+            If ProductFlavor <> Nothing Then
+                query("pn") = ProductFlavor
             End If
             query("typ") = type
             query("platform") = My.Computer.Info.OSPlatform
@@ -443,7 +446,7 @@ Suche:
                 client.OpenRead(url).Close()
             End Try
             Return True
-        Catch ex As exception
+        Catch ex As Exception
             Return False
         End Try
     End Function
