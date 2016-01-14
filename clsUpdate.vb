@@ -23,7 +23,7 @@ Public Class Update
 
     Dim isUpdating As Boolean
 
-    Dim Übersetzen As New TranslationLib.clsÜbersetzen(String.Empty, My.Resources.English)
+    Dim Übersetzen As New TranslationLib.Translation(String.Empty, My.Resources.English)
 
     ''' <summary>
     ''' This event is raised just before restarting to install an update.
@@ -72,22 +72,22 @@ Public Class Update
         Me.tempUpdatePath = IO.Path.Combine(tempUpdatePath, "Update")
 
         'Sprachen laden
-        Übersetzen.Sprachen.Add("German", "Deutsch", My.Resources.German)
-        Übersetzen.Sprachen.Add("English", "English", My.Resources.English)
-        Übersetzen.Sprachen.Add("French", "Français", My.Resources.French)
-        Übersetzen.Sprachen.Add("Spanish", "Español", My.Resources.Spanish)
-        Übersetzen.Sprachen.Add("Bavarian", "Boarisch", My.Resources.Bavarian)
-        Übersetzen.Sprachen.Add("Dutch", "Nederlands", My.Resources.Dutch)
-        Übersetzen.Sprachen.Add("Portuguese", "Português", My.Resources.Portuguese)
-        Übersetzen.Sprachen.Add("Polish", "Polski", My.Resources.Polish)
-        Übersetzen.Sprachen.Add("Chinese", "汉语", My.Resources.Chinese)
-        Übersetzen.Sprachen.Add("Serbian", "Srpski", My.Resources.Serbian)
-        Übersetzen.Sprachen.Add("Greek", "Ελληνικά", My.Resources.Greek)
-        Übersetzen.Sprachen.Add("Bulgarian", "Български", My.Resources.Bulgarian)
-        Übersetzen.Sprachen.Add("Danish", "Dansk", My.Resources.Danish)
+        Übersetzen.AddLanguage("German", "Deutsch", My.Resources.German)
+        Übersetzen.AddLanguage("English", "English", My.Resources.English)
+        Übersetzen.AddLanguage("French", "Français", My.Resources.French)
+        Übersetzen.AddLanguage("Spanish", "Español", My.Resources.Spanish)
+        Übersetzen.AddLanguage("Bavarian", "Boarisch", My.Resources.Bavarian)
+        Übersetzen.AddLanguage("Dutch", "Nederlands", My.Resources.Dutch)
+        Übersetzen.AddLanguage("Portuguese", "Português", My.Resources.Portuguese)
+        Übersetzen.AddLanguage("Polish", "Polski", My.Resources.Polish)
+        Übersetzen.AddLanguage("Chinese", "汉语", My.Resources.Chinese)
+        Übersetzen.AddLanguage("Serbian", "Srpski", My.Resources.Serbian)
+        Übersetzen.AddLanguage("Greek", "Ελληνικά", My.Resources.Greek)
+        Übersetzen.AddLanguage("Bulgarian", "Български", My.Resources.Bulgarian)
+        Übersetzen.AddLanguage("Danish", "Dansk", My.Resources.Danish)
 
         ' Set default language
-        Übersetzen.Load(Übersetzen.ÜberprüfeSprache(String.Empty))
+        Übersetzen.Load(Übersetzen.CheckLanguageName(String.Empty))
     End Sub
 
     ''' <summary>
@@ -97,7 +97,7 @@ Public Class Update
     ''' <param name="translatedProgramName">The program name translated to <paramref name="language"/>language</param>
     Sub Translate(ByVal language As String, ByVal translatedProgramName As String)
         translatedProgramName = translatedProgramName
-        language = Übersetzen.ÜberprüfeSprache(language)
+        language = Übersetzen.CheckLanguageName(language)
         Übersetzen.Load(language)
     End Sub
 
@@ -124,11 +124,11 @@ Public Class Update
 
             If String.IsNullOrEmpty(tmpUpdateSuche) Then
                 SendStatistics("gesucht nicht gefunden")
-                If showErrors Then MessageBox.Show(Übersetzen.Übersetze("msgKeinUpdate"), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                If showErrors Then MessageBox.Show(Übersetzen.Translate("msgKeinUpdate"), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Return
             End If
 
-            If DialogResult.Yes <> MessageBox.Show(Übersetzen.Übersetze("msgUpdateVorhanden", tmpUpdateSuche, Environment.NewLine), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
+            If DialogResult.Yes <> MessageBox.Show(Übersetzen.Translate("msgUpdateVorhanden", tmpUpdateSuche, Environment.NewLine), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
                 SendStatistics("gesucht gefunden nicht installiert")
                 Return
             End If
@@ -140,7 +140,7 @@ Public Class Update
                 End If
 
                 SendStatistics("gesucht gefunden installiert")
-                If DialogResult.Yes = MessageBox.Show(Übersetzen.Übersetze("msgUpdateErfolgreich", Environment.NewLine, TranslatedProgramName), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
+                If DialogResult.Yes = MessageBox.Show(Übersetzen.Translate("msgUpdateErfolgreich", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
                     InstallUpdate()
                 End If
             Catch ex As Exception
@@ -171,7 +171,7 @@ Public Class Update
     Private Function SearchUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
         If IO.File.Exists(IO.Path.Combine(tempUpdatePath, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length > 0 Then
             'bereits ein Update vorhanden
-            If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If ZeigeFehler Then MessageBox.Show(Übersetzen.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return "XXX"
         Else
             Try
@@ -220,7 +220,7 @@ Public Class Update
                     tmpFehler &= server & ": " & ex.Message & Environment.NewLine
                 End Try
             Next
-            If ZeigeFehler Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If ZeigeFehler Then MessageBox.Show(Übersetzen.Translate("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             SendStatistics("gesucht gefunden installieren fehler")
             Return "XXX"
 Suche:
@@ -239,7 +239,7 @@ Suche:
         End If
         If IO.File.Exists(IO.Path.Combine(tempUpdatePath, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length > 0 Then
             'bereits ein Update vorhanden
-            If withUI Then MessageBox.Show(Übersetzen.Übersetze("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If withUI Then MessageBox.Show(Übersetzen.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return False
         End If
         Try
@@ -248,7 +248,7 @@ Suche:
                     IO.Directory.CreateDirectory(tempUpdatePath)  'Verzeichnis für Update erstellen
                     If withUI Then tmpUpdateForm.Show()
                     For i As Int32 = 0 To filesToUpdate.Count - 1 'Dateien herunterladen
-                        If withUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("lblAktuelleDatei", filesToUpdate(i).Name), i, filesToUpdate.Count - 1, Übersetzen.Übersetze("Update", TranslatedProgramName))
+                        If withUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Translate("lblAktuelleDatei", filesToUpdate(i).Name), i, filesToUpdate.Count - 1, Übersetzen.Translate("Update", TranslatedProgramName))
                         Application.DoEvents()
                         Dim stream As IO.Stream = Nothing
                         Try
@@ -262,14 +262,14 @@ Suche:
                             Decompress(stream, IO.Path.Combine(tempUpdatePath, filesToUpdate(i).Name))
                         Catch ex As Exception
                             Console.Error.WriteLine(currentServer & filesToUpdate(i).Name & ": " & ex.Message)
-                            If withUI Then MessageBox.Show(ex.Message, Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                            If withUI Then MessageBox.Show(ex.Message, Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                         Finally
                             If stream IsNot Nothing Then
                                 stream.Close()
                             End If
                         End Try
                     Next i
-                    If withUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Übersetze("UpdateFertigstellen"), 1, 1, Übersetzen.Übersetze("Update", TranslatedProgramName))
+                    If withUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Translate("UpdateFertigstellen"), 1, 1, Übersetzen.Translate("Update", TranslatedProgramName))
                     Application.DoEvents()
                     'Versionen.lst herunterladen
                     Decompress(Client.OpenRead(currentServer & "Versionen.lst.kom"), IO.Path.Combine(tempUpdatePath, "Versionen.lst"))
@@ -286,20 +286,20 @@ Suche:
                         My.Computer.FileSystem.MoveFile(IO.Path.Combine(tempUpdatePath, "Update.exe"), tmpNeuFile, True)
                     Catch ex As Exception
                         Console.Error.WriteLine("Error moving Update.exe : " & ex.Message)
-                        If withUI Then MessageBox.Show(ex.Message, Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        If withUI Then MessageBox.Show(ex.Message, Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     End Try
                 Else
                     Try
                         IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
                     Catch ex As Exception
                         Console.Error.WriteLine("Error copying Update.exe : " & ex.Message)
-                        If withUI Then MessageBox.Show(ex.Message, Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        If withUI Then MessageBox.Show(ex.Message, Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Warning)
                     End Try
                 End If
             End Using
             Return True
         Catch ex As Exception 'Fehler beim Update herunterladen
-            If withUI Then MessageBox.Show(Übersetzen.Übersetze("msgFehlerUpdate", Environment.NewLine & ex.Message), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If withUI Then MessageBox.Show(Übersetzen.Translate("msgFehlerUpdate", Environment.NewLine & ex.Message), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return False
         End Try
     End Function
@@ -473,7 +473,7 @@ Suche:
             If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
                 pi.Verb = "runas"
             Else
-                MessageBox.Show(Übersetzen.Übersetze("msgUpdateInstallierenAdmin", TranslatedProgramName), Übersetzen.Übersetze("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show(Übersetzen.Translate("msgUpdateInstallierenAdmin", TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Return False
             End If
         End Try
@@ -495,11 +495,11 @@ Suche:
                 pi.FileName = "mono"
                 pi.Arguments = UpdateProgrammEXE & " """ & programName & """ """ & programExe & """"
                 pi.UseShellExecute = False
-                Console.WriteLine(Übersetzen.Übersetze("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
+                Console.WriteLine(Übersetzen.Translate("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
-                    MessageBox.Show(Übersetzen.Übersetze("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
+                    MessageBox.Show(Übersetzen.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                 End Try
             Else
                 pi.FileName = UpdateProgrammEXE
@@ -507,7 +507,7 @@ Suche:
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
-                    MessageBox.Show(Übersetzen.Übersetze("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
+                    MessageBox.Show(Übersetzen.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                 End Try
             End If
             Application.Exit()
