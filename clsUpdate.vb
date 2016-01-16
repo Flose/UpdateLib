@@ -7,7 +7,7 @@ Public Class Update
     Dim tempUpdatePath As String
 
     Dim installedCategories As List(Of String)
-    Dim filesToUpdate As Dateien
+    Dim filesToUpdate As List(Of Datei)
     Dim currentServer As String
 
     Dim programName, programExe, programPath As String
@@ -162,6 +162,27 @@ Public Class Update
         End Using
     End Sub
 
+    Private Sub ReadCategoriesFile()
+        installedCategories = New List(Of String)
+        'Installierte Kategorien rausfinden
+        If Not IO.File.Exists(IO.Path.Combine(programPath, "Kategorien.ini")) Then
+            Exit Sub
+        End If
+        Using Reader As New IO.StreamReader(IO.Path.Combine(programPath, "Kategorien.ini"), True)
+            Do
+                Dim line = Reader.ReadLine
+                If line Is Nothing Then
+                    Exit Do
+                End If
+
+                Dim index = line.IndexOf("="c)
+                If index > -1 AndAlso String.Compare(line.Substring(index + 1).Trim, "true", StringComparison.OrdinalIgnoreCase) = 0 Then
+                    installedCategories.Add(line.Substring(0, index).Trim.ToLowerInvariant)
+                End If
+            Loop
+        End Using
+    End Sub
+
     ''' <summary>
     ''' Sucht nach Updates
     ''' </summary>
@@ -173,63 +194,56 @@ Public Class Update
             'bereits ein Update vorhanden
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return "XXX"
-        Else
+        End If
+
+        Try
+            ReadUpdateServersFile()
+        Catch
+        End Try
+
+        If installedCategories Is Nothing Then
+            ReadCategoriesFile()
+        End If
+
+        Dim LokaleVersionen, UpdateVersionen As VersionenDatei
+
+        Try
+            LokaleVersionen = New VersionenDatei()
+            LokaleVersionen.Öffnen(IO.Path.Combine(programPath, "Versionen.lst"), True) 'Lokale Versionen datei öffnen
+        Catch ex As Exception
+            Console.Error.WriteLine("Versionen.lst: " & ex.Message)
+        End Try
+        If Not String.IsNullOrEmpty(LokaleVersionen.Version) Then
             Try
-                ReadUpdateServersFile()
+                programVersion = New Version(LokaleVersionen.Version)
             Catch
             End Try
-
-            If installedCategories Is Nothing Then
-                installedCategories = New List(Of String)()
-                'Installierte Kategorien rausfinden
-                If IO.File.Exists(IO.Path.Combine(programPath, "Kategorien.ini")) Then
-                    Using Reader As New IO.StreamReader(IO.Path.Combine(programPath, "Kategorien.ini"), True)
-                        Do Until Reader.Peek = -1
-                            Dim tmp = Reader.ReadLine
-                            Dim index = tmp.IndexOf("="c)
-                            If index > -1 AndAlso String.Compare(tmp.Substring(index + 1).Trim, "true", StringComparison.OrdinalIgnoreCase) = 0 Then
-                                installedCategories.Add(tmp.Substring(0, index).Trim.ToLowerInvariant)
-                            End If
-                        Loop
-                    End Using
-                End If
-            End If
-
-            Dim LokaleVersionen, UpdateVersionen As New VersionenDatei
-
+        End If
+        Dim tmpFehler As String = String.Empty
+        'Update versionsdatei öffnen:
+        For Each server In updateServers
             Try
-                LokaleVersionen.Öffnen(IO.Path.Combine(programPath, "Versionen.lst"), True) 'Lokale Versionen datei öffnen
+                UpdateVersionen = New VersionenDatei()
+                UpdateVersionen.Öffnen(server & "Versionen.lst.kom", False)
+                currentServer = server
+                Exit For
             Catch ex As Exception
-                Console.Error.WriteLine("Versionen.lst: " & ex.Message)
+                Console.Error.WriteLine(server & ": " & ex.Message)
+                tmpFehler &= server & ": " & ex.Message & Environment.NewLine
+                UpdateVersionen = Nothing
             End Try
-            If Not String.IsNullOrEmpty(LokaleVersionen.Version) Then
-                Try
-                    programVersion = New Version(LokaleVersionen.Version)
-                Catch
-                End Try
-            End If
-            Dim tmpFehler As String = String.Empty
-            'Update versionsdatei öffnen:
-            For Each server In updateServers
-                Try
-                    UpdateVersionen.Öffnen(server & "Versionen.lst.kom", False)
-                    currentServer = server
-                    GoTo Suche
-                Catch ex As Exception
-                    Console.Error.WriteLine(server & ": " & ex.Message)
-                    tmpFehler &= server & ": " & ex.Message & Environment.NewLine
-                End Try
-            Next
+        Next
+        If UpdateVersionen Is Nothing Then
             If ZeigeFehler Then MessageBox.Show(Übersetzen.Translate("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
             SendStatistics("gesucht gefunden installieren fehler")
             Return "XXX"
-Suche:
-            filesToUpdate = SearchNewFiles(LokaleVersionen, UpdateVersionen)
-            If filesToUpdate.Count > 0 Then 'Update vorhanden
-                Return UpdateVersionen.Version
-            Else
-                Return String.Empty
-            End If
+        End If
+
+        filesToUpdate = SearchNewFiles(LokaleVersionen, UpdateVersionen)
+        If filesToUpdate.Count > 0 Then 'Update vorhanden
+            Return UpdateVersionen.Version
+        Else
+            Return String.Empty
         End If
     End Function
 
@@ -526,35 +540,35 @@ Suche:
         Return (Type.GetType("Mono.Runtime") IsNot Nothing)
     End Function
 
-    Private Function SearchNewFiles(ByVal LokaleVersionen As VersionenDatei, ByVal UpdateVersionen As VersionenDatei) As Dateien
-        Dim tmpDateien As New Dateien
-        Dim LokalVersionKategorieIndex As Int32
-        If UpdateVersionen.InterneVersion > LokaleVersionen.InterneVersion Then
-            For i As Int32 = 0 To UpdateVersionen.Kategorien.Count - 1
-                With UpdateVersionen.Kategorien(i)
-                    If installedCategories Is Nothing OrElse .Pflicht OrElse installedCategories.IndexOf(.Name) > -1 Then
-                        LokalVersionKategorieIndex = LokaleVersionen.Kategorien.IndexOf(.Name)
-                        If LokalVersionKategorieIndex > -1 Then 'Lokale Versionen sind vorhanden
-                            '=> neuere Versionen suchen
-                            Dim lokalDateien As Dateien = LokaleVersionen.Kategorien(LokalVersionKategorieIndex).Dateien
-                            For j As Int32 = 0 To .Dateien.Count - 1
-                                If lokalDateien.IndexOf(.Dateien(j).Name) = -1 OrElse
-                                  .Dateien(j).InterneVersion > lokalDateien(lokalDateien.IndexOf(.Dateien(j).Name)).InterneVersion OrElse
-                                  (Not IO.File.Exists(IO.Path.Combine(programPath, .Dateien(j).Name))) Then
-                                    tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
-                                End If
-                            Next j
-                        Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
-                            '=> alle aus dieser Kategorie aktualisieren
-                            For j As Int32 = 0 To .Dateien.Count - 1
-                                tmpDateien.Add(.Dateien(j).Name, .Dateien(j).InterneVersion)
-                            Next j
-                        End If
-                    End If
-                End With
-            Next i
+    Private Function SearchNewFiles(ByVal LokaleVersionen As VersionenDatei, ByVal UpdateVersionen As VersionenDatei) As List(Of Datei)
+        Dim result As New List(Of Datei)
+        If UpdateVersionen.InterneVersion <= LokaleVersionen.InterneVersion Then
+            Return result
         End If
-        Return tmpDateien
+        For Each c In UpdateVersionen.Kategorien.Values
+            If Not c.Pflicht AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) > -1 Then
+                Continue For
+            End If
+
+            Dim localCat As Kategorie
+            If LokaleVersionen.Kategorien.TryGetValue(c.Name, localCat) Then 'Lokale Versionen sind vorhanden
+                '=> neuere Versionen suchen
+                For Each f In c.Dateien.Values
+                    Dim localFile As Datei
+                    If Not localCat.Dateien.TryGetValue(f.Name, localFile) Then
+                        Continue For
+                    End If
+
+                    If f.InterneVersion > localFile.InterneVersion OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
+                        result.Add(f)
+                    End If
+                Next
+            Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
+                '=> alle aus dieser Kategorie aktualisieren
+                result.AddRange(c.Dateien.Values)
+            End If
+        Next
+        Return result
     End Function
 
     ''' <summary>
@@ -567,125 +581,80 @@ Suche:
             frmH.ShowDialog(owner)
         End Using
     End Sub
-End Class
 
-Friend Class VersionenDatei
-    Friend Version As String, InterneVersion As Int32
-    Dim ReleasNotesUrl As String
-    Friend Kategorien As New Kategorien
+    Private Class VersionenDatei
+        Friend Version As String, InterneVersion As Int32
+        Dim ReleasNotesUrl As String
+        Friend Kategorien As New Dictionary(Of String, Kategorie)
 
-    Sub Öffnen(ByVal Datei As String, ByVal IstLokal As Boolean)
-        Dim Stream As IO.Stream
-        If IstLokal Then
-            Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
-        Else
-            Dim Client As New System.Net.WebClient
-            Try
-                Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
-            Catch
-                Client.Proxy = Nothing
-                Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
-            End Try
-        End If
-
-        Dim tmpKategorienIndex As Int32 = -1, tmp As String
-        Dim Reader As New IO.StreamReader(Stream, True)
-        Reader.ReadLine() 'UpdateVersion
-        Version = Reader.ReadLine
-        InterneVersion = CInt(Reader.ReadLine)
-        ReleasNotesUrl = Reader.ReadLine
-        Do Until Reader.Peek = -1
-            tmp = Reader.ReadLine
-            If tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "K:" Then
-                tmpKategorienIndex = Kategorien.Add(tmp.Substring(2, tmp.IndexOf(":"c, 2) - 2), CBool(tmp.Substring(tmp.IndexOf(":"c, 2) + 1)))
-            ElseIf tmp.Length > 1 AndAlso tmp.Substring(0, 2) = "D:" Then
-                tmpKategorienIndex = -2
-            ElseIf tmpKategorienIndex = -2 Then
-                'Dateien zum Löschen
-                'Löschen macht Update.exe
-            ElseIf tmpKategorienIndex > -1 Then
-                'Dateien in Kategorien
-                Kategorien(tmpKategorienIndex).Dateien.Add(tmp, CInt(Reader.ReadLine))
+        Sub Öffnen(ByVal Datei As String, ByVal IstLokal As Boolean)
+            Dim Stream As IO.Stream
+            If IstLokal Then
+                Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
+            Else
+                Dim Client As New System.Net.WebClient
+                Try
+                    Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+                Catch
+                    Client.Proxy = Nothing
+                    Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
+                End Try
             End If
-        Loop
-        Try 'für linux
-            Reader.Close()
-            Stream.Close()
-        Catch
-        End Try
-    End Sub
-End Class
+            Using Stream
+                Öffnen(Stream)
+            End Using
+        End Sub
 
-Friend Class Kategorien
-    Friend kKategorie() As Kategorie
+        Sub Öffnen(stream As IO.Stream)
+            Using Reader As New IO.StreamReader(stream, True)
+                Reader.ReadLine() 'UpdateVersion
+                Version = Reader.ReadLine
+                InterneVersion = CInt(Reader.ReadLine)
+                ReleasNotesUrl = Reader.ReadLine
 
-    Default ReadOnly Property Kategorie(ByVal Index As Int32) As Kategorie
-        Get
-            Return kKategorie(Index)
-        End Get
-    End Property
+                Dim currentCategory As Kategorie
+                Do
+                    Dim line = Reader.ReadLine
+                    If line Is Nothing Then
+                        Exit Do
+                    End If
 
-    Function Add(ByVal Name As String, ByVal Pflicht As Boolean) As Int32
-        Name = Name.Trim.ToLowerInvariant
-        If IndexOf(Name) = -1 Then
-            ReDim Preserve kKategorie(Count)
-            kKategorie(Count - 1) = New Kategorie(Name, Pflicht)
-            Return Count - 1
-        Else
-            Return IndexOf(Name)
-        End If
-    End Function
+                    If line.Length > 1 AndAlso line.Substring(0, 2) = "K:" Then
+                        Dim pos = line.IndexOf(":"c, 2)
+                        currentCategory = New Kategorie(line.Substring(2, pos - 2), CBool(line.Substring(pos + 1)))
+                        Kategorien.Add(currentCategory.Name, currentCategory)
+                    ElseIf line.Length > 1 AndAlso line.Substring(0, 2) = "D:" Then
+                        currentCategory = Nothing
+                    ElseIf currentCategory Is Nothing Then
+                        'Dateien zum Löschen
+                        'Löschen macht Update.exe
+                    Else
+                        'Dateien in Kategorien
+                        Dim newFile = New Datei(line, CInt(Reader.ReadLine))
+                        currentCategory.Dateien.Add(newFile.Name, newFile)
+                    End If
+                Loop
+            End Using
+        End Sub
+    End Class
 
-    Function IndexOf(ByVal Name As String) As Int32
-        For i As Int32 = 0 To Count - 1
-            If kKategorie(i).Name = Name Then Return i
-        Next i
-        Return -1
-    End Function
+    Private Class Kategorie
+        Friend Name As String
+        Friend Pflicht As Boolean
+        Friend Dateien As New Dictionary(Of String, Datei)
 
-    ReadOnly Property Count() As Int32
-        Get
-            If kKategorie Is Nothing Then Return 0 Else Return kKategorie.Length
-        End Get
-    End Property
-End Class
+        Sub New(ByVal Name As String, ByVal Pflicht As Boolean)
+            Me.Name = Name
+            Me.Pflicht = Pflicht
+        End Sub
+    End Class
 
-Friend Class Kategorie
-    Friend Name As String, Pflicht As Boolean
-    Friend Dateien As New Dateien
+    Private Class Datei
+        Friend Name As String, InterneVersion As Int32
 
-    Sub New(ByVal Name As String, ByVal Pflicht As Boolean)
-        Me.Name = Name
-        Me.Pflicht = Pflicht
-    End Sub
-End Class
-
-Friend Class Dateien
-    Inherits List(Of Datei)
-
-    Overloads Function Add(ByVal Name As String, ByVal InterneVersion As Int32) As Int32
-        If IndexOf(Name) = -1 Then
-            MyBase.Add(New Datei(Name.Replace("\"c, "/"c), InterneVersion))
-            Return Count - 1
-        Else
-            Return IndexOf(Name)
-        End If
-    End Function
-
-    Overloads Function IndexOf(ByVal Name As String) As Int32
-        Name = Name.Trim.Replace("\"c, "/"c)
-        For i As Int32 = 0 To Count - 1
-            If String.Compare(MyBase.Item(i).Name.Trim, Name, StringComparison.OrdinalIgnoreCase) = 0 Then Return i
-        Next i
-        Return -1
-    End Function
-End Class
-
-Friend Class Datei
-    Friend Name As String, InterneVersion As Int32
-
-    Sub New(ByVal Name As String, ByVal InterneVersion As Int32)
-        Me.Name = Name
-        Me.InterneVersion = InterneVersion
-    End Sub
+        Sub New(ByVal Name As String, ByVal InterneVersion As Integer)
+            Me.Name = Name.Replace("\"c, "/"c)
+            Me.InterneVersion = InterneVersion
+        End Sub
+    End Class
 End Class
