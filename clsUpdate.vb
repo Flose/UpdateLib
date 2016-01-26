@@ -68,7 +68,9 @@ Public Class Update
         Me.programPath = programPath
         Me.uid = uid
         Me.updateServersFile = updateServersFile
-        Me.updateServers.AddRange(updateServers)
+        If updateServers IsNot Nothing Then
+            Me.updateServers.AddRange(updateServers)
+        End If
         Me.tempUpdatePath = IO.Path.Combine(tempUpdatePath, "Update")
 
         'Sprachen laden
