@@ -150,12 +150,11 @@ Public Class Update
             Return
         End If
 
+        isUpdating = True
+
         Try
-            isUpdating = True
-
             SearchUpdateAsync(showErrors)
-
-        Finally
+        Catch
             isUpdating = False
         End Try
     End Sub
@@ -226,16 +225,19 @@ Public Class Update
                 If TypeOf e.Error Is UpdateAlreadyDownloadedException Then
                     'bereits ein Update vorhanden
                     If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    x.isUpdating = False
                     Exit Sub
                 ElseIf TypeOf e.Error Is UpdateLocalVersionsFileBrokenException Then
                     Console.Error.WriteLine("{0}: {1}", versionsFileName, e.Error.Message)
                     ' TODO messagebox to advice user to download setup and update manually
+                    x.isUpdating = False
                     Exit Sub
                 End If
 
                 Console.Error.WriteLine(e.Error)
                 If showErrors Then MessageBox.Show(x.t.Translate("msgFehlerUpdateSuchen", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                 x.SendStatistics("gesucht gefunden installieren fehler")
+                x.isUpdating = False
                 Exit Sub
             End If
 
@@ -243,11 +245,13 @@ Public Class Update
             If String.IsNullOrEmpty(newVersion) Then
                 x.SendStatistics("gesucht nicht gefunden")
                 If showErrors Then MessageBox.Show(x.t.Translate("msgKeinUpdate"), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                x.isUpdating = False
                 Exit Sub
             End If
 
             If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", newVersion, Environment.NewLine), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
                 x.SendStatistics("gesucht gefunden nicht installiert")
+                x.isUpdating = False
                 Exit Sub
             End If
 
@@ -256,6 +260,7 @@ Public Class Update
             Catch ex As Exception
                 x.SendStatistics("gesucht gefunden installieren fehler")
                 MessageBox.Show(ex.Message)
+                x.isUpdating = False
             End Try
         End Sub
     End Class
@@ -424,24 +429,30 @@ Public Class Update
                 Console.Error.WriteLine("Error updating: {0}", e.Error.Message)
                 If ui IsNot Nothing Then MessageBox.Show(x.t.Translate("msgFehlerUpdate", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                 x.SendStatistics("gesucht gefunden installieren fehler")
+                x.isUpdating = False
                 Return
             End If
 
             x.SendStatistics("gesucht gefunden installiert")
 
-            If DialogResult.Yes = MessageBox.Show(x.t.Translate("msgUpdateErfolgreich", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
-                x.InstallUpdate()
+            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateErfolgreich", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
+                x.isUpdating = False
+                Exit Sub
             End If
+
+            x.InstallUpdate()
+            x.isUpdating = False
         End Sub
     End Class
 
     Private Sub DownloadUpdateAsync(withUI As Boolean)
         If filesToUpdate.Count = 0 Then
-            Return
+            Throw New Exception("Download update called, but nothing to download.")
         End If
         If IsUpdateDownloaded() Then
             'bereits ein Update vorhanden
             If withUI Then MessageBox.Show(t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), t.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            isUpdating = False
             Return
         End If
         Dim w As New DownloadUpdateWorker(Me, withUI)
