@@ -1,18 +1,20 @@
+Imports System.ComponentModel
 Imports System.Diagnostics
 Imports System.Windows.Forms
+Imports Newtonsoft.Json
 
 Public Class Update
-    Dim updateServers As New List(Of String)
-    Dim updateServersFile As String
-    Dim tempUpdatePath As String
+    Private updateServers As New List(Of Uri)
+    Private updateServersFile As String
+    Private tempUpdatePath As String
 
-    Dim installedCategories As List(Of String)
-    Dim filesToUpdate As List(Of Datei)
-    Dim currentServer As String
+    Private installedCategories As List(Of String)
+    Private filesToUpdate As List(Of File)
+    Private currentServer As Uri
 
-    Dim programName, programExe, programPath As String
-    Dim programVersion As Version
-    Dim uid As String
+    Private programName, programExe, programPath As String
+    Private programVersion As Version
+    Private uid As String
 
     ''' <summary>
     ''' Optionally set the product flavor, i.e. Normal and Portable.
@@ -21,9 +23,9 @@ Public Class Update
     ''' <returns></returns>
     Public Property ProductFlavor As String
 
-    Dim isUpdating As Boolean
+    Private isUpdating As Boolean
 
-    Dim Übersetzen As New TranslationLib.Translation(String.Empty, My.Resources.English)
+    Private t As New TranslationLib.Translation(String.Empty, My.Resources.English)
 
     ''' <summary>
     ''' This event is raised just before restarting to install an update.
@@ -32,8 +34,7 @@ Public Class Update
     ''' <param name="e"></param>
     Public Event Restarting(sender As Object, e As EventArgs)
 
-
-    Dim statisticsServerUri As Uri
+    Private statisticsServerUri As Uri
     ''' <summary>
     ''' Optionally specify a server URL, that will be notified about update events.
     ''' The data is transmitted in the URL query part.
@@ -48,7 +49,7 @@ Public Class Update
         End Set
     End Property
 
-    Dim _translatedProgramName As String
+    Private _translatedProgramName As String
     Private Property TranslatedProgramName As String
         Get
             If _translatedProgramName IsNot Nothing Then
@@ -61,35 +62,68 @@ Public Class Update
         End Set
     End Property
 
-    Sub New(programName As String, programExe As String, programVersion As Version, programPath As String, tempUpdatePath As String, updateServersFile As String, updateServers As ICollection(Of String), ByVal uid As String)
-        Me.programExe = programExe
+    Private Const versionsFileName = "versions.json"
+
+    Private ReadOnly Property LocalVersionsFile As String
+        Get
+            Return IO.Path.Combine(programPath, versionsFileName)
+        End Get
+    End Property
+
+    Private ReadOnly Property UpdateTempVersionsFile As String
+        Get
+            Return IO.Path.Combine(tempUpdatePath, versionsFileName)
+        End Get
+    End Property
+
+    Private ReadOnly Property RemoteVersionsFile(server As Uri) As Uri
+        Get
+            Return New Uri(server, Uri.EscapeDataString(versionsFileName))
+        End Get
+    End Property
+
+    Public Sub New(programName As String, programExe As String, programVersion As Version, programPath As String, tempUpdatePath As String, updateServersFile As String, updateServers As IEnumerable(Of String), ByVal uid As String)
         Me.programName = programName
+        Me.programExe = programExe
         Me.programVersion = programVersion
         Me.programPath = programPath
         Me.uid = uid
         Me.updateServersFile = updateServersFile
         If updateServers IsNot Nothing Then
-            Me.updateServers.AddRange(updateServers)
+            For Each s In updateServers
+                AddUpdateServer(s)
+            Next
         End If
         Me.tempUpdatePath = IO.Path.Combine(tempUpdatePath, "Update")
 
         'Sprachen laden
-        Übersetzen.AddLanguage("German", "Deutsch", My.Resources.German)
-        Übersetzen.AddLanguage("English", "English", My.Resources.English)
-        Übersetzen.AddLanguage("French", "Français", My.Resources.French)
-        Übersetzen.AddLanguage("Spanish", "Español", My.Resources.Spanish)
-        Übersetzen.AddLanguage("Bavarian", "Boarisch", My.Resources.Bavarian)
-        Übersetzen.AddLanguage("Dutch", "Nederlands", My.Resources.Dutch)
-        Übersetzen.AddLanguage("Portuguese", "Português", My.Resources.Portuguese)
-        Übersetzen.AddLanguage("Polish", "Polski", My.Resources.Polish)
-        Übersetzen.AddLanguage("Chinese", "汉语", My.Resources.Chinese)
-        Übersetzen.AddLanguage("Serbian", "Srpski", My.Resources.Serbian)
-        Übersetzen.AddLanguage("Greek", "Ελληνικά", My.Resources.Greek)
-        Übersetzen.AddLanguage("Bulgarian", "Български", My.Resources.Bulgarian)
-        Übersetzen.AddLanguage("Danish", "Dansk", My.Resources.Danish)
+        t.AddLanguage("German", "Deutsch", My.Resources.German)
+        t.AddLanguage("English", "English", My.Resources.English)
+        t.AddLanguage("French", "Français", My.Resources.French)
+        t.AddLanguage("Spanish", "Español", My.Resources.Spanish)
+        t.AddLanguage("Bavarian", "Boarisch", My.Resources.Bavarian)
+        t.AddLanguage("Dutch", "Nederlands", My.Resources.Dutch)
+        t.AddLanguage("Portuguese", "Português", My.Resources.Portuguese)
+        t.AddLanguage("Polish", "Polski", My.Resources.Polish)
+        t.AddLanguage("Chinese", "汉语", My.Resources.Chinese)
+        t.AddLanguage("Serbian", "Srpski", My.Resources.Serbian)
+        t.AddLanguage("Greek", "Ελληνικά", My.Resources.Greek)
+        t.AddLanguage("Bulgarian", "Български", My.Resources.Bulgarian)
+        t.AddLanguage("Danish", "Dansk", My.Resources.Danish)
 
         ' Set default language
-        Übersetzen.Load(Übersetzen.CheckLanguageName(String.Empty))
+        t.Load(t.CheckLanguageName(String.Empty))
+    End Sub
+
+    Private Sub AddUpdateServer(server As String)
+        Dim ub As New UriBuilder(server)
+        If ub.Path.Length > 0 AndAlso ub.Path(ub.Path.Length - 1) <> "/"c Then
+            ub.Path += "/"c
+        End If
+        Dim uri = ub.Uri
+        If Not updateServers.Contains(uri) Then
+            updateServers.Add(uri)
+        End If
     End Sub
 
     ''' <summary>
@@ -97,13 +131,13 @@ Public Class Update
     ''' </summary>
     ''' <param name="language">English language name</param>
     ''' <param name="translatedProgramName">The program name translated to <paramref name="language"/>language</param>
-    Sub Translate(ByVal language As String, ByVal translatedProgramName As String)
+    Public Sub Translate(ByVal language As String, ByVal translatedProgramName As String)
         translatedProgramName = translatedProgramName
-        language = Übersetzen.CheckLanguageName(language)
-        Übersetzen.Load(language)
+        language = t.CheckLanguageName(language)
+        t.Load(language)
     End Sub
 
-    Sub UpdateSearchAndInstall(Optional showErrors As Object = True) 'zeigefehler as object um in eigenem thread zu starten
+    Public Sub UpdateSearchAndInstall(showErrors As Object) 'zeigefehler as object um in eigenem thread zu starten
         UpdateSearchAndInstall(CBool(showErrors))
     End Sub
 
@@ -111,7 +145,7 @@ Public Class Update
     ''' Search for updates and if available, ask if it should be installed and install it
     ''' </summary>
     ''' <remarks></remarks>
-    Sub UpdateSearchAndInstall(Optional showErrors As Boolean = True) 'zeigefehler as object um in eigenem thread zu starten
+    Public Sub UpdateSearchAndInstall(Optional showErrors As Boolean = True) 'zeigefehler as object um in eigenem thread zu starten
         If isUpdating Then
             Return
         End If
@@ -119,36 +153,8 @@ Public Class Update
         Try
             isUpdating = True
 
-            Dim tmpUpdateSuche As String = SearchUpdate(showErrors)
-            If tmpUpdateSuche = "XXX" Then 'Update fehler oder update schon heruntergeladen
-                Return
-            End If
+            SearchUpdateAsync(showErrors)
 
-            If String.IsNullOrEmpty(tmpUpdateSuche) Then
-                SendStatistics("gesucht nicht gefunden")
-                If showErrors Then MessageBox.Show(Übersetzen.Translate("msgKeinUpdate"), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Return
-            End If
-
-            If DialogResult.Yes <> MessageBox.Show(Übersetzen.Translate("msgUpdateVorhanden", tmpUpdateSuche, Environment.NewLine), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
-                SendStatistics("gesucht gefunden nicht installiert")
-                Return
-            End If
-
-            Try
-                If Not DownloadUpdate(True) Then
-                    SendStatistics("gesucht gefunden installieren fehler")
-                    Return
-                End If
-
-                SendStatistics("gesucht gefunden installiert")
-                If DialogResult.Yes = MessageBox.Show(Übersetzen.Translate("msgUpdateErfolgreich", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
-                    InstallUpdate()
-                End If
-            Catch ex As Exception
-                SendStatistics("gesucht gefunden installieren fehler")
-                MessageBox.Show(ex.Message)
-            End Try
         Finally
             isUpdating = False
         End Try
@@ -157,9 +163,7 @@ Public Class Update
     Private Sub ReadUpdateServersFile()
         Using UpdateReader As New IO.StreamReader(updateServersFile, True)
             For Each s In UpdateReader.ReadToEnd.Split(New Char() {Convert.ToChar(10), Convert.ToChar(13)}, StringSplitOptions.RemoveEmptyEntries)
-                If Not updateServers.Contains(s) Then
-                    updateServers.Add(s)
-                End If
+                AddUpdateServer(s)
             Next
         End Using
     End Sub
@@ -185,140 +189,264 @@ Public Class Update
         End Using
     End Sub
 
+    Private Class UpdateAlreadyDownloadedException
+        Inherits Exception
+    End Class
+
+    Private Class UpdateLocalVersionsFileBrokenException
+        Inherits Exception
+    End Class
+
+    Private Function IsUpdateDownloaded() As Boolean
+        Return IO.File.Exists(UpdateTempVersionsFile) AndAlso
+               IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length > 0
+    End Function
+
+    Private Class SearchUpdateWorker
+        Inherits BackgroundWorker
+
+        Private x As Update
+        Private showErrors As Boolean
+
+        Public Sub New(x As Update, showErrors As Boolean)
+            Me.x = x
+            Me.showErrors = showErrors
+        End Sub
+
+        Protected Overrides Sub OnDoWork(e As DoWorkEventArgs)
+            MyBase.OnDoWork(e)
+
+            e.Result = x.SearchUpdate()
+        End Sub
+
+        Protected Overrides Sub OnRunWorkerCompleted(e As RunWorkerCompletedEventArgs)
+            MyBase.OnRunWorkerCompleted(e)
+
+            If e.Error IsNot Nothing Then
+                If TypeOf e.Error Is UpdateAlreadyDownloadedException Then
+                    'bereits ein Update vorhanden
+                    If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    Exit Sub
+                ElseIf TypeOf e.Error Is UpdateLocalVersionsFileBrokenException Then
+                    Console.Error.WriteLine("{0}: {1}", versionsFileName, e.Error.Message)
+                    ' TODO messagebox to advice user to download setup and update manually
+                    Exit Sub
+                End If
+
+                Console.Error.WriteLine(e.Error)
+                If showErrors Then MessageBox.Show(x.t.Translate("msgFehlerUpdateSuchen", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                x.SendStatistics("gesucht gefunden installieren fehler")
+                Exit Sub
+            End If
+
+            Dim newVersion = CStr(e.Result)
+            If String.IsNullOrEmpty(newVersion) Then
+                x.SendStatistics("gesucht nicht gefunden")
+                If showErrors Then MessageBox.Show(x.t.Translate("msgKeinUpdate"), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            End If
+
+            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", newVersion, Environment.NewLine), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
+                x.SendStatistics("gesucht gefunden nicht installiert")
+                Exit Sub
+            End If
+
+            Try
+                x.DownloadUpdateAsync(True)
+            Catch ex As Exception
+                x.SendStatistics("gesucht gefunden installieren fehler")
+                MessageBox.Show(ex.Message)
+            End Try
+        End Sub
+    End Class
+
     ''' <summary>
     ''' Sucht nach Updates
     ''' </summary>
-    ''' <param name="ZeigeFehler">Ob fehler angezeigt werden sollen</param>
+    ''' <param name="showErrors">Ob fehler angezeigt werden sollen</param>
     ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
     ''' <remarks></remarks>
-    Private Function SearchUpdate(Optional ByVal ZeigeFehler As Boolean = True) As String
-        If IO.File.Exists(IO.Path.Combine(tempUpdatePath, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length > 0 Then
-            'bereits ein Update vorhanden
-            If ZeigeFehler Then MessageBox.Show(Übersetzen.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return "XXX"
+    Private Sub SearchUpdateAsync(Optional showErrors As Boolean = True)
+        If IsUpdateDownloaded() Then
+            Throw New UpdateAlreadyDownloadedException
         End If
 
+        Dim w As New DownloadUpdateWorker(Me, showErrors)
+        w.RunWorkerAsync()
+    End Sub
+
+    Private Function SearchUpdate(Optional showErrors As Boolean = True) As String
         Try
             ReadUpdateServersFile()
         Catch
+            ' Ignore errors, if file cannot be read the fallback servers are used
         End Try
 
         If installedCategories Is Nothing Then
             ReadCategoriesFile()
         End If
 
-        Dim LokaleVersionen, UpdateVersionen As VersionenDatei
-
+        Dim localVersions, updateVersions As VersionsFile
         Try
-            LokaleVersionen = New VersionenDatei()
-            LokaleVersionen.Öffnen(IO.Path.Combine(programPath, "Versionen.lst"), True) 'Lokale Versionen datei öffnen
+            Using stream As New IO.FileStream(LocalVersionsFile, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
+                localVersions = VersionsFile.Open(stream) 'Lokale Versionen datei öffnen
+            End Using
         Catch ex As Exception
-            Console.Error.WriteLine("Versionen.lst: " & ex.Message)
+            Throw New UpdateLocalVersionsFileBrokenException
         End Try
-        If Not String.IsNullOrEmpty(LokaleVersionen.Version) Then
-            Try
-                programVersion = New Version(LokaleVersionen.Version)
-            Catch
-            End Try
+        If localVersions.Version IsNot Nothing Then
+            programVersion = localVersions.Version
         End If
-        Dim tmpFehler As String = String.Empty
+
+        Dim errors As String = Nothing
         'Update versionsdatei öffnen:
         For Each server In updateServers
             Try
-                UpdateVersionen = New VersionenDatei()
-                UpdateVersionen.Öffnen(server & "Versionen.lst.kom", False)
+                updateVersions = VersionsFile.Open(OpenWebStream(RemoteVersionsFile(server)))
                 currentServer = server
                 Exit For
             Catch ex As Exception
-                Console.Error.WriteLine(server & ": " & ex.Message)
-                tmpFehler &= server & ": " & ex.Message & Environment.NewLine
-                UpdateVersionen = Nothing
+                Dim err = String.Format("{0}: {1}", server, ex)
+                errors &= err & Environment.NewLine
+                updateVersions = Nothing
             End Try
         Next
-        If UpdateVersionen Is Nothing Then
-            If ZeigeFehler Then MessageBox.Show(Übersetzen.Translate("msgFehlerUpdateSuchen", Environment.NewLine & tmpFehler), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-            SendStatistics("gesucht gefunden installieren fehler")
-            Return "XXX"
+        If errors IsNot Nothing Then
+            Throw New Exception(errors)
         End If
 
-        filesToUpdate = SearchNewFiles(LokaleVersionen, UpdateVersionen)
+        'TODO check if required .net framework is installed
+        'UpdateVersionen.Framework
+
+        filesToUpdate = SearchNewFiles(localVersions, updateVersions)
         If filesToUpdate.Count > 0 Then 'Update vorhanden
-            Return UpdateVersionen.Version
-        Else
-            Return String.Empty
+            Return updateVersions.DisplayVersion
         End If
+
+        Return ""
     End Function
 
-    Private Function DownloadUpdate(withUI As Boolean) As Boolean
-        If filesToUpdate.Count = 0 Then
-            Return False
-        End If
-        If IO.File.Exists(IO.Path.Combine(tempUpdatePath, "Versionen.lst")) AndAlso IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length > 0 Then
-            'bereits ein Update vorhanden
-            If withUI Then MessageBox.Show(Übersetzen.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return False
-        End If
-        Try
-            Using tmpUpdateForm As New frmUpdate
-                Using Client As New System.Net.WebClient()
-                    IO.Directory.CreateDirectory(tempUpdatePath)  'Verzeichnis für Update erstellen
-                    If withUI Then tmpUpdateForm.Show()
-                    For i As Int32 = 0 To filesToUpdate.Count - 1 'Dateien herunterladen
-                        If withUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Translate("lblAktuelleDatei", filesToUpdate(i).Name), i, filesToUpdate.Count - 1, Übersetzen.Translate("Update", TranslatedProgramName))
-                        Application.DoEvents()
-                        Dim stream As IO.Stream = Nothing
+    Private Class DownloadUpdateWorker
+        Inherits BackgroundWorker
+
+        Private x As Update
+        Private ui As frmUpdate
+
+        Public Sub New(x As Update, withUI As Boolean)
+            Me.x = x
+            If withUI Then
+                ui = New frmUpdate(x.t.Translate("Update", x.TranslatedProgramName))
+                ui.Show()
+            End If
+        End Sub
+
+        Private Class DownloadException
+            Inherits Exception
+
+            Public Sub New(server As Uri, file As String, innerException As Exception)
+                MyBase.New(String.Format("{0} ({1}): {2}", server, file, innerException.Message), innerException)
+            End Sub
+        End Class
+
+        Protected Overrides Sub OnDoWork(e As DoWorkEventArgs)
+            MyBase.OnDoWork(e)
+
+            Using Client As New Net.WebClient()
+                IO.Directory.CreateDirectory(x.tempUpdatePath)  'Verzeichnis für Update erstellen
+
+                For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
+                    Dim currentFileName = x.filesToUpdate(i).Name
+                    ReportProgress(i \ (x.filesToUpdate.Count - 1), x.t.Translate("lblAktuelleDatei", currentFileName))
+
+                    Dim stream As IO.Stream = Nothing
+                    Try
+                        Dim url = New Uri(x.currentServer, Uri.EscapeDataString(currentFileName))
                         Try
-                            Dim url = currentServer & Uri.EscapeDataString(filesToUpdate(i).Name) & ".kom"
-                            Try
-                                stream = Client.OpenRead(url)
-                            Catch
-                                Client.Proxy = Nothing
-                                stream = Client.OpenRead(url)
-                            End Try
-                            Decompress(stream, IO.Path.Combine(tempUpdatePath, filesToUpdate(i).Name))
-                        Catch ex As Exception
-                            Console.Error.WriteLine(currentServer & filesToUpdate(i).Name & ": " & ex.Message)
-                            If withUI Then MessageBox.Show(ex.Message, Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-                        Finally
-                            If stream IsNot Nothing Then
-                                stream.Close()
-                            End If
+                            stream = Client.OpenRead(url)
+                        Catch
+                            Client.Proxy = Nothing
+                            stream = Client.OpenRead(url)
                         End Try
-                    Next i
-                    If withUI Then tmpUpdateForm.Aktualisieren(Übersetzen.Translate("UpdateFertigstellen"), 1, 1, Übersetzen.Translate("Update", TranslatedProgramName))
-                    Application.DoEvents()
-                    'Versionen.lst herunterladen
-                    Decompress(Client.OpenRead(currentServer & "Versionen.lst.kom"), IO.Path.Combine(tempUpdatePath, "Versionen.lst"))
-                End Using
+                        Store(stream, IO.Path.Combine(x.tempUpdatePath, currentFileName))
+                    Catch ex As Exception
+                        Throw New DownloadException(x.currentServer, currentFileName, ex)
+                    Finally
+                        If stream IsNot Nothing Then
+                            stream.Close()
+                        End If
+                    End Try
+                Next i
+                ReportProgress(100, x.t.Translate("UpdateFertigstellen"))
 
-                ' Update.exe verschieben ' TODO update.exe in apppath oder im update ordner hernehmen
-                Dim t As Int32, tmpNeuFile As String
-                Do
-                    t += 1
-                    tmpNeuFile = IO.Path.Combine(IO.Path.Combine(tempUpdatePath, ".."), "Update-" & t & ".exe")
-                Loop While IO.File.Exists(tmpNeuFile)
-                If IO.File.Exists(IO.Path.Combine(tempUpdatePath, "Update.exe")) Then
-                    Try
-                        My.Computer.FileSystem.MoveFile(IO.Path.Combine(tempUpdatePath, "Update.exe"), tmpNeuFile, True)
-                    Catch ex As Exception
-                        Console.Error.WriteLine("Error moving Update.exe : " & ex.Message)
-                        If withUI Then MessageBox.Show(ex.Message, Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    End Try
-                Else
-                    Try
-                        IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
-                    Catch ex As Exception
-                        Console.Error.WriteLine("Error copying Update.exe : " & ex.Message)
-                        If withUI Then MessageBox.Show(ex.Message, Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                    End Try
-                End If
+                ' Download versions file
+                Try
+                    Store(Client.OpenRead(x.RemoteVersionsFile(x.currentServer)), x.UpdateTempVersionsFile)
+                Catch ex As Exception
+                    Throw New Exception("Error downloading Version file " & ex.Message, ex)
+                End Try
             End Using
-            Return True
-        Catch ex As Exception 'Fehler beim Update herunterladen
-            If withUI Then MessageBox.Show(Übersetzen.Translate("msgFehlerUpdate", Environment.NewLine & ex.Message), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Return False
-        End Try
-    End Function
+
+            ' Update.exe verschieben
+            Dim counter As Int32, tmpNeuFile As String
+            Do
+                counter += 1
+                tmpNeuFile = IO.Path.Combine(IO.Path.Combine(x.tempUpdatePath, ".."), "Update-" & counter & ".exe")
+            Loop While IO.File.Exists(tmpNeuFile)
+            If IO.File.Exists(IO.Path.Combine(x.tempUpdatePath, "Update.exe")) Then
+                Try
+                    My.Computer.FileSystem.MoveFile(IO.Path.Combine(x.tempUpdatePath, "Update.exe"), tmpNeuFile, True)
+                Catch ex As Exception
+                    Throw New Exception("Error moving Update.exe" & ex.Message, ex)
+                End Try
+            Else
+                Try
+                    IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
+                Catch ex As Exception
+                    Throw New Exception("Error copying Update.exe" & ex.Message, ex)
+                End Try
+            End If
+        End Sub
+
+        Protected Overrides Sub OnProgressChanged(e As ProgressChangedEventArgs)
+            MyBase.OnProgressChanged(e)
+
+            If ui IsNot Nothing Then
+                ui.Aktualisieren(CStr(e.UserState), e.ProgressPercentage)
+            End If
+        End Sub
+
+        Protected Overrides Sub OnRunWorkerCompleted(e As RunWorkerCompletedEventArgs)
+            MyBase.OnRunWorkerCompleted(e)
+
+            ui.Close()
+
+            If e.Error IsNot Nothing Then
+                Console.Error.WriteLine("Error updating: {0}", e.Error.Message)
+                If ui IsNot Nothing Then MessageBox.Show(x.t.Translate("msgFehlerUpdate", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                x.SendStatistics("gesucht gefunden installieren fehler")
+                Return
+            End If
+
+            x.SendStatistics("gesucht gefunden installiert")
+
+            If DialogResult.Yes = MessageBox.Show(x.t.Translate("msgUpdateErfolgreich", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
+                x.InstallUpdate()
+            End If
+        End Sub
+    End Class
+
+    Private Sub DownloadUpdateAsync(withUI As Boolean)
+        If filesToUpdate.Count = 0 Then
+            Return
+        End If
+        If IsUpdateDownloaded() Then
+            'bereits ein Update vorhanden
+            If withUI Then MessageBox.Show(t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), t.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
+        Dim w As New DownloadUpdateWorker(Me, withUI)
+        w.RunWorkerAsync()
+    End Sub
 
     ''' <summary>
     ''' Helper function to format versions in a nice way.
@@ -378,13 +506,29 @@ Public Class Update
         End Try
     End Function
 
+    Private Shared Sub Store(stream As IO.Stream, outputFile As String)
+        Dim BUFFER_SIZE As Integer = 4096
+        IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(outputFile))
+        Dim buffer(BUFFER_SIZE - 1) As Byte
+
+        Using Writer As New IO.FileStream(outputFile, IO.FileMode.Create, IO.FileAccess.Write)
+            While True
+                Dim bytesRead As Integer = stream.Read(buffer, 0, BUFFER_SIZE)
+                If bytesRead = 0 Then
+                    Exit While
+                End If
+                Writer.Write(buffer, 0, bytesRead)
+            End While
+        End Using
+    End Sub
+
     Private Shared Sub Decompress(ByVal Stream As IO.Stream, ByVal DateiNach As String)
         Dim BUFFER_SIZE As Integer = 4096
         Static UseGUnzip As Boolean = True
         IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(DateiNach))
         Dim buffer(BUFFER_SIZE - 1) As Byte
         If UseGUnzip Then
-            Try
+            Try ' TODO warum gunzip?
                 Dim tmpProcess As New Process
                 tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
                 tmpProcess.StartInfo.FileName = "gunzip"
@@ -478,7 +622,7 @@ Public Class Update
     ''' </summary>
     ''' <returns>True if update is available, false otherwise</returns>
     Public Function InstallUpdate() As Boolean
-        If Not IO.File.Exists(IO.Path.Combine(tempUpdatePath, "Versionen.lst")) OrElse IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length = 0 Then
+        If Not IsUpdateDownloaded() Then
             Return False
         End If
 
@@ -489,7 +633,7 @@ Public Class Update
             If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
                 pi.Verb = "runas"
             Else
-                MessageBox.Show(Übersetzen.Translate("msgUpdateInstallierenAdmin", TranslatedProgramName), Übersetzen.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show(t.Translate("msgUpdateInstallierenAdmin", TranslatedProgramName), t.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Return False
             End If
         End Try
@@ -511,11 +655,11 @@ Public Class Update
                 pi.FileName = "mono"
                 pi.Arguments = UpdateProgrammEXE & " """ & programName & """ """ & programExe & """"
                 pi.UseShellExecute = False
-                Console.WriteLine(Übersetzen.Translate("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
+                Console.WriteLine(t.Translate("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
-                    MessageBox.Show(Übersetzen.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
+                    MessageBox.Show(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                 End Try
             Else
                 pi.FileName = UpdateProgrammEXE
@@ -523,7 +667,7 @@ Public Class Update
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
-                    MessageBox.Show(Übersetzen.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
+                    MessageBox.Show(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                 End Try
             End If
             Application.Exit()
@@ -531,7 +675,6 @@ Public Class Update
         Catch
             Return False
         End Try
-
     End Function
 
     ''' <summary>
@@ -542,32 +685,32 @@ Public Class Update
         Return (Type.GetType("Mono.Runtime") IsNot Nothing)
     End Function
 
-    Private Function SearchNewFiles(ByVal LokaleVersionen As VersionenDatei, ByVal UpdateVersionen As VersionenDatei) As List(Of Datei)
-        Dim result As New List(Of Datei)
-        If UpdateVersionen.InterneVersion <= LokaleVersionen.InterneVersion Then
+    Private Function SearchNewFiles(ByVal LokaleVersionen As VersionsFile, ByVal UpdateVersionen As VersionsFile) As List(Of File)
+        Dim result As New List(Of File)
+        If UpdateVersionen.Version <= LokaleVersionen.Version Then
             Return result
         End If
-        For Each c In UpdateVersionen.Kategorien.Values
-            If Not c.Pflicht AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) > -1 Then
+        For Each c In UpdateVersionen.Categories
+            If Not c.IsMandatory AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) > -1 Then
                 Continue For
             End If
 
-            Dim localCat As Kategorie
-            If LokaleVersionen.Kategorien.TryGetValue(c.Name, localCat) Then 'Lokale Versionen sind vorhanden
+            Dim localCat As Category = LokaleVersionen.GetCategory(c.Name)
+            If localCat IsNot Nothing Then 'Lokale Versionen sind vorhanden
                 '=> neuere Versionen suchen
-                For Each f In c.Dateien.Values
-                    Dim localFile As Datei
-                    If Not localCat.Dateien.TryGetValue(f.Name, localFile) Then
+                For Each f In c.Files
+                    Dim localFile As File = localCat.GetFile(f.Name)
+                    If localFile Is Nothing Then
                         Continue For
                     End If
 
-                    If f.InterneVersion > localFile.InterneVersion OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
+                    If f.Hash <> localFile.Hash OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
                         result.Add(f)
                     End If
                 Next
             Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
                 '=> alle aus dieser Kategorie aktualisieren
-                result.AddRange(c.Dateien.Values)
+                result.AddRange(c.Files)
             End If
         Next
         Return result
@@ -578,85 +721,85 @@ Public Class Update
     ''' </summary>
     ''' <param name="owner"></param>
     Sub ShowUpdateHistoryDialog(Optional owner As IWin32Window = Nothing)
-        Using frmH As New frmUpdateHistory(Übersetzen, programPath)
+        Using frmH As New frmUpdateHistory(t, programPath)
             If owner Is Nothing Then frmH.StartPosition = FormStartPosition.CenterScreen
             frmH.ShowDialog(owner)
         End Using
     End Sub
 
-    Private Class VersionenDatei
-        Friend Version As String, InterneVersion As Int32
-        Dim ReleasNotesUrl As String
-        Friend Kategorien As New Dictionary(Of String, Kategorie)
+    Private Function OpenWebStream(uri As Uri) As IO.Stream
+        Dim Client As New Net.WebClient
+        Try
+            Return New IO.Compression.GZipStream(Client.OpenRead(uri), IO.Compression.CompressionMode.Decompress)
+        Catch
+            Client.Proxy = Nothing
+            Return New IO.Compression.GZipStream(Client.OpenRead(uri), IO.Compression.CompressionMode.Decompress)
+        End Try
+    End Function
 
-        Sub Öffnen(ByVal Datei As String, ByVal IstLokal As Boolean)
-            Dim Stream As IO.Stream
-            If IstLokal Then
-                Stream = New IO.FileStream(Datei, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite)
-            Else
-                Dim Client As New System.Net.WebClient
-                Try
-                    Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
-                Catch
-                    Client.Proxy = Nothing
-                    Stream = New IO.Compression.GZipStream(Client.OpenRead(Datei), IO.Compression.CompressionMode.Decompress)
-                End Try
-            End If
-            Using Stream
-                Öffnen(Stream)
+    Private Class VersionsFile
+        <JsonProperty("displayVersion")>
+        Public DisplayVersion As String
+
+        <JsonProperty("version", Required:=Required.Always)>
+        Public Version As Version
+
+        <JsonProperty("releaseNotesUrl")>
+        Public ReleasNotesUrl As String
+
+        <JsonProperty("projectUrl")>
+        Public ProjectUrl As String
+
+        <JsonProperty("framework")>
+        Public Framework As String
+
+        <JsonProperty("categories")>
+        Public Categories As List(Of Category)
+
+        Public Shared Function Open(stream As IO.Stream) As VersionsFile
+            Using reader As New IO.StreamReader(stream, Text.Encoding.UTF8)
+                Return New JsonSerializer().Deserialize(Of VersionsFile)(New JsonTextReader(reader))
             End Using
-        End Sub
+            ' if old json is missingtell user to download manually
+            ' delete files that are in old json but not in new one
+        End Function
 
-        Sub Öffnen(stream As IO.Stream)
-            Using Reader As New IO.StreamReader(stream, True)
-                Reader.ReadLine() 'UpdateVersion
-                Version = Reader.ReadLine
-                InterneVersion = CInt(Reader.ReadLine)
-                ReleasNotesUrl = Reader.ReadLine
-
-                Dim currentCategory As Kategorie
-                Do
-                    Dim line = Reader.ReadLine
-                    If line Is Nothing Then
-                        Exit Do
-                    End If
-
-                    If line.Length > 1 AndAlso line.Substring(0, 2) = "K:" Then
-                        Dim pos = line.IndexOf(":"c, 2)
-                        currentCategory = New Kategorie(line.Substring(2, pos - 2), CBool(line.Substring(pos + 1)))
-                        Kategorien.Add(currentCategory.Name, currentCategory)
-                    ElseIf line.Length > 1 AndAlso line.Substring(0, 2) = "D:" Then
-                        currentCategory = Nothing
-                    ElseIf currentCategory Is Nothing Then
-                        'Dateien zum Löschen
-                        'Löschen macht Update.exe
-                    Else
-                        'Dateien in Kategorien
-                        Dim newFile = New Datei(line, CInt(Reader.ReadLine))
-                        currentCategory.Dateien.Add(newFile.Name, newFile)
-                    End If
-                Loop
-            End Using
-        End Sub
+        Public Function GetCategory(name As String) As Category
+            For Each c In Categories
+                If c.Name = name Then
+                    Return c
+                End If
+            Next
+            Return Nothing
+        End Function
     End Class
 
-    Private Class Kategorie
-        Friend Name As String
-        Friend Pflicht As Boolean
-        Friend Dateien As New Dictionary(Of String, Datei)
+    Private Class Category
+        <JsonProperty("name")>
+        Public Name As String
 
-        Sub New(ByVal Name As String, ByVal Pflicht As Boolean)
-            Me.Name = Name
-            Me.Pflicht = Pflicht
-        End Sub
+        <JsonProperty("files")>
+        Public Files As List(Of File)
+
+        Public Function IsMandatory() As Boolean
+            Return Name Is Nothing
+        End Function
+
+        Public Function GetFile(name As String) As File
+            For Each f In Files
+                If f.Name = name Then
+                    Return f
+                End If
+            Next
+            Return Nothing
+        End Function
     End Class
 
-    Private Class Datei
-        Friend Name As String, InterneVersion As Int32
+    Private Class File
+        <JsonProperty("name")>
+        Public Name As String
 
-        Sub New(ByVal Name As String, ByVal InterneVersion As Integer)
-            Me.Name = Name.Replace("\"c, "/"c)
-            Me.InterneVersion = InterneVersion
-        End Sub
+        <JsonProperty("sha256")>
+        Public Hash As String
     End Class
 End Class

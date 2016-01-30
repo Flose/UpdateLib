@@ -1,15 +1,21 @@
 ﻿Friend Class frmUpdate
-    Private Delegate Sub Aktualisieren_Callback(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Int32, ByVal Max As Int32, ByVal Caption As String)
+    Private Delegate Sub Aktualisieren_Callback(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Integer)
 
-    Friend Sub Aktualisieren(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Int32, ByVal Max As Int32, ByVal Caption As String)
-        If Me.InvokeRequired Then
-            Me.BeginInvoke(New Aktualisieren_Callback(AddressOf Aktualisieren), lblAktuelleDatei, Fortschritt, Max, Caption)
+    Friend Sub New(titleText As String)
+        ' Dieser Aufruf ist für den Designer erforderlich.
+        InitializeComponent()
+
+        ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
+        Me.Text = titleText
+    End Sub
+
+    Friend Sub Aktualisieren(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Integer)
+        If InvokeRequired Then
+            BeginInvoke(New Aktualisieren_Callback(AddressOf Aktualisieren), lblAktuelleDatei)
             Exit Sub
         End If
 
         Me.lblAktuelleDatei.Text = lblAktuelleDatei
-        pgbUpdate.Maximum = Max
         pgbUpdate.Value = Fortschritt
-        Me.Text = Caption
     End Sub
 End Class
