@@ -6,15 +6,44 @@ Imports Newtonsoft.Json
 Public Class Update
     Private updateServers As New List(Of Uri)
     Private updateServersFile As String
+    Private tempUpdateBasePath As String
     Private tempUpdatePath As String
 
     Private installedCategories As List(Of String)
     Private filesToUpdate As List(Of File)
+    Private localVersionsFile As VersionsFile
     Private currentServer As Uri
 
     Private programName, programExe, programPath As String
     Private programVersion As Version
+    Private _translatedProgramName As String
+    Private Property TranslatedProgramName As String
+        Get
+            If _translatedProgramName IsNot Nothing Then
+                Return _translatedProgramName
+            End If
+            Return programName
+        End Get
+        Set(value As String)
+            _translatedProgramName = value
+        End Set
+    End Property
+
     Private uid As String
+    Private statisticsServerUri As Uri
+    ''' <summary>
+    ''' Optionally specify a server URL, that will be notified about update events.
+    ''' The data is transmitted in the URL query part.
+    ''' </summary>
+    ''' <returns></returns>
+    Public Property StatisticsServer As String
+        Get
+            Return statisticsServerUri.ToString
+        End Get
+        Set(value As String)
+            statisticsServerUri = New Uri(value)
+        End Set
+    End Property
 
     ''' <summary>
     ''' Optionally set the product flavor, i.e. Normal and Portable.
@@ -34,55 +63,27 @@ Public Class Update
     ''' <param name="e"></param>
     Public Event Restarting(sender As Object, e As EventArgs)
 
-    Private statisticsServerUri As Uri
-    ''' <summary>
-    ''' Optionally specify a server URL, that will be notified about update events.
-    ''' The data is transmitted in the URL query part.
-    ''' </summary>
-    ''' <returns></returns>
-    Public Property StatisticsServer As String
-        Get
-            Return statisticsServerUri.ToString
-        End Get
-        Set(value As String)
-            statisticsServerUri = New Uri(value)
-        End Set
-    End Property
-
-    Private _translatedProgramName As String
-    Private Property TranslatedProgramName As String
-        Get
-            If _translatedProgramName IsNot Nothing Then
-                Return _translatedProgramName
-            End If
-            Return programName
-        End Get
-        Set(value As String)
-            _translatedProgramName = value
-        End Set
-    End Property
-
     Private Const versionsFileName = "versions.json"
 
-    Private ReadOnly Property LocalVersionsFile As String
+    Private ReadOnly Property LocalVersionsFilePath As String
         Get
             Return IO.Path.Combine(programPath, versionsFileName)
         End Get
     End Property
 
-    Private ReadOnly Property UpdateTempVersionsFile As String
+    Private ReadOnly Property UpdateTempVersionsFilePath As String
         Get
             Return IO.Path.Combine(tempUpdatePath, versionsFileName)
         End Get
     End Property
 
-    Private ReadOnly Property RemoteVersionsFile(server As Uri) As Uri
+    Private ReadOnly Property RemoteVersionsFilePath(server As Uri) As Uri
         Get
             Return New Uri(server, Uri.EscapeDataString(versionsFileName))
         End Get
     End Property
 
-    Public Sub New(programName As String, programExe As String, programVersion As Version, programPath As String, tempUpdatePath As String, updateServersFile As String, updateServers As IEnumerable(Of String), ByVal uid As String)
+    Public Sub New(programName As String, programExe As String, programVersion As Version, programPath As String, tempUpdateBasePath As String, updateServersFile As String, updateServers As IEnumerable(Of String), ByVal uid As String)
         Me.programName = programName
         Me.programExe = programExe
         Me.programVersion = programVersion
@@ -94,7 +95,8 @@ Public Class Update
                 AddUpdateServer(s)
             Next
         End If
-        Me.tempUpdatePath = IO.Path.Combine(tempUpdatePath, "Update")
+        Me.tempUpdateBasePath = tempUpdateBasePath
+        Me.tempUpdatePath = IO.Path.Combine(tempUpdateBasePath, "Update")
 
         'Sprachen laden
         t.AddLanguage("German", "Deutsch", My.Resources.German)
@@ -197,8 +199,8 @@ Public Class Update
     End Class
 
     Private Function IsUpdateDownloaded() As Boolean
-        Return IO.File.Exists(UpdateTempVersionsFile) AndAlso
-               IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe").Length > 0
+        Return IO.File.Exists(UpdateTempVersionsFilePath) AndAlso
+               IO.Directory.GetFiles(tempUpdateBasePath, "Update-*.exe").Length > 0
     End Function
 
     Private Class SearchUpdateWorker
@@ -293,7 +295,7 @@ Public Class Update
 
         Dim localVersions, updateVersions As VersionsFile
         Try
-            Using stream As New IO.FileStream(LocalVersionsFile, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
+            Using stream As New IO.FileStream(LocalVersionsFilePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
                 localVersions = VersionsFile.Open(stream) 'Lokale Versionen datei öffnen
             End Using
         Catch ex As Exception
@@ -307,7 +309,7 @@ Public Class Update
         'Update versionsdatei öffnen:
         For Each server In updateServers
             Try
-                updateVersions = VersionsFile.Open(OpenWebStream(RemoteVersionsFile(server)))
+                updateVersions = VersionsFile.Open(OpenWebStream(RemoteVersionsFilePath(server)))
                 currentServer = server
                 Exit For
             Catch ex As Exception
@@ -385,7 +387,7 @@ Public Class Update
 
                 ' Download versions file
                 Try
-                    Store(Client.OpenRead(x.RemoteVersionsFile(x.currentServer)), x.UpdateTempVersionsFile)
+                    Store(Client.OpenRead(x.RemoteVersionsFilePath(x.currentServer)), x.UpdateTempVersionsFilePath)
                 Catch ex As Exception
                     Throw New Exception("Error downloading Version file " & ex.Message, ex)
                 End Try
@@ -395,7 +397,7 @@ Public Class Update
             Dim counter As Int32, tmpNeuFile As String
             Do
                 counter += 1
-                tmpNeuFile = IO.Path.Combine(IO.Path.Combine(x.tempUpdatePath, ".."), "Update-" & counter & ".exe")
+                tmpNeuFile = IO.Path.Combine(x.tempUpdateBasePath, "Update-" & counter & ".exe")
             Loop While IO.File.Exists(tmpNeuFile)
             If IO.File.Exists(IO.Path.Combine(x.tempUpdatePath, "Update.exe")) Then
                 Try
@@ -654,7 +656,7 @@ Public Class Update
         pi.WorkingDirectory = Application.StartupPath
         Try
             Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
-            For Each file As String In IO.Directory.GetFiles(IO.Path.Combine(tempUpdatePath, ".."), "Update-*.exe")
+            For Each file As String In IO.Directory.GetFiles(tempUpdateBasePath, "Update-*.exe")
                 If IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
                     tmpneusteÄnderung = IO.File.GetLastWriteTime(file)
                     tmpDatei = file
