@@ -766,7 +766,7 @@ Public Class Update
         <JsonProperty("framework")>
         Public Framework As String
 
-        <JsonProperty("categories")>
+        <JsonProperty("categories", Required:=Required.Always)>
         Public Categories As List(Of Category)
 
         Public Shared Function Open(stream As IO.Stream) As VersionsFile
@@ -791,7 +791,7 @@ Public Class Update
         <JsonProperty("name")>
         Public Name As String
 
-        <JsonProperty("files")>
+        <JsonProperty("files", Required:=Required.Always)>
         Public Files As List(Of File)
 
         Public Function IsMandatory() As Boolean
@@ -809,10 +809,10 @@ Public Class Update
     End Class
 
     Private Class File
-        <JsonProperty("name")>
+        <JsonProperty("name", Required:=Required.Always)>
         Public Name As String
 
-        <JsonProperty("sha256")>
+        <JsonProperty("sha256", Required:=Required.Always)>
         Public Hash As String
     End Class
 End Class
