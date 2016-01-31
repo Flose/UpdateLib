@@ -12,6 +12,7 @@ Public Class Update
     Private installedCategories As List(Of String)
     Private filesToUpdate As List(Of File)
     Private localVersionsFile As VersionsFile
+    Private remoteVersionsFile As VersionsFile
     Private currentServer As Uri
 
     Private programName, programExe, programPath As String
@@ -162,11 +163,18 @@ Public Class Update
     End Sub
 
     Private Sub ReadUpdateServersFile()
-        Using UpdateReader As New IO.StreamReader(updateServersFile, True)
-            For Each s In UpdateReader.ReadToEnd.Split(New Char() {Convert.ToChar(10), Convert.ToChar(13)}, StringSplitOptions.RemoveEmptyEntries)
-                AddUpdateServer(s)
-            Next
-        End Using
+        If Not IO.File.Exists(updateServersFile) Then
+            Exit Sub
+        End If
+        Try
+            Using UpdateReader As New IO.StreamReader(updateServersFile, True)
+                For Each s In UpdateReader.ReadToEnd.Split(New Char() {Convert.ToChar(10), Convert.ToChar(13)}, StringSplitOptions.RemoveEmptyEntries)
+                    AddUpdateServer(s)
+                Next
+            End Using
+        Catch ex As Exception
+            Console.Error.WriteLine("Error while opening update servers file, using fallback: {0}", ex.Message)
+        End Try
     End Sub
 
     Private Sub ReadCategoriesFile()
@@ -175,19 +183,33 @@ Public Class Update
         If Not IO.File.Exists(IO.Path.Combine(programPath, "Kategorien.ini")) Then
             Exit Sub
         End If
-        Using Reader As New IO.StreamReader(IO.Path.Combine(programPath, "Kategorien.ini"), True)
-            Do
-                Dim line = Reader.ReadLine
-                If line Is Nothing Then
-                    Exit Do
-                End If
+        Try
+            Using Reader As New IO.StreamReader(IO.Path.Combine(programPath, "Kategorien.ini"), True)
+                Do
+                    Dim line = Reader.ReadLine
+                    If line Is Nothing Then
+                        Exit Do
+                    End If
 
-                Dim index = line.IndexOf("="c)
-                If index > -1 AndAlso String.Compare(line.Substring(index + 1).Trim, "true", StringComparison.OrdinalIgnoreCase) = 0 Then
-                    installedCategories.Add(line.Substring(0, index).Trim.ToLowerInvariant)
-                End If
-            Loop
-        End Using
+                    Dim index = line.IndexOf("="c)
+                    If index > -1 AndAlso String.Compare(line.Substring(index + 1).Trim, "true", StringComparison.OrdinalIgnoreCase) = 0 Then
+                        installedCategories.Add(line.Substring(0, index).Trim.ToLowerInvariant)
+                    End If
+                Loop
+            End Using
+        Catch ex As Exception
+            Console.Error.WriteLine("Error while opening categories file, ignoring: {0}", ex.Message)
+        End Try
+    End Sub
+
+    Private Sub ReadLocalVersionsFile()
+        Try
+            Using stream As New IO.FileStream(LocalVersionsFilePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
+                localVersionsFile = VersionsFile.Open(stream)
+            End Using
+        Catch ex As Exception
+            Throw New UpdateLocalVersionsFileBrokenException
+        End Try
     End Sub
 
     Private Class UpdateAlreadyDownloadedException
@@ -243,15 +265,15 @@ Public Class Update
                 Exit Sub
             End If
 
-            Dim newVersion = CStr(e.Result)
-            If String.IsNullOrEmpty(newVersion) Then
+            Dim updateAvailable = CBool(e.Result)
+            If Not updateAvailable Then
                 x.SendStatistics("gesucht nicht gefunden")
                 If showErrors Then MessageBox.Show(x.t.Translate("msgKeinUpdate"), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 x.isUpdating = False
                 Exit Sub
             End If
 
-            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", newVersion, Environment.NewLine), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
+            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", x.remoteVersionsFile.DisplayVersion, Environment.NewLine), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
                 x.SendStatistics("gesucht gefunden nicht installiert")
                 x.isUpdating = False
                 Exit Sub
@@ -282,40 +304,26 @@ Public Class Update
         w.RunWorkerAsync()
     End Sub
 
-    Private Function SearchUpdate(Optional showErrors As Boolean = True) As String
-        Try
-            ReadUpdateServersFile()
-        Catch
-            ' Ignore errors, if file cannot be read the fallback servers are used
-        End Try
+    Private Function SearchUpdate(Optional showErrors As Boolean = True) As Boolean
+        ReadUpdateServersFile()
+        ReadCategoriesFile()
+        ReadLocalVersionsFile()
 
-        If installedCategories Is Nothing Then
-            ReadCategoriesFile()
-        End If
-
-        Dim localVersions, updateVersions As VersionsFile
-        Try
-            Using stream As New IO.FileStream(LocalVersionsFilePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
-                localVersions = VersionsFile.Open(stream) 'Lokale Versionen datei öffnen
-            End Using
-        Catch ex As Exception
-            Throw New UpdateLocalVersionsFileBrokenException
-        End Try
-        If localVersions.Version IsNot Nothing Then
-            programVersion = localVersions.Version
+        If localVersionsFile.Version IsNot Nothing Then
+            programVersion = localVersionsFile.Version
         End If
 
         Dim errors As String = Nothing
         'Update versionsdatei öffnen:
         For Each server In updateServers
             Try
-                updateVersions = VersionsFile.Open(OpenWebStream(RemoteVersionsFilePath(server)))
+                remoteVersionsFile = VersionsFile.Open(OpenWebStream(RemoteVersionsFilePath(server)), True)
                 currentServer = server
                 Exit For
             Catch ex As Exception
                 Dim err = String.Format("{0}: {1}", server, ex)
                 errors &= err & Environment.NewLine
-                updateVersions = Nothing
+                remoteVersionsFile = Nothing
             End Try
         Next
         If errors IsNot Nothing Then
@@ -325,12 +333,14 @@ Public Class Update
         'TODO check if required .net framework is installed
         'UpdateVersionen.Framework
 
-        filesToUpdate = SearchNewFiles(localVersions, updateVersions)
+        filesToUpdate = SearchNewFiles()
         If filesToUpdate.Count > 0 Then 'Update vorhanden
-            Return updateVersions.DisplayVersion
+            Return True
         End If
 
-        Return ""
+        remoteVersionsFile = Nothing
+        Return False
+    End Function
     End Function
 
     Private Class DownloadUpdateWorker
@@ -350,48 +360,70 @@ Public Class Update
         Private Class DownloadException
             Inherits Exception
 
-            Public Sub New(server As Uri, file As String, innerException As Exception)
-                MyBase.New(String.Format("{0} ({1}): {2}", server, file, innerException.Message), innerException)
+            Public Sub New(uri As Uri, innerException As Exception)
+                MyBase.New(String.Format("{0}: {1}", uri, innerException.Message), innerException)
+            End Sub
+
+            Public Sub New(uri As Uri)
+                MyBase.New(String.Format("Download of ""{0}"" failed.", uri))
             End Sub
         End Class
+
+        Private Function DownloadAndStoreFile(url As Uri, destFilePath As String) As Byte()
+            Dim stream As IO.Stream = Nothing
+            Try
+                Using Client As New Net.WebClient()
+                    Try
+                        stream = Client.OpenRead(url)
+                    Catch
+                        Client.Proxy = Nothing
+                        stream = Client.OpenRead(url)
+                    End Try
+                End Using
+                Return StoreAndHash(stream, destFilePath)
+            Catch ex As Exception
+                Throw New DownloadException(url, ex)
+            Finally
+                If stream IsNot Nothing Then
+                    stream.Close()
+                End If
+            End Try
+        End Function
 
         Protected Overrides Sub OnDoWork(e As DoWorkEventArgs)
             MyBase.OnDoWork(e)
 
-            Using Client As New Net.WebClient()
-                IO.Directory.CreateDirectory(x.tempUpdatePath)  'Verzeichnis für Update erstellen
+            IO.Directory.CreateDirectory(x.tempUpdatePath)  'Verzeichnis für Update erstellen
 
-                For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
-                    Dim currentFileName = x.filesToUpdate(i).Name
-                    ReportProgress(i \ (x.filesToUpdate.Count - 1), x.t.Translate("lblAktuelleDatei", currentFileName))
+            For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
+                Dim currentFile = x.filesToUpdate(i)
+                ReportProgress(i \ (x.filesToUpdate.Count - 1), x.t.Translate("lblAktuelleDatei", currentFile.Name))
+                Dim url = New Uri(x.currentServer, Uri.EscapeDataString(currentFile.Name))
+                Dim outputFile = IO.Path.Combine(x.tempUpdatePath, currentFile.Name)
 
-                    Dim stream As IO.Stream = Nothing
-                    Try
-                        Dim url = New Uri(x.currentServer, Uri.EscapeDataString(currentFileName))
-                        Try
-                            stream = Client.OpenRead(url)
-                        Catch
-                            Client.Proxy = Nothing
-                            stream = Client.OpenRead(url)
-                        End Try
-                        Store(stream, IO.Path.Combine(x.tempUpdatePath, currentFileName))
-                    Catch ex As Exception
-                        Throw New DownloadException(x.currentServer, currentFileName, ex)
-                    Finally
-                        If stream IsNot Nothing Then
-                            stream.Close()
-                        End If
-                    End Try
-                Next i
-                ReportProgress(100, x.t.Translate("UpdateFertigstellen"))
+                Dim retryCount = 0
+                Do
+                    Dim hash = DownloadAndStoreFile(url, outputFile)
+                    If CompareByteArray(hash, currentFile.Hash) Then
+                        Continue For
+                    End If
 
-                ' Download versions file
-                Try
-                    Store(Client.OpenRead(x.RemoteVersionsFilePath(x.currentServer)), x.UpdateTempVersionsFilePath)
-                Catch ex As Exception
-                    Throw New Exception("Error downloading Version file " & ex.Message, ex)
-                End Try
-            End Using
+                    ' retry
+                    If retryCount > 1 Then
+                        Throw New DownloadException(url)
+                    End If
+                    IO.File.Delete(outputFile)
+                    retryCount += 1
+                Loop
+            Next i
+            ReportProgress(100, x.t.Translate("UpdateFertigstellen"))
+
+            ' Store new versions file
+            Try
+                x.remoteVersionsFile.Save(x.UpdateTempVersionsFilePath)
+            Catch ex As Exception
+                Throw New Exception("Error storing version file " & ex.Message, ex)
+            End Try
 
             ' Update.exe verschieben
             Dim counter As Int32, tmpNeuFile As String
@@ -519,6 +551,38 @@ Public Class Update
         End Try
     End Function
 
+    Private Shared Function StoreAndHash(stream As IO.Stream, outputFile As String) As Byte()
+        Dim BUFFER_SIZE As Integer = 4096
+        IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(outputFile))
+        Dim buffer(BUFFER_SIZE - 1) As Byte
+
+        Using x = Security.Cryptography.SHA256.Create()
+            Using Writer As New IO.FileStream(outputFile, IO.FileMode.Create, IO.FileAccess.Write)
+                While True
+                    Dim bytesRead As Integer = stream.Read(buffer, 0, BUFFER_SIZE)
+                    If bytesRead = 0 Then
+                        Exit While
+                    End If
+                    x.TransformBlock(buffer, 0, bytesRead, Nothing, 0)
+                    Writer.Write(buffer, 0, bytesRead)
+                End While
+            End Using
+            Return x.TransformFinalBlock(buffer, 0, 0)
+        End Using
+    End Function
+
+    Private Shared Function CompareByteArray(a1 As Byte(), a2 As Byte()) As Boolean
+        If a1.Length <> a2.Length Then
+            Return False
+        End If
+        For i = 0 To a1.Length
+            If a1(i) <> a2(i) Then
+                Return False
+            End If
+        Next
+        Return True
+    End Function
+
     Private Shared Sub Store(stream As IO.Stream, outputFile As String)
         Dim BUFFER_SIZE As Integer = 4096
         IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(outputFile))
@@ -629,21 +693,21 @@ Public Class Update
         End Try
     End Function
 
-
     ''' <summary>
     ''' Install a previously downloaded update.
+    ''' Before updating, the Restarting event is raised.
     ''' </summary>
-    ''' <returns>True if update is available, false otherwise</returns>
+    ''' <returns>False if no update is available or can't be installed, otherwise exits the appliction.</returns>
     Public Function InstallUpdate() As Boolean
         If Not IsUpdateDownloaded() Then
             Return False
         End If
 
-        Dim pi As New System.Diagnostics.ProcessStartInfo
+        Dim pi As New ProcessStartInfo
         Try
             IO.File.Create(IO.Path.Combine(programPath, "tmp.d" & (New Random).Next(0, 10)), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
         Catch 'wenn keine Schreibrechte im Programmverzeichnis
-            If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7
+            If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7/8/10
                 pi.Verb = "runas"
             Else
                 MessageBox.Show(t.Translate("msgUpdateInstallierenAdmin", TranslatedProgramName), t.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -685,7 +749,8 @@ Public Class Update
             End If
             Application.Exit()
             Return True
-        Catch
+        Catch ex As Exception
+            Console.Error.WriteLine("Error while trying to install update: {0}", ex.Message)
             Return False
         End Try
     End Function
@@ -698,17 +763,17 @@ Public Class Update
         Return (Type.GetType("Mono.Runtime") IsNot Nothing)
     End Function
 
-    Private Function SearchNewFiles(ByVal LokaleVersionen As VersionsFile, ByVal UpdateVersionen As VersionsFile) As List(Of File)
+    Private Function SearchNewFiles() As List(Of File)
         Dim result As New List(Of File)
-        If UpdateVersionen.Version <= LokaleVersionen.Version Then
+        If remoteVersionsFile.Version <= localVersionsFile.Version Then
             Return result
         End If
-        For Each c In UpdateVersionen.Categories
+        For Each c In remoteVersionsFile.Categories
             If Not c.IsMandatory AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) > -1 Then
                 Continue For
             End If
 
-            Dim localCat As Category = LokaleVersionen.GetCategory(c.Name)
+            Dim localCat As Category = localVersionsFile.GetCategory(c.Name)
             If localCat IsNot Nothing Then 'Lokale Versionen sind vorhanden
                 '=> neuere Versionen suchen
                 For Each f In c.Files
@@ -717,7 +782,7 @@ Public Class Update
                         Continue For
                     End If
 
-                    If f.Hash <> localFile.Hash OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
+                    If f.HashString.ToLowerInvariant <> localFile.HashString.ToLowerInvariant OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
                         result.Add(f)
                     End If
                 Next
@@ -769,13 +834,35 @@ Public Class Update
         <JsonProperty("categories", Required:=Required.Always)>
         Public Categories As List(Of Category)
 
-        Public Shared Function Open(stream As IO.Stream) As VersionsFile
+        Private originalContent As String
+
+        Public Shared Function Open(stream As IO.Stream, Optional keepInputStreamInMemory As Boolean = False) As VersionsFile
             Using reader As New IO.StreamReader(stream, Text.Encoding.UTF8)
-                Return New JsonSerializer().Deserialize(Of VersionsFile)(New JsonTextReader(reader))
+                If keepInputStreamInMemory Then
+                    Dim content = reader.ReadToEnd
+                    Dim result = New JsonSerializer().Deserialize(Of VersionsFile)(New JsonTextReader(New IO.StringReader(content)))
+                    result.originalContent = content
+                    Return result
+                Else
+                    Return New JsonSerializer().Deserialize(Of VersionsFile)(New JsonTextReader(reader))
+                End If
             End Using
-            ' if old json is missingtell user to download manually
-            ' delete files that are in old json but not in new one
+            'TODO if old json is missingtell user to download manually
+            'TODO delete files that are in old json but not in new one
         End Function
+
+        Public Sub Save(path As String)
+            Using stream As New IO.FileStream(path, IO.FileMode.Create, IO.FileAccess.Write, IO.FileShare.Read)
+                Using w As New IO.StreamWriter(stream)
+                    If originalContent IsNot Nothing Then
+                        w.Write(originalContent)
+                    Else
+                        Dim s As New JsonSerializer()
+                        s.Serialize(w, Me)
+                    End If
+                End Using
+            End Using
+        End Sub
 
         Public Function GetCategory(name As String) As Category
             For Each c In Categories
@@ -813,6 +900,12 @@ Public Class Update
         Public Name As String
 
         <JsonProperty("sha256", Required:=Required.Always)>
-        Public Hash As String
+        Public HashString As String
+
+        Public ReadOnly Property Hash As Byte()
+            Get
+                Return Runtime.Remoting.Metadata.W3cXsd2001.SoapHexBinary.Parse(HashString).Value
+            End Get
+        End Property
     End Class
 End Class
