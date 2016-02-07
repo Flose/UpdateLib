@@ -19,6 +19,24 @@
                 versionFile.Save(newFile)
                 Console.Out.WriteLine("Converted old file to ""{0}""", newFile)
             Case "make-checksums"
+                If args.Length < 4 Then
+                    Console.Error.WriteLine("Input file and update directory missing")
+                    Environment.Exit(1)
+                End If
+
+                Dim file = args(2)
+                Dim dir = args(3)
+                Dim versionFile = VersionsFile.Open(file)
+                Using x = Security.Cryptography.SHA256.Create()
+                    For Each c In versionFile.Categories
+                        For Each f In c.Files
+                            Using stream As New IO.FileStream(IO.Path.Combine(dir, f.Name), IO.FileMode.Open, IO.FileAccess.Read)
+                                f.Hash = x.ComputeHash(stream)
+                            End Using
+                        Next
+                    Next
+                End Using
+                versionFile.Save(file)
         End Select
     End Sub
 
