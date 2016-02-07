@@ -22,6 +22,12 @@ Friend Class VersionsFile
 
     Private originalContent As String
 
+    Public Shared Function Open(file As String, Optional keepInputStreamInMemory As Boolean = False) As VersionsFile
+        Using stream As New IO.FileStream(file, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
+            Return Open(stream, keepInputStreamInMemory)
+        End Using
+    End Function
+
     Public Shared Function Open(stream As IO.Stream, Optional keepInputStreamInMemory As Boolean = False) As VersionsFile
         Using reader As New IO.StreamReader(stream, Text.Encoding.UTF8)
             If keepInputStreamInMemory Then

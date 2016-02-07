@@ -203,9 +203,7 @@ Public Class Update
 
     Private Sub ReadLocalVersionsFile()
         Try
-            Using stream As New IO.FileStream(LocalVersionsFilePath, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.Read)
-                localVersionsFile = VersionsFile.Open(stream)
-            End Using
+            localVersionsFile = VersionsFile.Open(LocalVersionsFilePath)
         Catch ex As Exception
             Throw New UpdateLocalVersionsFileBrokenException
         End Try
@@ -316,7 +314,9 @@ Public Class Update
         'Update versionsdatei öffnen:
         For Each server In updateServers
             Try
-                remoteVersionsFile = VersionsFile.Open(OpenWebStream(RemoteVersionsFilePath(server)), True)
+                Using stream = OpenWebStream(RemoteVersionsFilePath(server))
+                    remoteVersionsFile = VersionsFile.Open(stream, True)
+                End Using
                 currentServer = server
                 Exit For
             Catch ex As Exception
