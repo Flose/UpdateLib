@@ -5,6 +5,7 @@ Friend Class VersionsFile
     Public DisplayVersion As String
 
     <JsonProperty("version", Required:=Required.Always)>
+    <JsonConverter(GetType(Converters.VersionConverter))>
     Public Version As Version
 
     <JsonProperty("releaseNotesUrl")>
@@ -17,7 +18,7 @@ Friend Class VersionsFile
     Public Framework As String
 
     <JsonProperty("categories", Required:=Required.Always)>
-    Public Categories As List(Of Category)
+    Public Categories As New List(Of Category)
 
     Private originalContent As String
 
@@ -41,6 +42,7 @@ Friend Class VersionsFile
                     w.Write(originalContent)
                 Else
                     Dim s As New JsonSerializer()
+                    s.Formatting = Formatting.Indented
                     s.Serialize(w, Me)
                 End If
             End Using
@@ -58,11 +60,18 @@ Friend Class VersionsFile
 End Class
 
 Friend Class Category
-    <JsonProperty("name")>
+    <JsonProperty("name", NullValueHandling:=NullValueHandling.Ignore)>
     Public Name As String
 
     <JsonProperty("files", Required:=Required.Always)>
-    Public Files As List(Of File)
+    Public Files As New List(Of File)
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(name As String)
+        Me.Name = name
+    End Sub
 
     Public Function IsMandatory() As Boolean
         Return Name Is Nothing
@@ -85,6 +94,15 @@ Friend Class File
     <JsonProperty("sha256", Required:=Required.Always)>
     Public HashString As String
 
+    Public Sub New()
+    End Sub
+
+    Public Sub New(name As String, HashString As String)
+        Me.Name = name
+        Me.HashString = HashString
+    End Sub
+
+    <JsonIgnore>
     Public ReadOnly Property Hash As Byte()
         Get
             Return Runtime.Remoting.Metadata.W3cXsd2001.SoapHexBinary.Parse(HashString).Value
