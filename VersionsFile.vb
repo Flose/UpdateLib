@@ -109,9 +109,12 @@ Friend Class File
     End Sub
 
     <JsonIgnore>
-    Public ReadOnly Property Hash As Byte()
+    Public Property Hash As Byte()
         Get
             Return Runtime.Remoting.Metadata.W3cXsd2001.SoapHexBinary.Parse(HashString).Value
         End Get
+        Set(value As Byte())
+            HashString = New Runtime.Remoting.Metadata.W3cXsd2001.SoapHexBinary(value).ToString
+        End Set
     End Property
 End Class
