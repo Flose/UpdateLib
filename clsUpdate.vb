@@ -374,23 +374,12 @@ Public Class Update
         End Class
 
         Private Function DownloadAndStoreFile(url As Uri, destFilePath As String) As Byte()
-            Dim stream As IO.Stream = Nothing
             Try
-                Using Client As New Net.WebClient()
-                    Try
-                        stream = Client.OpenRead(url)
-                    Catch
-                        Client.Proxy = Nothing
-                        stream = Client.OpenRead(url)
-                    End Try
+                Using stream = x.OpenWebStream(url)
+                    Return StoreAndHash(stream, destFilePath)
                 End Using
-                Return StoreAndHash(stream, destFilePath)
             Catch ex As Exception
                 Throw New DownloadException(url, ex)
-            Finally
-                If stream IsNot Nothing Then
-                    stream.Close()
-                End If
             End Try
         End Function
 
@@ -785,12 +774,9 @@ Public Class Update
     End Sub
 
     Private Function OpenWebStream(uri As Uri) As IO.Stream
-        Dim Client As New Net.WebClient
-        Try
-            Return Client.OpenRead(uri)
-        Catch
-            Client.Proxy = Nothing
-            Return Client.OpenRead(uri)
-        End Try
+        Dim request As Net.HttpWebRequest = DirectCast(Net.WebRequest.Create(uri), Net.HttpWebRequest)
+        request.AutomaticDecompression = Net.DecompressionMethods.GZip
+        request.UserAgent = My.Application.Info.ProductName + "/" + My.Application.Info.Version.ToString(3) + " (" + My.Computer.Info.OSPlatform + If(UpdateLib.Update.IsRunningOnMono, ", Mono", "") + ")"
+        Return request.GetResponse().GetResponseStream()
     End Function
 End Class
