@@ -254,7 +254,7 @@ Public Class Update
                     Exit Sub
                 ElseIf TypeOf e.Error Is UpdateLocalVersionsFileBrokenException Then
                     Console.Error.WriteLine("{0}: {1}", versionsFileName, e.Error.Message)
-                    ' TODO messagebox to advice user to download setup and update manually
+                    If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateLokaleInstallationNichtVollständig", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                     x.isUpdating = False
                     Exit Sub
                 End If
