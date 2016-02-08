@@ -10,6 +10,7 @@ Public Class Update
 
     Private installedCategories As List(Of String)
     Private filesToUpdate As List(Of File)
+    Private filesToDelete As List(Of String)
     Private localVersionsFile As VersionsFile
     Private remoteVersionsFile As VersionsFile
     Private currentServer As Uri
@@ -335,7 +336,7 @@ Public Class Update
         'TODO check if required .net framework is installed
         'UpdateVersionen.Framework
 
-        filesToUpdate = SearchNewFiles()
+        SearchNewFiles()
         If filesToUpdate IsNot Nothing AndAlso filesToUpdate.Count > 0 Then 'Update vorhanden
             Return True
         End If
@@ -716,14 +717,19 @@ Public Class Update
         Return (Type.GetType("Mono.Runtime") IsNot Nothing)
     End Function
 
-    Private Function SearchNewFiles() As List(Of File)
-        Dim result As New List(Of File)
+    Private Sub SearchNewFiles()
         If remoteVersionsFile.Version <= localVersionsFile.Version Then
-            Return result
+            filesToDelete = Nothing
+            filesToUpdate = Nothing
+            Return
         End If
+        filesToUpdate = New List(Of File)
+        Dim allRemoteFiles As New List(Of String) ' TODO make a set when using newer .net framework
+        ' TODO add dependencies between categories
         For Each c In remoteVersionsFile.Categories
             If Not c.IsMandatory AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) = -1 Then
                 ' category is not selected locally and is not mandatory
+                ' TODO add these to allRemoteFiles too??
                 Continue For
             End If
 
@@ -731,18 +737,41 @@ Public Class Update
             If localCat IsNot Nothing Then 'Category exists in local versions file
                 ' Search updated files
                 For Each f In c.Files
+                    allRemoteFiles.Add(f.Name)
+
                     Dim localFile As File = localCat.GetFile(f.Name)
                     If localFile Is Nothing OrElse Not CompareByteArray(f.Hash, localFile.Hash) OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
-                        result.Add(f)
+                        filesToUpdate.Add(f)
+#If DEBUG Then
+                        Console.Out.WriteLine("new: " + f.Name)
+#End If
                     End If
                 Next
             Else
                 ' Update all files from this category
-                result.AddRange(c.Files)
+                filesToUpdate.AddRange(c.Files)
+                For Each f In c.Files
+                    allRemoteFiles.Add(f.Name)
+#If DEBUG Then
+                    Console.Out.WriteLine("new (category): " + f.Name)
+#End If
+                Next
             End If
         Next
-        Return result
-    End Function
+
+        filesToDelete = New List(Of String)
+        'Search for files that should be deleted
+        For Each c In localVersionsFile.Categories
+            For Each f In c.Files
+                If Not allRemoteFiles.Contains(f.Name) Then
+                    filesToDelete.Add(f.Name)
+#If DEBUG Then
+                    Console.Out.WriteLine("delete: " + f.Name)
+#End If
+                End If
+            Next
+        Next
+    End Sub
 
     ''' <summary>
     ''' Show a window with a list of all installed updates.
