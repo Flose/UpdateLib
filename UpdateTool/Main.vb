@@ -41,8 +41,8 @@
         Console.Out.WriteLine("Converted old file to ""{0}""", newFile)
     End Sub
 
-    Private Sub MakeChecksums(file As String, dir As String)
-        Dim versionFile = VersionsFile.Open(file)
+    Private Sub MakeChecksums(versionsFile As String, dir As String)
+        Dim versionFile = UpdateTool.VersionsFile.Open(versionsFile)
         Dim allFileNames As New HashSet(Of String)
         Using x = Security.Cryptography.SHA256.Create()
             For Each c In versionFile.Categories
@@ -60,7 +60,8 @@
                 Console.Out.WriteLine("File in update dir, but missing in versions.json: {0}", file)
             End If
         Next
-        versionFile.Save(file)
+        versionFile.Save(versionsFile)
+        Console.Out.WriteLine("Updated checksums in file ""{0}""", versionsFile)
     End Sub
 
     Sub PrintHelpAndExit()
