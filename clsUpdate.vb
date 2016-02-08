@@ -603,57 +603,6 @@ Public Class Update
         End Using
     End Sub
 
-    Private Shared Sub Decompress(ByVal Stream As IO.Stream, ByVal DateiNach As String)
-        Dim BUFFER_SIZE As Integer = 4096
-        Static UseGUnzip As Boolean = True
-        IO.Directory.CreateDirectory(IO.Path.GetDirectoryName(DateiNach))
-        Dim buffer(BUFFER_SIZE - 1) As Byte
-        If UseGUnzip Then
-            Try ' TODO warum gunzip?
-                Dim tmpProcess As New Process
-                tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
-                tmpProcess.StartInfo.FileName = "gunzip"
-                tmpProcess.StartInfo.UseShellExecute = False
-                tmpProcess.Start() 'test ob gunzip verfügbar
-
-                Dim tmpName As String = IO.Path.GetTempFileName
-                Using Writer As New IO.FileStream(tmpName & ".gz", IO.FileMode.Create, IO.FileAccess.Write)
-                    While True
-                        Dim bytesRead As Integer = Stream.Read(buffer, 0, BUFFER_SIZE)
-                        If bytesRead = 0 Then
-                            Exit While
-                        End If
-                        Writer.Write(buffer, 0, bytesRead)
-                    End While
-                End Using
-                tmpProcess = New Process
-                tmpProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden
-                tmpProcess.StartInfo.Arguments = "-qf """ & tmpName & ".gz" & """"
-                tmpProcess.StartInfo.FileName = "gunzip"
-                tmpProcess.Start()
-                tmpProcess.WaitForExit(5000)
-
-                My.Computer.FileSystem.MoveFile(tmpName, DateiNach, True)
-                Stream.Close()
-                Exit Sub
-            Catch
-                UseGUnzip = False
-            End Try
-        End If
-
-        Using Gzip As New IO.Compression.GZipStream(Stream, IO.Compression.CompressionMode.Decompress)
-            Using Writer As New IO.FileStream(DateiNach, IO.FileMode.Create, IO.FileAccess.Write)
-                While True
-                    Dim bytesRead As Integer = Gzip.Read(buffer, 0, BUFFER_SIZE)
-                    If bytesRead = 0 Then
-                        Exit While
-                    End If
-                    Writer.Write(buffer, 0, bytesRead)
-                End While
-            End Using
-        End Using 'gzip
-    End Sub
-
     Private Shared Function BuildQueryString(nvp As Specialized.NameValueCollection) As String
         Dim builder As New System.Text.StringBuilder()
         For Each v As String In nvp.AllKeys
