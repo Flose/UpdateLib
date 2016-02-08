@@ -12,40 +12,55 @@
                     Environment.Exit(1)
                 End If
 
-                Dim legacyFile = args(2)
-                Dim versionFile = OpenLegacyVersionsFile(legacyFile)
-
-                Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(legacyFile), "versions.json")
-                versionFile.Save(newFile)
-                Console.Out.WriteLine("Converted old file to ""{0}""", newFile)
+                Try
+                    ConvertLegacyFile(args(2))
+                Catch ex As Exception
+                    Console.Error.WriteLine("Failed to convert file: {0}", ex.Message)
+                    Environment.Exit(2)
+                End Try
             Case "make-checksums"
                 If args.Length < 4 Then
                     Console.Error.WriteLine("Input file and update directory missing")
                     Environment.Exit(1)
                 End If
 
-                Dim file = args(2)
-                Dim dir = args(3)
-                Dim versionFile = VersionsFile.Open(file)
-                Dim allFileNames As New HashSet(Of String)
-                Using x = Security.Cryptography.SHA256.Create()
-                    For Each c In versionFile.Categories
-                        For Each f In c.Files
-                            Dim filePath = IO.Path.Combine(dir, f.Name)
-                            allFileNames.Add(IO.Path.GetFullPath(filePath))
-                            Using stream As New IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read)
-                                f.Hash = x.ComputeHash(stream)
-                            End Using
-                        Next
-                    Next
-                End Using
-                For Each file In IO.Directory.EnumerateFiles(dir, "*", IO.SearchOption.AllDirectories)
-                    If Not allFileNames.Contains(IO.Path.GetFullPath(file)) Then
-                        Console.Out.WriteLine("File in update dir, but missing in versions.json: {0}", file)
-                    End If
-                Next
-                versionFile.Save(file)
+                Try
+                    MakeChecksums(args(2), args(3))
+                Catch ex As Exception
+                    Console.Error.WriteLine("Failed to make checksums: {0}", ex.Message)
+                    Environment.Exit(2)
+                End Try
         End Select
+    End Sub
+
+    Private Sub ConvertLegacyFile(legacyFile As String)
+        Dim versionFile = OpenLegacyVersionsFile(legacyFile)
+
+        Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(legacyFile), "versions.json")
+        versionFile.Save(newFile)
+        Console.Out.WriteLine("Converted old file to ""{0}""", newFile)
+    End Sub
+
+    Private Sub MakeChecksums(file As String, dir As String)
+        Dim versionFile = VersionsFile.Open(file)
+        Dim allFileNames As New HashSet(Of String)
+        Using x = Security.Cryptography.SHA256.Create()
+            For Each c In versionFile.Categories
+                For Each f In c.Files
+                    Dim filePath = IO.Path.Combine(dir, f.Name)
+                    allFileNames.Add(IO.Path.GetFullPath(filePath))
+                    Using stream As New IO.FileStream(filePath, IO.FileMode.Open, IO.FileAccess.Read)
+                        f.Hash = x.ComputeHash(stream)
+                    End Using
+                Next
+            Next
+        End Using
+        For Each file In IO.Directory.EnumerateFiles(dir, "*", IO.SearchOption.AllDirectories)
+            If Not allFileNames.Contains(IO.Path.GetFullPath(file)) Then
+                Console.Out.WriteLine("File in update dir, but missing in versions.json: {0}", file)
+            End If
+        Next
+        versionFile.Save(file)
     End Sub
 
     Sub PrintHelpAndExit()
