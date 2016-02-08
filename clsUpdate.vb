@@ -281,21 +281,21 @@ Public Class Update
 
                 Console.Error.WriteLine(e.Error)
                 If showErrors Then MessageBox.Show(x.t.Translate("msgFehlerUpdateSuchen", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-                x.SendStatistics("gesucht gefunden installieren fehler")
+                x.SendStatistics(StatisticsTypes.UpdateError)
                 x.isUpdating = False
                 Exit Sub
             End If
 
             Dim updateAvailable = CBool(e.Result)
             If Not updateAvailable Then
-                x.SendStatistics("gesucht nicht gefunden")
+                x.SendStatistics(StatisticsTypes.NoUpdateAvailable)
                 If showErrors Then MessageBox.Show(x.t.Translate("msgKeinUpdate"), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 x.isUpdating = False
                 Exit Sub
             End If
 
             If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", x.remoteVersionsFile.DisplayVersion, Environment.NewLine), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
-                x.SendStatistics("gesucht gefunden nicht installiert")
+                x.SendStatistics(StatisticsTypes.FoundAndNotInstalled)
                 x.isUpdating = False
                 Exit Sub
             End If
@@ -303,7 +303,7 @@ Public Class Update
             Try
                 x.DownloadUpdateAsync(True)
             Catch ex As Exception
-                x.SendStatistics("gesucht gefunden installieren fehler")
+                x.SendStatistics(StatisticsTypes.UpdateError)
                 MessageBox.Show(ex.Message)
                 x.isUpdating = False
             End Try
@@ -478,12 +478,12 @@ Public Class Update
             If e.Error IsNot Nothing Then
                 Console.Error.WriteLine("Error updating: {0}", e.Error.Message)
                 If ui IsNot Nothing Then MessageBox.Show(x.t.Translate("msgFehlerUpdate", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
-                x.SendStatistics("gesucht gefunden installieren fehler")
+                x.SendStatistics(StatisticsTypes.UpdateError)
                 x.isUpdating = False
                 Return
             End If
 
-            x.SendStatistics("gesucht gefunden installiert")
+            x.SendStatistics(StatisticsTypes.FoundAndInstalled)
 
             If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateErfolgreich", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
                 x.isUpdating = False
@@ -627,22 +627,30 @@ Public Class Update
         Return builder.ToString()
     End Function
 
-    Private Function SendStatistics(type As String) As Boolean
+    Private Enum StatisticsTypes
+        NoUpdateAvailable
+        FoundAndInstalled
+        FoundAndNotInstalled
+        UpdateError
+    End Enum
+
+    Private Function SendStatistics(type As StatisticsTypes) As Boolean
         Try
             Dim client As New Net.WebClient
 
             Dim query As New Specialized.NameValueCollection
-            query("programm") = programName.ToLowerInvariant
+            query("program") = programName.ToLowerInvariant
             query("version") = GetVersionsText(programVersion)
             If ProductFlavor <> Nothing Then
-                query("pn") = ProductFlavor
+                query("flavor") = ProductFlavor
             End If
-            query("typ") = type
+            query("type") = type.ToString()
             query("platform") = My.Computer.Info.OSPlatform
             query("lang") = My.Application.Culture.Name
             If uid <> Nothing Then
-                query("dat") = uid
+                query("uid") = uid
             End If
+            query("channel") = CurrentReleaseChannel
 
             Dim ub As New UriBuilder(statisticsServerUri)
             ub.Query &= If(String.IsNullOrEmpty(ub.Query), "", "&") & BuildQueryString(query)
