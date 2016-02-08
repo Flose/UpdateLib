@@ -15,6 +15,26 @@ Public Class Update
     Private remoteVersionsFile As VersionsFile
     Private currentServer As Uri
 
+    Private _releaseChannels As New List(Of String)(New String() {"stable", "beta", "alpha"})
+    Public ReadOnly Property ReleaseChannels As IList(Of String)
+        Get
+            Return _releaseChannels.AsReadOnly()
+        End Get
+    End Property
+
+    Private _currentReleaseChannel As Integer = 0
+    Public Property CurrentReleaseChannel As String
+        Get
+            Return _releaseChannels(_currentReleaseChannel)
+        End Get
+        Set(value As String)
+            _currentReleaseChannel = _releaseChannels.IndexOf(value)
+            If _currentReleaseChannel = -1 Then
+                _currentReleaseChannel = 0
+            End If
+        End Set
+    End Property
+
     Private programName, programExe, programPath As String
     Private programVersion As Version
     Private _translatedProgramName As String
@@ -80,7 +100,7 @@ Public Class Update
 
     Private ReadOnly Property RemoteVersionsFilePath(server As Uri) As Uri
         Get
-            Return New Uri(server, Uri.EscapeDataString(versionsFileName))
+            Return GetUpdateFileUri(server, CurrentReleaseChannel, versionsFileName)
         End Get
     End Property
 
@@ -344,6 +364,9 @@ Public Class Update
         remoteVersionsFile = Nothing
         Return False
     End Function
+
+    Private Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
+        Return New Uri(server, Uri.EscapeDataString(releaseChannel + "/" + fileName))
     End Function
 
     Private Class DownloadUpdateWorker
@@ -391,7 +414,7 @@ Public Class Update
             For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
                 Dim currentFile = x.filesToUpdate(i)
                 ReportProgress(i \ (x.filesToUpdate.Count - 1), x.t.Translate("lblAktuelleDatei", currentFile.Name))
-                Dim url = New Uri(x.currentServer, Uri.EscapeDataString(currentFile.Name))
+                Dim url = x.GetUpdateFileUri(x.currentServer, x.CurrentReleaseChannel, currentFile.Name)
                 Dim outputFile = IO.Path.Combine(x.tempUpdatePath, currentFile.Name)
 
                 Dim retryCount = 0
