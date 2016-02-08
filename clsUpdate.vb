@@ -177,11 +177,13 @@ Public Class Update
     End Sub
 
     Private Sub ReadCategoriesFile()
-        installedCategories = New List(Of String)
         'Installierte Kategorien rausfinden
         If Not IO.File.Exists(IO.Path.Combine(programPath, "Kategorien.ini")) Then
+            installedCategories = Nothing
             Exit Sub
         End If
+
+        installedCategories = New List(Of String)
         Try
             Using Reader As New IO.StreamReader(IO.Path.Combine(programPath, "Kategorien.ini"), True)
                 Do
@@ -197,6 +199,7 @@ Public Class Update
                 Loop
             End Using
         Catch ex As Exception
+            installedCategories = Nothing
             Console.Error.WriteLine("Error while opening categories file, ignoring: {0}", ex.Message)
         End Try
     End Sub
@@ -293,15 +296,15 @@ Public Class Update
     ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
     ''' <remarks></remarks>
     Private Sub SearchUpdateAsync(Optional showErrors As Boolean = True)
-        If IsUpdateDownloaded() Then
-            Throw New UpdateAlreadyDownloadedException
-        End If
-
-        Dim w As New DownloadUpdateWorker(Me, showErrors)
+        Dim w As New SearchUpdateWorker(Me, showErrors)
         w.RunWorkerAsync()
     End Sub
 
     Private Function SearchUpdate(Optional showErrors As Boolean = True) As Boolean
+        If IsUpdateDownloaded() Then
+            Throw New UpdateAlreadyDownloadedException
+        End If
+
         ReadUpdateServersFile()
         ReadCategoriesFile()
         ReadLocalVersionsFile()
@@ -325,7 +328,7 @@ Public Class Update
                 remoteVersionsFile = Nothing
             End Try
         Next
-        If errors IsNot Nothing Then
+        If remoteVersionsFile Is Nothing Then
             Throw New Exception(errors)
         End If
 
@@ -333,7 +336,7 @@ Public Class Update
         'UpdateVersionen.Framework
 
         filesToUpdate = SearchNewFiles()
-        If filesToUpdate.Count > 0 Then 'Update vorhanden
+        If filesToUpdate IsNot Nothing AndAlso filesToUpdate.Count > 0 Then 'Update vorhanden
             Return True
         End If
 
@@ -350,6 +353,7 @@ Public Class Update
 
         Public Sub New(x As Update, withUI As Boolean)
             Me.x = x
+            Me.WorkerReportsProgress = True
             If withUI Then
                 ui = New frmUpdate(x.t.Translate("Update", x.TranslatedProgramName))
                 ui.Show()
@@ -479,7 +483,7 @@ Public Class Update
     End Class
 
     Private Sub DownloadUpdateAsync(withUI As Boolean)
-        If filesToUpdate.Count = 0 Then
+        If filesToUpdate Is Nothing OrElse filesToUpdate.Count = 0 Then
             Throw New Exception("Download update called, but nothing to download.")
         End If
         If IsUpdateDownloaded() Then
@@ -566,7 +570,8 @@ Public Class Update
                     Writer.Write(buffer, 0, bytesRead)
                 End While
             End Using
-            Return x.TransformFinalBlock(buffer, 0, 0)
+            x.TransformFinalBlock(buffer, 0, 0)
+            Return x.Hash
         End Using
     End Function
 
@@ -574,7 +579,7 @@ Public Class Update
         If a1.Length <> a2.Length Then
             Return False
         End If
-        For i = 0 To a1.Length
+        For i = 0 To a1.Length - 1
             If a1(i) <> a2(i) Then
                 Return False
             End If
@@ -768,25 +773,22 @@ Public Class Update
             Return result
         End If
         For Each c In remoteVersionsFile.Categories
-            If Not c.IsMandatory AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) > -1 Then
+            If Not c.IsMandatory AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) = -1 Then
+                ' category is not selected locally and is not mandatory
                 Continue For
             End If
 
             Dim localCat As Category = localVersionsFile.GetCategory(c.Name)
-            If localCat IsNot Nothing Then 'Lokale Versionen sind vorhanden
-                '=> neuere Versionen suchen
+            If localCat IsNot Nothing Then 'Category exists in local versions file
+                ' Search updated files
                 For Each f In c.Files
                     Dim localFile As File = localCat.GetFile(f.Name)
-                    If localFile Is Nothing Then
-                        Continue For
-                    End If
-
-                    If f.HashString.ToLowerInvariant <> localFile.HashString.ToLowerInvariant OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
+                    If localFile Is Nothing OrElse Not CompareByteArray(f.Hash, localFile.Hash) OrElse Not IO.File.Exists(IO.Path.Combine(programPath, f.Name)) Then
                         result.Add(f)
                     End If
                 Next
-            Else 'Lokale Versionen zu dieser Kategorie sind nicht vorhanden
-                '=> alle aus dieser Kategorie aktualisieren
+            Else
+                ' Update all files from this category
                 result.AddRange(c.Files)
             End If
         Next
@@ -807,10 +809,10 @@ Public Class Update
     Private Function OpenWebStream(uri As Uri) As IO.Stream
         Dim Client As New Net.WebClient
         Try
-            Return New IO.Compression.GZipStream(Client.OpenRead(uri), IO.Compression.CompressionMode.Decompress)
+            Return Client.OpenRead(uri)
         Catch
             Client.Proxy = Nothing
-            Return New IO.Compression.GZipStream(Client.OpenRead(uri), IO.Compression.CompressionMode.Decompress)
+            Return Client.OpenRead(uri)
         End Try
     End Function
 End Class
