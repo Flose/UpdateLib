@@ -170,10 +170,6 @@ Public Class Update
         t.Load(language)
     End Sub
 
-    Public Sub UpdateSearchAndInstall(showErrors As Object) 'zeigefehler as object um in eigenem thread zu starten
-        UpdateSearchAndInstall(CBool(showErrors))
-    End Sub
-
     ''' <summary>
     ''' Search for updates and if available, ask if it should be installed and install it
     ''' </summary>
