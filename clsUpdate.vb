@@ -104,6 +104,16 @@ Public Class Update
         End Get
     End Property
 
+    Private Shared _highestInstalledNetFramework As Version
+    Private Shared ReadOnly Property HighestInstalledNetFramework As Version
+        Get
+            If _highestInstalledNetFramework.Equals(New Version) Then
+                _highestInstalledNetFramework = GetHighestInstalledNetFramework()
+            End If
+            Return _highestInstalledNetFramework
+        End Get
+    End Property
+
     Public Sub New(programName As String, programExe As String, programVersion As Version, programPath As String, tempUpdateBasePath As String, updateServersFile As String, updateServers As IEnumerable(Of String), ByVal uid As String)
         Me.programName = programName
         Me.programExe = programExe
@@ -174,6 +184,8 @@ Public Class Update
         End If
 
         isUpdating = True
+        ' Redetect installed framework
+        _highestInstalledNetFramework = New Version
 
         Try
             SearchUpdateAsync(showErrors)
@@ -252,6 +264,14 @@ Public Class Update
         Private x As Update
         Private showErrors As Boolean
 
+        Private Enum InstallStatus
+            Installed
+            NotInstalled
+            Unknown
+        End Enum
+
+        Private frameworkInstallStatus As InstallStatus
+
         Public Sub New(x As Update, showErrors As Boolean)
             Me.x = x
             Me.showErrors = showErrors
@@ -260,7 +280,59 @@ Public Class Update
         Protected Overrides Sub OnDoWork(e As DoWorkEventArgs)
             MyBase.OnDoWork(e)
 
-            e.Result = x.SearchUpdate()
+            If x.IsUpdateDownloaded() Then
+                Throw New UpdateAlreadyDownloadedException
+            End If
+
+            x.ReadUpdateServersFile()
+            x.ReadCategoriesFile()
+            x.ReadLocalVersionsFile()
+
+            If x.localVersionsFile.Version IsNot Nothing Then
+                x.programVersion = x.localVersionsFile.Version
+            End If
+
+            Dim errors As String = Nothing
+            'Update versionsdatei öffnen:
+            For Each server In x.updateServers
+                Try
+                    Using stream = OpenWebStream(x.RemoteVersionsFilePath(server))
+                        x.remoteVersionsFile = VersionsFile.Open(stream, True)
+                    End Using
+                    x.currentServer = server
+                    Exit For
+                Catch ex As Exception
+                    Dim err = String.Format("{0}: {1}", server, ex)
+                    errors &= err & Environment.NewLine
+                    x.remoteVersionsFile = Nothing
+                End Try
+            Next
+            If x.remoteVersionsFile Is Nothing Then
+                Throw New Exception(errors)
+            End If
+
+            x.SearchNewFiles()
+            If x.filesToUpdate Is Nothing OrElse x.filesToUpdate.Count = 0 Then 'no update available
+                x.remoteVersionsFile = Nothing
+                e.Result = False
+                Return
+            End If
+
+            If String.IsNullOrEmpty(x.remoteVersionsFile.Framework) OrElse x.remoteVersionsFile.Framework = x.localVersionsFile.Framework Then
+                frameworkInstallStatus = InstallStatus.Installed
+            Else
+                Try
+                    If HasFramework(x.remoteVersionsFile.Framework) Then
+                        frameworkInstallStatus = InstallStatus.Installed
+                    Else
+                        frameworkInstallStatus = InstallStatus.NotInstalled
+                    End If
+                Catch ex As Exception
+                    frameworkInstallStatus = InstallStatus.Unknown
+                End Try
+            End If
+
+            e.Result = True
         End Sub
 
         Protected Overrides Sub OnRunWorkerCompleted(e As RunWorkerCompletedEventArgs)
@@ -271,11 +343,13 @@ Public Class Update
                     'bereits ein Update vorhanden
                     If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                     x.isUpdating = False
+                    x.remoteVersionsFile = Nothing
                     Exit Sub
                 ElseIf TypeOf e.Error Is UpdateLocalVersionsFileBrokenException Then
                     Console.Error.WriteLine("{0}: {1}", versionsFileName, e.Error.Message)
                     If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateLokaleInstallationNichtVollständig", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                     x.isUpdating = False
+                    x.remoteVersionsFile = Nothing
                     Exit Sub
                 End If
 
@@ -283,6 +357,7 @@ Public Class Update
                 If showErrors Then MessageBox.Show(x.t.Translate("msgFehlerUpdateSuchen", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
                 x.SendStatistics(StatisticsTypes.UpdateError)
                 x.isUpdating = False
+                x.remoteVersionsFile = Nothing
                 Exit Sub
             End If
 
@@ -291,12 +366,20 @@ Public Class Update
                 x.SendStatistics(StatisticsTypes.NoUpdateAvailable)
                 If showErrors Then MessageBox.Show(x.t.Translate("msgKeinUpdate"), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
                 x.isUpdating = False
+                x.remoteVersionsFile = Nothing
                 Exit Sub
             End If
 
-            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", x.remoteVersionsFile.DisplayVersion, Environment.NewLine), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
+            Dim additionalText As String = ""
+            If frameworkInstallStatus = InstallStatus.NotInstalled Then
+                additionalText = String.Format(Environment.NewLine + Environment.NewLine + "Warning: Install .Net Framework {0} (or an equivalent Mono version) before installing the update. Otherwise the program will fail to start after the update.", x.remoteVersionsFile.Framework) 'TODO translate
+            ElseIf frameworkInstallStatus = InstallStatus.Unknown Then
+                additionalText = String.Format(Environment.NewLine + Environment.NewLine + "Warning: .Net Framework {0} (or an equivalent Mono version) is necessary for this update. Make sure it’s installed.", x.remoteVersionsFile.Framework) 'TODO translate
+            End If
+            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", x.remoteVersionsFile.DisplayVersion, Environment.NewLine) + additionalText, x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
                 x.SendStatistics(StatisticsTypes.FoundAndNotInstalled)
                 x.isUpdating = False
+                x.remoteVersionsFile = Nothing
                 Exit Sub
             End If
 
@@ -306,6 +389,7 @@ Public Class Update
                 x.SendStatistics(StatisticsTypes.UpdateError)
                 MessageBox.Show(ex.Message)
                 x.isUpdating = False
+                x.remoteVersionsFile = Nothing
             End Try
         End Sub
     End Class
@@ -321,48 +405,74 @@ Public Class Update
         w.RunWorkerAsync()
     End Sub
 
-    Private Function SearchUpdate(Optional showErrors As Boolean = True) As Boolean
-        If IsUpdateDownloaded() Then
-            Throw New UpdateAlreadyDownloadedException
+    Private Shared Function HasFramework(framework As String) As Boolean
+        Dim m As Text.RegularExpressions.Match = Text.RegularExpressions.Regex.Match(framework, "([^0-9]*)([0-9]+(\.[0-9]+)+)")
+        If m.Success AndAlso m.Groups(1).Value = "net" Then
+            Dim requiredVersion As New Version(m.Groups(2).Value)
+
+            If requiredVersion <= New Version(4, 6, 1) Then
+                Return HighestInstalledNetFramework > requiredVersion
+            End If
         End If
 
-        ReadUpdateServersFile()
-        ReadCategoriesFile()
-        ReadLocalVersionsFile()
+        Throw New Exception("Required framework is unknown, probably too recent")
+    End Function
 
-        If localVersionsFile.Version IsNot Nothing Then
-            programVersion = localVersionsFile.Version
+    Private Shared Function GetHighestInstalledNetFramework() As Version
+        If IsRunningOnMono() Then
+            If Environment.OSVersion.Platform = PlatformID.Unix Then
+                Try
+                    If IO.File.Exists("/usr/lib/mono/4.5/Microsoft.VisualBasic.dll") Then
+                        Return New Version(4, 5)
+                    ElseIf IO.File.Exists("/usr/lib/mono/4.0/Microsoft.VisualBasic.dll") Then
+                        Return New Version(4, 0)
+                    ElseIf IO.File.Exists("/usr/lib/mono/2.0/Microsoft.VisualBasic.dll") Then
+                        Return New Version(2, 0)
+                    End If
+                Catch ex As Exception
+                End Try
+            Else
+                ' TODO maybe check mono version
+            End If
+        Else
+            ' See https://msdn.microsoft.com/en-us/library/hh925568.aspx
+            Using ndpKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.RegistryKey.OpenRemoteBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, "").OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\")
+                If ndpKey IsNot Nothing AndAlso ndpKey.GetValue("Release") IsNot Nothing Then
+                    Dim releaseKey = CInt(ndpKey.GetValue("Release"))
+                    If releaseKey >= 394254 Then
+                        Return New Version(4, 6, 1)
+                    ElseIf releaseKey >= 393295 Then
+                        Return New Version(4, 6)
+                    ElseIf releaseKey >= 379893 Then
+                        Return New Version(4, 5, 2)
+                    ElseIf releaseKey >= 378675 Then
+                        Return New Version(4, 5, 1)
+                    ElseIf releaseKey >= 378389 Then
+                        Return New Version(4, 5)
+                    End If
+                End If
+            End Using
+
+            Dim versions As New List(Of Version)
+            Using ndpKey As Microsoft.Win32.RegistryKey = Microsoft.Win32.RegistryKey.OpenRemoteBaseKey(Microsoft.Win32.RegistryHive.LocalMachine, "").OpenSubKey("SOFTWARE\Microsoft\NET Framework Setup\NDP\")
+                For Each versionKeyName As String In ndpKey.GetSubKeyNames()
+                    If Not versionKeyName.StartsWith("v") Then
+                        Continue For
+                    End If
+
+                    Try
+                        versions.Add(New Version(versionKeyName.Substring(1)))
+                    Catch ex As Exception
+                    End Try
+                Next
+            End Using
+            If versions.Count > 0 Then
+                versions.Sort()
+                Return versions(versions.Count - 1)
+            End If
         End If
 
-        Dim errors As String = Nothing
-        'Update versionsdatei öffnen:
-        For Each server In updateServers
-            Try
-                Using stream = OpenWebStream(RemoteVersionsFilePath(server))
-                    remoteVersionsFile = VersionsFile.Open(stream, True)
-                End Using
-                currentServer = server
-                Exit For
-            Catch ex As Exception
-                Dim err = String.Format("{0}: {1}", server, ex)
-                errors &= err & Environment.NewLine
-                remoteVersionsFile = Nothing
-            End Try
-        Next
-        If remoteVersionsFile Is Nothing Then
-            Throw New Exception(errors)
-        End If
-
-        'TODO check if required .net framework is installed
-        'UpdateVersionen.Framework
-
-        SearchNewFiles()
-        If filesToUpdate IsNot Nothing AndAlso filesToUpdate.Count > 0 Then 'Update vorhanden
-            Return True
-        End If
-
-        remoteVersionsFile = Nothing
-        Return False
+        Throw New Exception("No framework found")
     End Function
 
     Private Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
@@ -413,7 +523,7 @@ Public Class Update
 
             For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
                 Dim currentFile = x.filesToUpdate(i)
-                ReportProgress(i \ (x.filesToUpdate.Count - 1), x.t.Translate("lblAktuelleDatei", currentFile.Name))
+                ReportProgress((i + 1) * 100 \ x.filesToUpdate.Count, x.t.Translate("lblAktuelleDatei", currentFile.Name))
                 Dim url = x.GetUpdateFileUri(x.currentServer, x.CurrentReleaseChannel, currentFile.Name)
                 Dim outputFile = IO.Path.Combine(x.tempUpdatePath, currentFile.Name)
 
@@ -651,6 +761,10 @@ Public Class Update
                 query("uid") = uid
             End If
             query("channel") = CurrentReleaseChannel
+            Try
+                query("netVersion") = GetVersionsText(HighestInstalledNetFramework)
+            Catch ex As Exception
+            End Try
 
             Dim ub As New UriBuilder(statisticsServerUri)
             ub.Query &= If(String.IsNullOrEmpty(ub.Query), "", "&") & BuildQueryString(query)
