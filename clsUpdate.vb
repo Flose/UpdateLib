@@ -626,10 +626,10 @@ Public Class Update
     ''' <param name="showRevision"></param>
     ''' <returns></returns>
     Private Shared Function GetVersionsText(ByVal version As Version, Optional ByVal showRevision As Boolean = True) As String
-        If showRevision AndAlso version.Revision <> 0 Then
+        If showRevision AndAlso version.Revision > 0 Then
             Return version.ToString(4)
         End If
-        If version.Build <> 0 Then
+        If version.Build > 0 Then
             Return version.ToString(3)
         End If
 
