@@ -302,7 +302,7 @@ Public Class Update
                     x.currentServer = server
                     Exit For
                 Catch ex As Exception
-                    Dim err = String.Format("{0}: {1}", server, ex)
+                    Dim err = String.Format("{0}: {1}", server, ex.Message)
                     errors &= err & Environment.NewLine
                     x.remoteVersionsFile = Nothing
                 End Try
@@ -498,7 +498,7 @@ Public Class Update
             Inherits Exception
 
             Public Sub New(uri As Uri, innerException As Exception)
-                MyBase.New(String.Format("{0}: {1}", uri, innerException.Message), innerException)
+                MyBase.New(String.Format("Download of ""{0}"" failed: {1}", uri, innerException.Message), innerException)
             End Sub
 
             Public Sub New(uri As Uri)
@@ -536,7 +536,7 @@ Public Class Update
 
                     ' retry
                     If retryCount > 1 Then
-                        Throw New DownloadException(url)
+                        Throw New DownloadException(url, New Exception("Checksum error"))
                     End If
                     IO.File.Delete(outputFile)
                     retryCount += 1
