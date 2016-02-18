@@ -475,7 +475,7 @@ Public Class Update
         Throw New Exception("No framework found")
     End Function
 
-    Private Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
+    Private Shared Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
         Return New Uri(server, Uri.EscapeDataString(releaseChannel + "/" + fileName))
     End Function
 
@@ -508,7 +508,7 @@ Public Class Update
 
         Private Function DownloadAndStoreFile(url As Uri, destFilePath As String) As Byte()
             Try
-                Using stream = x.OpenWebStream(url)
+                Using stream = OpenWebStream(url)
                     Return StoreAndHash(stream, destFilePath)
                 End Using
             Catch ex As Exception
@@ -524,7 +524,7 @@ Public Class Update
             For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
                 Dim currentFile = x.filesToUpdate(i)
                 ReportProgress((i + 1) * 100 \ x.filesToUpdate.Count, x.t.Translate("lblAktuelleDatei", currentFile.Name))
-                Dim url = x.GetUpdateFileUri(x.currentServer, x.CurrentReleaseChannel, currentFile.Name)
+                Dim url = GetUpdateFileUri(x.currentServer, x.CurrentReleaseChannel, currentFile.Name)
                 Dim outputFile = IO.Path.Combine(x.tempUpdatePath, currentFile.Name)
 
                 Dim retryCount = 0
@@ -918,7 +918,7 @@ Public Class Update
         End Using
     End Sub
 
-    Private Function OpenWebStream(uri As Uri) As IO.Stream
+    Private Shared Function OpenWebStream(uri As Uri) As IO.Stream
         Dim request As Net.HttpWebRequest = DirectCast(Net.WebRequest.Create(uri), Net.HttpWebRequest)
         request.AutomaticDecompression = Net.DecompressionMethods.GZip
         request.UserAgent = My.Application.Info.ProductName + "/" + My.Application.Info.Version.ToString(3) + " (" + My.Computer.Info.OSPlatform + If(UpdateLib.Update.IsRunningOnMono, ", Mono", "") + ")"
