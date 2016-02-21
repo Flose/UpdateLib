@@ -12,6 +12,9 @@
     <releaseNotes>First release.</releaseNotes>
     <copyright>Copyright Flose 2016</copyright>
     <tags>Update Library</tags>
+    <contentFiles>
+        <files include="**/Update.exe" buildAction="None" copyToOutput="true" />
+    </contentFiles>
     <dependencies>
       <dependency id="Newtonsoft.Json" version="8.0.2" />
       <dependency id="TranslationLib" version="2.0.0" />
@@ -20,5 +23,7 @@
   <files>
     <file src="bin\Release20\$id$.dll" target="lib\net20\" />
     <file src="bin\Release40\$id$.dll" target="lib\net40\" />
+    <file src="..\UpdateExe\bin\Release20\Update.exe" target="contentFiles\any\net20" />
+    <file src="..\UpdateExe\bin\Release40\Update.exe" target="contentFiles\any\net40" />
   </files>
 </package>

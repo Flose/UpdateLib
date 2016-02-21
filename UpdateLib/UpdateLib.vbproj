@@ -193,8 +193,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <Target Name="AfterBuild" Condition=" '$(Configuration)' == 'Release'">
-    <Exec Command="nuget pack UpdateLib.vbproj -Prop Configuration=Release -Symbols">
-    </Exec>
-  </Target>
 </Project>
