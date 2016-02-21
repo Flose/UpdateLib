@@ -4,7 +4,8 @@
     "TranslationLib": "2.0.0"
   },
   "frameworks": {
-    "net20": {}
+    "net20": {},
+    "net40": {}
   },
   "runtimes": {
     "win": {}
