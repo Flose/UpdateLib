@@ -75,7 +75,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\VersionsFile.vb">
+    <Compile Include="..\UpdateLib\VersionsFile.vb">
       <Link>VersionsFile.vb</Link>
     </Compile>
     <Compile Include="Main.vb" />
