@@ -1,6 +1,6 @@
 obj/
 bin/
-*.suo 
+*.suo
 
 # Ignore NuGet Packages
 *.nupkg
