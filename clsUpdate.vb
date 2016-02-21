@@ -815,18 +815,18 @@ Public Class Update
 
         pi.WorkingDirectory = Application.StartupPath
         Try
-            Dim tmpneusteÄnderung As New Date(0), tmpDatei As String = String.Empty
+            Dim tmpneusteÄnderung As New Date(0)
+            Dim UpdateProgrammEXE As String = String.Empty
             For Each file As String In IO.Directory.GetFiles(tempUpdateBasePath, "Update-*.exe")
                 If IO.File.GetLastWriteTime(file) > tmpneusteÄnderung Then
                     tmpneusteÄnderung = IO.File.GetLastWriteTime(file)
-                    tmpDatei = file
+                    UpdateProgrammEXE = file
                 End If
             Next
 
-            Dim UpdateProgrammEXE As String = """" & tmpDatei & """"
             If Environment.OSVersion.Platform = PlatformID.Unix Then
                 pi.FileName = "mono"
-                pi.Arguments = UpdateProgrammEXE & " """ & programName & """ """ & programExe & """"
+                pi.Arguments = String.Format("""{0}"" ""{1}"" ""{2}"" ""{3}""", UpdateProgrammEXE, programName, programExe, Application.StartupPath)
                 pi.UseShellExecute = False
                 Console.WriteLine(t.Translate("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
                 Try
@@ -835,8 +835,8 @@ Public Class Update
                     MessageBox.Show(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
                 End Try
             Else
-                pi.FileName = UpdateProgrammEXE
-                pi.Arguments = """" & programName & """ """ & programExe & """"
+                pi.FileName = """" & UpdateProgrammEXE & """"
+                pi.Arguments = String.Format("""{0}"" ""{1}"" ""{2}""", programName, programExe, Application.StartupPath)
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
