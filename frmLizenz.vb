@@ -6,7 +6,6 @@
         InitializeComponent()
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
 
-        lblReleasenotes.Text = System.String.Format(lblReleasenotes.Text, System.Environment.GetCommandLineArgs(1))
         Dim tmpReader As System.IO.StreamReader
         'Lizenzen aus Update verzeichnis(haben vorrang)
         Try
@@ -42,10 +41,6 @@
         Else
             cmbSprachen.SelectedIndex = tmpIndex
         End If
-        'Releasenotes
-        If String.IsNullOrEmpty(ReleasNotesUrl) Then
-            lblReleasenotes.Visible = False
-        End If
     End Sub
 
     Private Sub cmbSprachen_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbSprachen.SelectedIndexChanged
@@ -68,13 +63,5 @@
                 txtLizenz.Text = String.Empty
             End Try
         End If
-    End Sub
-
-    Private Sub lblReleasenotes_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles lblReleasenotes.LinkClicked
-        Try
-            Process.Start(ReleasNotesUrl) '"http://www.mal-was-anderes.de/programme/karteikasten/releasenotes.txt")
-        Catch
-        End Try
-        lblReleasenotes.LinkVisited = True
     End Sub
 End Class

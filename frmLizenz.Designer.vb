@@ -22,11 +22,10 @@ Partial Class frmLizenz
     'Das Bearbeiten mit dem Code-Editor ist nicht möglich.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.cmbSprachen = New System.Windows.Forms.ComboBox
-        Me.txtLizenz = New System.Windows.Forms.TextBox
-        Me.cmdOk = New System.Windows.Forms.Button
-        Me.lblReleasenotes = New System.Windows.Forms.LinkLabel
-        Me.cmdAblehnen = New System.Windows.Forms.Button
+        Me.cmbSprachen = New System.Windows.Forms.ComboBox()
+        Me.txtLizenz = New System.Windows.Forms.TextBox()
+        Me.cmdOk = New System.Windows.Forms.Button()
+        Me.cmdAblehnen = New System.Windows.Forms.Button()
         Me.SuspendLayout()
         '
         'cmbSprachen
@@ -41,8 +40,8 @@ Partial Class frmLizenz
         'txtLizenz
         '
         Me.txtLizenz.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+            Or System.Windows.Forms.AnchorStyles.Left) _
+            Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtLizenz.Location = New System.Drawing.Point(12, 39)
         Me.txtLizenz.Multiline = True
         Me.txtLizenz.Name = "txtLizenz"
@@ -61,16 +60,6 @@ Partial Class frmLizenz
         Me.cmdOk.TabIndex = 2
         Me.cmdOk.Text = "Akzeptieren/Accept"
         Me.cmdOk.UseVisualStyleBackColor = True
-        '
-        'lblReleasenotes
-        '
-        Me.lblReleasenotes.AutoSize = True
-        Me.lblReleasenotes.Location = New System.Drawing.Point(265, 15)
-        Me.lblReleasenotes.Name = "lblReleasenotes"
-        Me.lblReleasenotes.Size = New System.Drawing.Size(89, 13)
-        Me.lblReleasenotes.TabIndex = 3
-        Me.lblReleasenotes.TabStop = True
-        Me.lblReleasenotes.Text = "{0} Releasenotes"
         '
         'cmdAblehnen
         '
@@ -91,7 +80,6 @@ Partial Class frmLizenz
         Me.CancelButton = Me.cmdAblehnen
         Me.ClientSize = New System.Drawing.Size(454, 414)
         Me.Controls.Add(Me.cmdAblehnen)
-        Me.Controls.Add(Me.lblReleasenotes)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.txtLizenz)
         Me.Controls.Add(Me.cmbSprachen)
@@ -107,6 +95,5 @@ Partial Class frmLizenz
     Friend WithEvents cmbSprachen As System.Windows.Forms.ComboBox
     Friend WithEvents txtLizenz As System.Windows.Forms.TextBox
     Friend WithEvents cmdOk As System.Windows.Forms.Button
-    Friend WithEvents lblReleasenotes As System.Windows.Forms.LinkLabel
     Friend WithEvents cmdAblehnen As System.Windows.Forms.Button
 End Class
