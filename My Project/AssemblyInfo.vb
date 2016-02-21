@@ -10,14 +10,15 @@ Imports System.Runtime.InteropServices
 
 ' Die Werte der Assemblyattribute überprüfen
 
-<Assembly: AssemblyTitle("Update")> 
-<Assembly: AssemblyDescription("Update durchführen")> 
-<Assembly: AssemblyCompany("Flo & Seb Engineering")> 
+<Assembly: AssemblyTitle("Update")>
+<Assembly: AssemblyDescription("Replace program files with previously downloaded update files")>
+<Assembly: AssemblyCompany("Flose")>
 <Assembly: AssemblyProduct("Update")>
-<Assembly: AssemblyCopyright("© Flo & Seb Engineering 2006-2015")>
-<Assembly: AssemblyTrademark("")> 
+<Assembly: AssemblyCopyright("© Flose 2006-2016")>
+<Assembly: AssemblyTrademark("")>
 
-<Assembly: ComVisible(False)> 
+<Assembly: ComVisible(False)>
+<Assembly: CLSCompliant(True)>
 
 'Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
 <Assembly: Guid("7426721d-ec0d-4b64-92b0-e5c85537659d")>
@@ -33,7 +34,7 @@ Imports System.Runtime.InteropServices
 ' übernehmen, indem Sie "*" eingeben:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.5.8.0")>
-<Assembly: AssemblyFileVersion("1.5.8.0")>
+<Assembly: AssemblyVersion("2.0.0.0")>
+<Assembly: AssemblyFileVersion("2.0.0.0")>
 
 <Assembly: NeutralResourcesLanguageAttribute("de-DE")> 
