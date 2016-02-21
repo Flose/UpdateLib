@@ -1,6 +1,5 @@
 ﻿Imports System.Resources
 
-Imports System
 Imports System.Reflection
 Imports System.Runtime.InteropServices
 
@@ -17,7 +16,8 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyCopyright("© Flose 2007 - 2016")>
 <Assembly: AssemblyTrademark("")> 
 
-<Assembly: ComVisible(False)> 
+<Assembly: ComVisible(False)>
+<Assembly: CLSCompliant(True)>
 
 'Die folgende GUID bestimmt die ID der Typbibliothek, wenn dieses Projekt für COM verfügbar gemacht wird
 <Assembly: Guid("c238fc47-e078-40b4-b39b-c648292aaff1")>
