@@ -547,6 +547,18 @@ Public Class Update
                 Throw New Exception("Error storing version file " & ex.Message, ex)
             End Try
 
+            Try
+                Using writer As New IO.StreamWriter("UpdateInfo.txt", False, Text.Encoding.UTF8)
+                    writer.WriteLine(1)
+                    writer.WriteLine(x.remoteVersionsFile.DisplayVersion)
+                    For Each f In x.filesToDelete
+                        writer.WriteLine(f)
+                    Next
+                End Using
+            Catch ex As Exception
+                Throw New Exception("Error storing UpdateInfo.txt file: " & ex.Message, ex)
+            End Try
+
             ' Update.exe verschieben
             Dim counter As Int32, tmpNeuFile As String
             Do
