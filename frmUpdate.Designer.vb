@@ -31,7 +31,7 @@ Partial Class frmUpdate
         Me.lblDatei.Name = "lblDatei"
         Me.lblDatei.Size = New System.Drawing.Size(273, 54)
         Me.lblDatei.TabIndex = 1
-        Me.lblDatei.Text = "Updaten ..."
+        Me.lblDatei.Text = "Updating …"
         Me.lblDatei.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'frmUpdate
@@ -48,7 +48,7 @@ Partial Class frmUpdate
         Me.Name = "frmUpdate"
         Me.ShowIcon = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Update von {0}"
+        Me.Text = "PROGRAM_NAME"
         Me.ResumeLayout(False)
 
     End Sub
