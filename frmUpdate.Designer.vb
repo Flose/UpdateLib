@@ -20,7 +20,7 @@ Partial Class frmUpdate
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmUpdate))
-        Me.lblDatei = New System.Windows.Forms.Label
+        Me.lblDatei = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'lblDatei
@@ -52,5 +52,6 @@ Partial Class frmUpdate
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents lblDatei As System.Windows.Forms.Label
+
+    Private WithEvents lblDatei As Windows.Forms.Label
 End Class

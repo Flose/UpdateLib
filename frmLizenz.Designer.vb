@@ -92,8 +92,9 @@ Partial Class frmLizenz
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents cmbSprachen As System.Windows.Forms.ComboBox
-    Friend WithEvents txtLizenz As System.Windows.Forms.TextBox
-    Friend WithEvents cmdOk As System.Windows.Forms.Button
-    Friend WithEvents cmdAblehnen As System.Windows.Forms.Button
+
+    Private WithEvents cmbSprachen As Windows.Forms.ComboBox
+    Private WithEvents txtLizenz As Windows.Forms.TextBox
+    Private WithEvents cmdOk As Windows.Forms.Button
+    Private WithEvents cmdAblehnen As Windows.Forms.Button
 End Class
