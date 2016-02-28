@@ -238,26 +238,6 @@ Public Class Update
         t.Load(language)
     End Sub
 
-    ''' <summary>
-    ''' Search for updates and if available, ask if it should be installed and install it
-    ''' </summary>
-    ''' <remarks></remarks>
-    Public Sub UpdateSearchAndInstall(Optional showErrors As Boolean = True) 'zeigefehler as object um in eigenem thread zu starten
-        If isUpdating Then
-            Return
-        End If
-
-        isUpdating = True
-        ' Redetect installed framework
-        _highestInstalledNetFramework = New Version
-
-        Try
-            SearchUpdateAsync(showErrors)
-        Catch
-            isUpdating = False
-        End Try
-    End Sub
-
     Private Sub ReadUpdateServersFile()
         If Not IO.File.Exists(updateServersFile) Then
             Exit Sub
@@ -450,12 +430,19 @@ Public Class Update
     End Sub
 
     ''' <summary>
-    ''' Sucht nach Updates
+    ''' Search for update. If an update is found, the UpdateFoundEvent is raised.
     ''' </summary>
-    ''' <param name="showErrors">Ob fehler angezeigt werden sollen</param>
-    ''' <returns>Gibt die neuere Version des Updates zurück andernfalls string.empty</returns>
+    ''' <param name="showErrors">If true, raises the UpdateErrorEvent if an error occurs</param>
     ''' <remarks></remarks>
-    Private Sub SearchUpdateAsync(Optional showErrors As Boolean = True)
+    Public Sub SearchUpdateAsync(Optional showErrors As Boolean = True)
+        If isUpdating Then
+            Return
+        End If
+        isUpdating = True
+
+        'Redetect framework version
+        _highestInstalledNetFramework = New Version
+
         Dim w As New SearchUpdateWorker(Me, showErrors)
         w.RunWorkerAsync()
     End Sub
