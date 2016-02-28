@@ -83,7 +83,7 @@
                 'InterneVersion = CInt()
                 reader.ReadLine()
                 result.ReleasNotesUrl = reader.ReadLine
-                Dim currentCategory As Category
+                Dim currentCategory As Category = Nothing
                 Do
                     Dim line = reader.ReadLine
                     If line Is Nothing Then
