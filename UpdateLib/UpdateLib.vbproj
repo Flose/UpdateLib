@@ -116,6 +116,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="OverlayUi.Designer.vb">
+      <DependentUpon>OverlayUi.vb</DependentUpon>
+    </Compile>
+    <Compile Include="OverlayUi.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="VersionsFile.vb" />
   </ItemGroup>
   <ItemGroup>
@@ -132,6 +138,9 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OverlayUi.resx">
+      <DependentUpon>OverlayUi.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
