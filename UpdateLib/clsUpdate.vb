@@ -1,6 +1,5 @@
 Imports System.ComponentModel
 Imports System.Diagnostics
-Imports System.Windows.Forms
 
 Public Class Update
     Private updateServers As New List(Of Uri)
@@ -38,7 +37,7 @@ Public Class Update
     Private programName, programExe, programPath As String
     Private programVersion As Version
     Private _translatedProgramName As String
-    Private Property TranslatedProgramName As String
+    Friend Property TranslatedProgramName As String
         Get
             If _translatedProgramName IsNot Nothing Then
                 Return _translatedProgramName
@@ -75,7 +74,7 @@ Public Class Update
 
     Private isUpdating As Boolean
 
-    Private t As New TranslationLib.Translation(String.Empty, My.Resources.English)
+    Friend t As New TranslationLib.Translation(String.Empty, My.Resources.English)
 
     ''' <summary>
     ''' This event is raised just before restarting to install an update.
@@ -83,6 +82,75 @@ Public Class Update
     ''' <param name="sender"></param>
     ''' <param name="e"></param>
     Public Event Restarting(sender As Object, e As EventArgs)
+
+    Public Event UpdateError(sender As Object, e As ErrorEventArgs)
+
+    Public Event UpdateInfo(sender As Object, e As InfoEventArgs)
+
+    Public Event UpdateFound(sender As Object, e As UpdateFoundEventArgs)
+
+    Public Event UpdateDownloaded(sender As Object, e As EventArgs)
+
+    Public Class ErrorEventArgs
+        Inherits EventArgs
+
+        Public Property Message As String
+        Public Property InnerException As Exception
+
+        Friend Sub New(message As String, innerException As Exception)
+            Me.Message = message
+            Me.InnerException = innerException
+        End Sub
+    End Class
+
+    Public Class InfoEventArgs
+        Inherits EventArgs
+
+        Public Property Message As String
+
+        Friend Sub New(message As String)
+            Me.Message = message
+        End Sub
+    End Class
+
+    Public Class UpdateFoundEventArgs
+        Inherits EventArgs
+
+        Public Property DisplayVersion As String
+        Public Property ReleaseNotesUrl As String
+        Public Property Framework As String
+        Public Property FrameworkInstallStatus As InstallStatus
+
+        Friend Sub New(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkInstallStatus As InstallStatus)
+            Me.DisplayVersion = displayVersion
+            Me.ReleaseNotesUrl = releaseNotesUrl
+            Me.Framework = framework
+            Me.FrameworkInstallStatus = frameworkInstallStatus
+        End Sub
+    End Class
+
+    Private Sub RaiseUpdateInfoEvent(message As String)
+        RaiseEvent UpdateInfo(Me, New InfoEventArgs(message))
+    End Sub
+
+    Private Sub RaiseUpdateErrorEvent(message As String, innerException As Exception)
+        RaiseEvent UpdateError(Me, New ErrorEventArgs(message, innerException))
+    End Sub
+
+    Private Sub RaiseUpdateFoundEvent(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkInstallStatus As InstallStatus)
+        RaiseEvent UpdateFound(Me, New UpdateFoundEventArgs(displayVersion, releaseNotesUrl, framework, frameworkInstallStatus))
+    End Sub
+
+    Private Sub RaiseUpdateDownloadedEvent()
+        RaiseEvent UpdateDownloaded(Me, EventArgs.Empty)
+    End Sub
+
+    Friend ReadOnly Property TranslatedTitle() As String
+        Get
+            Return t.Translate("Update", TranslatedProgramName)
+        End Get
+    End Property
+
 
     Private Const versionsFileName = "versions.json"
 
@@ -254,17 +322,17 @@ Public Class Update
                IO.Directory.GetFiles(tempUpdateBasePath, "Update-*.exe").Length > 0
     End Function
 
+
+    Public Enum InstallStatus
+        Installed
+        NotInstalled
+        Unknown
+    End Enum
     Private Class SearchUpdateWorker
         Inherits BackgroundWorker
 
         Private x As Update
         Private showErrors As Boolean
-
-        Private Enum InstallStatus
-            Installed
-            NotInstalled
-            Unknown
-        End Enum
 
         Private frameworkInstallStatus As InstallStatus
 
@@ -337,20 +405,20 @@ Public Class Update
             If e.Error IsNot Nothing Then
                 If TypeOf e.Error Is UpdateAlreadyDownloadedException Then
                     'bereits ein Update vorhanden
-                    If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, x.TranslatedProgramName), e.Error)
                     x.isUpdating = False
                     x.remoteVersionsFile = Nothing
                     Exit Sub
                 ElseIf TypeOf e.Error Is UpdateLocalVersionsFileBrokenException Then
                     Console.Error.WriteLine("{0}: {1}", versionsFileName, e.Error.Message)
-                    If showErrors Then MessageBox.Show(x.t.Translate("msgUpdateLokaleInstallationNichtVollständig", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgUpdateLokaleInstallationNichtVollständig", Environment.NewLine, x.TranslatedProgramName), e.Error)
                     x.isUpdating = False
                     x.remoteVersionsFile = Nothing
                     Exit Sub
                 End If
 
                 Console.Error.WriteLine(e.Error)
-                If showErrors Then MessageBox.Show(x.t.Translate("msgFehlerUpdateSuchen", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgFehlerUpdateSuchen", Environment.NewLine & e.Error.Message), e.Error)
                 x.SendStatistics(StatisticsTypes.UpdateError)
                 x.isUpdating = False
                 x.remoteVersionsFile = Nothing
@@ -360,35 +428,26 @@ Public Class Update
             Dim updateAvailable = CBool(e.Result)
             If Not updateAvailable Then
                 x.SendStatistics(StatisticsTypes.NoUpdateAvailable)
-                If showErrors Then MessageBox.Show(x.t.Translate("msgKeinUpdate"), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                If showErrors Then x.RaiseUpdateInfoEvent(x.t.Translate("msgKeinUpdate"))
                 x.isUpdating = False
                 x.remoteVersionsFile = Nothing
                 Exit Sub
             End If
 
-            Dim additionalText As String = ""
-            If frameworkInstallStatus = InstallStatus.NotInstalled Then
-                additionalText = String.Format(Environment.NewLine + Environment.NewLine + "Warning: Install .Net Framework {0} (or an equivalent Mono version) before installing the update. Otherwise the program will fail to start after the update.", x.remoteVersionsFile.Framework) 'TODO translate
-            ElseIf frameworkInstallStatus = InstallStatus.Unknown Then
-                additionalText = String.Format(Environment.NewLine + Environment.NewLine + "Warning: .Net Framework {0} (or an equivalent Mono version) is necessary for this update. Make sure it’s installed.", x.remoteVersionsFile.Framework) 'TODO translate
-            End If
-            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateVorhanden", x.remoteVersionsFile.DisplayVersion, Environment.NewLine) + additionalText, x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
-                x.SendStatistics(StatisticsTypes.FoundAndNotInstalled)
-                x.isUpdating = False
-                x.remoteVersionsFile = Nothing
-                Exit Sub
-            End If
-
-            Try
-                x.DownloadUpdateAsync(True)
-            Catch ex As Exception
-                x.SendStatistics(StatisticsTypes.UpdateError)
-                MessageBox.Show(ex.Message)
-                x.isUpdating = False
-                x.remoteVersionsFile = Nothing
-            End Try
+            x.isUpdating = False
+            x.RaiseUpdateFoundEvent(x.remoteVersionsFile.DisplayVersion, x.remoteVersionsFile.ReleasNotesUrl, x.remoteVersionsFile.Framework, frameworkInstallStatus)
         End Sub
     End Class
+
+    Public Sub ResetUpdateState()
+        If isUpdating OrElse remoteVersionsFile Is Nothing Then
+            Return
+        End If
+
+        SendStatistics(StatisticsTypes.FoundAndNotInstalled)
+        isUpdating = False
+        remoteVersionsFile = Nothing
+    End Sub
 
     ''' <summary>
     ''' Sucht nach Updates
@@ -573,7 +632,7 @@ Public Class Update
                 End Try
             Else
                 Try
-                    IO.File.Copy(IO.Path.Combine(Application.StartupPath, "Update.exe"), tmpNeuFile)
+                    IO.File.Copy(IO.Path.Combine(Windows.Forms.Application.StartupPath, "Update.exe"), tmpNeuFile)
                 Catch ex As Exception
                     Throw New Exception("Error copying Update.exe" & ex.Message, ex)
                 End Try
@@ -595,7 +654,7 @@ Public Class Update
 
             If e.Error IsNot Nothing Then
                 Console.Error.WriteLine("Error updating: {0}", e.Error.Message)
-                If ui IsNot Nothing Then MessageBox.Show(x.t.Translate("msgFehlerUpdate", Environment.NewLine & e.Error.Message), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+                If ui IsNot Nothing Then x.RaiseUpdateErrorEvent(x.t.Translate("msgFehlerUpdate", Environment.NewLine & e.Error.Message), e.Error)
                 x.SendStatistics(StatisticsTypes.UpdateError)
                 x.isUpdating = False
                 Return
@@ -603,24 +662,26 @@ Public Class Update
 
             x.SendStatistics(StatisticsTypes.FoundAndInstalled)
 
-            If DialogResult.Yes <> MessageBox.Show(x.t.Translate("msgUpdateErfolgreich", Environment.NewLine, x.TranslatedProgramName), x.t.Translate("Update", x.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
-                x.isUpdating = False
-                Exit Sub
-            End If
-
-            x.InstallUpdate()
             x.isUpdating = False
+            x.RaiseUpdateDownloadedEvent()
         End Sub
     End Class
 
-    Private Sub DownloadUpdateAsync(withUI As Boolean)
+    Public Sub DownloadUpdateAsync(Optional withUI As Boolean = True)
+        If isUpdating Then
+            Return
+        End If
+        isUpdating = True
+
         If filesToUpdate Is Nothing OrElse filesToUpdate.Count = 0 Then
             Throw New Exception("Download update called, but nothing to download.")
         End If
         If IsUpdateDownloaded() Then
             'bereits ein Update vorhanden
-            If withUI Then MessageBox.Show(t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), t.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Error)
+            If withUI Then RaiseUpdateErrorEvent(t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Nothing)
+            SendStatistics(StatisticsTypes.UpdateError)
             isUpdating = False
+            remoteVersionsFile = Nothing
             Return
         End If
         Dim w As New DownloadUpdateWorker(Me, withUI)
@@ -806,14 +867,16 @@ Public Class Update
             If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7/8/10
                 pi.Verb = "runas"
             Else
-                MessageBox.Show(t.Translate("msgUpdateInstallierenAdmin", TranslatedProgramName), t.Translate("Update", TranslatedProgramName), MessageBoxButtons.OK, MessageBoxIcon.Information)
+                RaiseUpdateInfoEvent(t.Translate("msgUpdateInstallierenAdmin", TranslatedProgramName))
                 Return False
             End If
         End Try
 
         RaiseEvent Restarting(Me, New EventArgs)
 
-        pi.WorkingDirectory = Application.StartupPath
+        Dim startupPath = Windows.Forms.Application.StartupPath
+
+        pi.WorkingDirectory = startupPath
         Try
             Dim tmpneusteÄnderung As New Date(0)
             Dim UpdateProgrammEXE As String = String.Empty
@@ -826,24 +889,24 @@ Public Class Update
 
             If Environment.OSVersion.Platform = PlatformID.Unix Then
                 pi.FileName = "mono"
-                pi.Arguments = String.Format("""{0}"" ""{1}"" ""{2}"" ""{3}""", UpdateProgrammEXE, programName, programExe, Application.StartupPath)
+                pi.Arguments = String.Format("""{0}"" ""{1}"" ""{2}"" ""{3}""", UpdateProgrammEXE, programName, programExe, startupPath)
                 pi.UseShellExecute = False
-                Console.WriteLine(t.Translate("MonoUpdateHinweis", "cd """ & Application.StartupPath & """ && mono " & pi.Arguments))
+                Console.WriteLine(t.Translate("MonoUpdateHinweis", "cd """ & startupPath & """ && mono " & pi.Arguments))
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
-                    MessageBox.Show(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
+                    RaiseUpdateErrorEvent(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message), ex)
                 End Try
             Else
                 pi.FileName = """" & UpdateProgrammEXE & """"
-                pi.Arguments = String.Format("""{0}"" ""{1}"" ""{2}""", programName, programExe, Application.StartupPath)
+                pi.Arguments = String.Format("""{0}"" ""{1}"" ""{2}""", programName, programExe, startupPath)
                 Try
                     Process.Start(pi)
                 Catch ex As Exception
-                    MessageBox.Show(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message))
+                    RaiseUpdateErrorEvent(t.Translate("FehlerAusführen", pi.FileName & " " & pi.Arguments, ex.Message), ex)
                 End Try
             End If
-            Application.Exit()
+            Windows.Forms.Application.Exit()
             Return True
         Catch ex As Exception
             Console.Error.WriteLine("Error while trying to install update: {0}", ex.Message)
@@ -867,11 +930,9 @@ Public Class Update
         End If
         filesToUpdate = New List(Of File)
         Dim allRemoteFiles As New List(Of String) ' TODO make a set when using newer .net framework
-        ' TODO add dependencies between categories
         For Each c In remoteVersionsFile.Categories
             If Not c.IsMandatory AndAlso installedCategories IsNot Nothing AndAlso installedCategories.IndexOf(c.Name) = -1 Then
                 ' category is not selected locally and is not mandatory
-                ' TODO add these to allRemoteFiles too??
                 Continue For
             End If
 
@@ -919,9 +980,9 @@ Public Class Update
     ''' Show a window with a list of all installed updates.
     ''' </summary>
     ''' <param name="owner"></param>
-    Sub ShowUpdateHistoryDialog(Optional owner As IWin32Window = Nothing)
+    Sub ShowUpdateHistoryDialog(Optional owner As Windows.Forms.IWin32Window = Nothing)
         Using frmH As New frmUpdateHistory(t, programPath)
-            If owner Is Nothing Then frmH.StartPosition = FormStartPosition.CenterScreen
+            If owner Is Nothing Then frmH.StartPosition = Windows.Forms.FormStartPosition.CenterScreen
             frmH.ShowDialog(owner)
         End Using
     End Sub
@@ -929,7 +990,7 @@ Public Class Update
     Private Shared Function OpenWebStream(uri As Uri) As IO.Stream
         Dim request As Net.HttpWebRequest = DirectCast(Net.WebRequest.Create(uri), Net.HttpWebRequest)
         request.AutomaticDecompression = Net.DecompressionMethods.GZip
-        request.UserAgent = My.Application.Info.ProductName + "/" + My.Application.Info.Version.ToString(3) + " (" + My.Computer.Info.OSPlatform + If(UpdateLib.Update.IsRunningOnMono, ", Mono", "") + ")"
+        request.UserAgent = My.Application.Info.ProductName + "/" + My.Application.Info.Version.ToString(3) + " (" + My.Computer.Info.OSPlatform + If(IsRunningOnMono(), ", Mono", "") + ")"
         Return request.GetResponse().GetResponseStream()
     End Function
 End Class
