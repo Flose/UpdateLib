@@ -340,7 +340,7 @@ Public Class Update
             'Update versionsdatei öffnen:
             For Each server In x.updateServers
                 Try
-                    Using stream = OpenWebStream(x.RemoteVersionsFilePath(server))
+                    Using stream = x.OpenWebStream(x.RemoteVersionsFilePath(server))
                         x.remoteVersionsFile = VersionsFile.Open(stream, True)
                     End Using
                     x.currentServer = server
@@ -550,7 +550,7 @@ Public Class Update
 
         Private Function DownloadAndStoreFile(url As Uri, destFilePath As String) As Byte()
             Try
-                Using stream = OpenWebStream(url)
+                Using stream = x.OpenWebStream(url)
                     Return StoreAndHash(stream, destFilePath)
                 End Using
             Catch ex As Exception
@@ -613,7 +613,7 @@ Public Class Update
             Loop While IO.File.Exists(tmpNeuFile)
             If IO.File.Exists(IO.Path.Combine(x.tempUpdatePath, "Update.exe")) Then
                 Try
-                    My.Computer.FileSystem.MoveFile(IO.Path.Combine(x.tempUpdatePath, "Update.exe"), tmpNeuFile, True)
+                    MoveFile(IO.Path.Combine(x.tempUpdatePath, "Update.exe"), tmpNeuFile, True)
                 Catch ex As Exception
                     Throw New Exception("Error moving Update.exe" & ex.Message, ex)
                 End Try
@@ -624,6 +624,19 @@ Public Class Update
                     Throw New Exception("Error copying Update.exe" & ex.Message, ex)
                 End Try
             End If
+        End Sub
+
+        Public Shared Function GetParentPath(path As String) As String
+            IO.Path.GetFullPath(path)
+            Return IO.Path.GetDirectoryName(path.TrimEnd(New Char() {IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar}))
+        End Function
+
+        Private Sub MoveFile(sourceFileName As String, destinationFileName As String, overwrite As Boolean)
+            If overwrite Then
+                IO.File.Delete(destinationFileName)
+            End If
+            IO.Directory.CreateDirectory(GetParentPath(destinationFileName))
+            IO.File.Move(sourceFileName, destinationFileName)
         End Sub
 
         Protected Overrides Sub OnProgressChanged(e As ProgressChangedEventArgs)
@@ -811,8 +824,8 @@ Public Class Update
                 query("flavor") = ProductFlavor
             End If
             query("type") = type.ToString()
-            query("platform") = My.Computer.Info.OSPlatform
-            query("lang") = My.Application.Culture.Name
+            query("platform") = Environment.OSVersion.Platform.ToString()
+            query("lang") = Threading.Thread.CurrentThread.CurrentCulture.Name
             If uid <> Nothing Then
                 query("uid") = uid
             End If
@@ -974,10 +987,10 @@ Public Class Update
         End Using
     End Sub
 
-    Private Shared Function OpenWebStream(uri As Uri) As IO.Stream
+    Private Function OpenWebStream(uri As Uri) As IO.Stream
         Dim request As Net.HttpWebRequest = DirectCast(Net.WebRequest.Create(uri), Net.HttpWebRequest)
         request.AutomaticDecompression = Net.DecompressionMethods.GZip
-        request.UserAgent = My.Application.Info.ProductName + "/" + My.Application.Info.Version.ToString(3) + " (" + My.Computer.Info.OSPlatform + If(IsRunningOnMono(), ", Mono", "") + ")"
+        request.UserAgent = programName + "/" + programVersion.ToString(3) + " (" + Environment.OSVersion.Platform.ToString() + If(IsRunningOnMono(), ", Mono", "") + ")"
         Return request.GetResponse().GetResponseStream()
     End Function
 End Class
