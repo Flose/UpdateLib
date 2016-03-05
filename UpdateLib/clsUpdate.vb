@@ -74,7 +74,7 @@ Public Class Update
 
     Private isUpdating As Boolean
 
-    Friend t As New TranslationLib.Translation(String.Empty, My.Resources.English)
+    Friend t As New TranslationLib.Translation(Nothing, My.Resources.English)
 
     ''' <summary>
     ''' This event is raised just before restarting to install an update.
