@@ -1,5 +1,4 @@
 ﻿Imports System.Windows.Forms
-Imports FloseCode.UpdateLib
 
 Public Class MessageBoxUi
     Private WithEvents update As Update
@@ -14,11 +13,11 @@ Public Class MessageBoxUi
         End If
     End Sub
 
-    Private Sub update_UpdateError(sender As Object, e As Update.ErrorEventArgs) Handles update.UpdateError
+    Private Sub update_UpdateError(sender As Object, e As ErrorEventArgs) Handles update.UpdateError
         MessageBox.Show(e.Message, update.TranslatedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
     End Sub
 
-    Private Sub update_UpdateFound(sender As Object, e As Update.UpdateFoundEventArgs) Handles update.UpdateFound
+    Private Sub update_UpdateFound(sender As Object, e As UpdateFoundEventArgs) Handles update.UpdateFound
         Dim additionalText As String = ""
         If e.FrameworkInstallStatus = Update.InstallStatus.NotInstalled Then
             additionalText = String.Format(Environment.NewLine + Environment.NewLine + "Warning: Install .Net Framework {0} (or an equivalent Mono version) before installing the update. Otherwise the program will fail to start after the update.", e.Framework) 'TODO translate
@@ -32,7 +31,7 @@ Public Class MessageBoxUi
         End If
     End Sub
 
-    Private Sub update_UpdateInfo(sender As Object, e As Update.InfoEventArgs) Handles update.UpdateInfo
+    Private Sub update_UpdateInfo(sender As Object, e As InfoEventArgs) Handles update.UpdateInfo
         MessageBox.Show(e.Message, update.TranslatedTitle, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class

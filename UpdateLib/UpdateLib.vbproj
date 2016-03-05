@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsUpdate.vb" />
+    <Compile Include="EventArgs.vb" />
     <Compile Include="frmUpdate.designer.vb">
       <DependentUpon>frmUpdate.vb</DependentUpon>
     </Compile>

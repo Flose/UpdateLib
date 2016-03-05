@@ -91,44 +91,6 @@ Public Class Update
 
     Public Event UpdateDownloaded(sender As Object, e As EventArgs)
 
-    Public Class ErrorEventArgs
-        Inherits EventArgs
-
-        Public Property Message As String
-        Public Property InnerException As Exception
-
-        Friend Sub New(message As String, innerException As Exception)
-            Me.Message = message
-            Me.InnerException = innerException
-        End Sub
-    End Class
-
-    Public Class InfoEventArgs
-        Inherits EventArgs
-
-        Public Property Message As String
-
-        Friend Sub New(message As String)
-            Me.Message = message
-        End Sub
-    End Class
-
-    Public Class UpdateFoundEventArgs
-        Inherits EventArgs
-
-        Public Property DisplayVersion As String
-        Public Property ReleaseNotesUrl As String
-        Public Property Framework As String
-        Public Property FrameworkInstallStatus As InstallStatus
-
-        Friend Sub New(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkInstallStatus As InstallStatus)
-            Me.DisplayVersion = displayVersion
-            Me.ReleaseNotesUrl = releaseNotesUrl
-            Me.Framework = framework
-            Me.FrameworkInstallStatus = frameworkInstallStatus
-        End Sub
-    End Class
-
     Private Sub RaiseUpdateInfoEvent(message As String)
         If UpdateInfoEvent Is Nothing OrElse UpdateInfoEvent.GetInvocationList.Length = 0 Then
             Windows.Forms.MessageBox.Show(message, TranslatedTitle, Windows.Forms.MessageBoxButtons.OK, Windows.Forms.MessageBoxIcon.Information)

@@ -28,7 +28,7 @@ Public Class OverlayUi
         Show()
     End Sub
 
-    Private Sub _update_UpdateError(sender As Object, e As Update.ErrorEventArgs) Handles _update.UpdateError
+    Private Sub _update_UpdateError(sender As Object, e As ErrorEventArgs) Handles _update.UpdateError
         'TODO formatting
         lblText.Text = e.Message
         LinkLabel.Visible = False
@@ -36,7 +36,7 @@ Public Class OverlayUi
         Show()
     End Sub
 
-    Private Sub _update_UpdateFound(sender As Object, e As Update.UpdateFoundEventArgs) Handles _update.UpdateFound
+    Private Sub _update_UpdateFound(sender As Object, e As UpdateFoundEventArgs) Handles _update.UpdateFound
         ' TODO separate label (bold) for warnings
         Dim additionalText As String = ""
         If e.FrameworkInstallStatus = UpdateLib.Update.InstallStatus.NotInstalled Then
@@ -53,7 +53,7 @@ Public Class OverlayUi
         Show()
     End Sub
 
-    Private Sub _update_UpdateInfo(sender As Object, e As Update.InfoEventArgs) Handles _update.UpdateInfo
+    Private Sub _update_UpdateInfo(sender As Object, e As InfoEventArgs) Handles _update.UpdateInfo
         'TODO formating
         lblText.Text = e.Message
         LinkLabel.Visible = False
