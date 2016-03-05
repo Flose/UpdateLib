@@ -355,13 +355,13 @@ Public Class Update
             If e.Error IsNot Nothing Then
                 If TypeOf e.Error Is UpdateAlreadyDownloadedException Then
                     'bereits ein Update vorhanden
-                    If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, x.TranslatedProgramName), e.Error)
+                    If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgUpdateBereitsVorhanden", x.TranslatedProgramName), e.Error)
                     x.isUpdating = False
                     x.remoteVersionsFile = Nothing
                     Exit Sub
                 ElseIf TypeOf e.Error Is UpdateLocalVersionsFileBrokenException Then
                     Console.Error.WriteLine("{0}: {1}", versionsFileName, e.Error.Message)
-                    If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgUpdateLokaleInstallationNichtVollständig", Environment.NewLine, x.TranslatedProgramName), e.Error)
+                    If showErrors Then x.RaiseUpdateErrorEvent(x.t.Translate("msgUpdateLokaleInstallationNichtVollständig"), e.Error)
                     x.isUpdating = False
                     x.remoteVersionsFile = Nothing
                     Exit Sub
@@ -648,7 +648,7 @@ Public Class Update
         End If
         If IsUpdateDownloaded() Then
             'bereits ein Update vorhanden
-            If withUI Then RaiseUpdateErrorEvent(t.Translate("msgUpdateBereitsVorhanden", Environment.NewLine, TranslatedProgramName), Nothing)
+            If withUI Then RaiseUpdateErrorEvent(t.Translate("msgUpdateBereitsVorhanden", TranslatedProgramName), Nothing)
             SendStatistics(StatisticsTypes.UpdateError)
             isUpdating = False
             remoteVersionsFile = Nothing

@@ -8,7 +8,7 @@ Public Class MessageBoxUi
     End Sub
 
     Private Sub update_UpdateDownloaded(sender As Object, e As EventArgs) Handles update.UpdateDownloaded
-        If DialogResult.Yes <> MessageBox.Show(update.t.Translate("msgUpdateErfolgreich", Environment.NewLine, update.TranslatedProgramName), update.t.Translate("Update", update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
+        If DialogResult.Yes <> MessageBox.Show(update.t.Translate("msgUpdateErfolgreich", update.TranslatedProgramName), update.t.Translate("Update", update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
             update.InstallUpdate()
         End If
     End Sub
@@ -24,7 +24,7 @@ Public Class MessageBoxUi
         ElseIf e.FrameworkInstallStatus = UpdateLib.Update.InstallStatus.Unknown Then
             additionalText = Environment.NewLine + Environment.NewLine + _update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
         End If
-        If DialogResult.Yes <> MessageBox.Show(update.t.Translate("msgUpdateVorhanden", e.DisplayVersion, Environment.NewLine) + additionalText, update.t.Translate("Update", update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
+        If DialogResult.Yes <> MessageBox.Show(update.t.Translate("msgUpdateVorhanden", e.DisplayVersion) + additionalText, update.t.Translate("Update", update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
             update.DownloadUpdateAsync()
         Else
             update.ResetUpdateState()

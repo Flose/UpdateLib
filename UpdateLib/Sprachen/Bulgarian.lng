@@ -1,15 +1,21 @@
 ﻿1
 SprachenName=Български
-msgUpdateBereitsVorhanden=Ъпдейтът вече е свален!{0}Рестартирайте {1}, за да го инсталирате.
+msgUpdateBereitsVorhanden=Ъпдейтът вече е свален!\n\nРестартирайте {0}, за да го инсталирате.
+msgUpdateLokaleInstallationNichtVollständig=
 Update={0} ъпдейт
-msgUpdateVorhanden=Съществува ъпдейт на версия {0}.{1}Искате ли да го свалите сега?
+msgUpdateVorhanden=Съществува ъпдейт на версия {0}.\n\nИскате ли да го свалите сега?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=Вече сте свалили един ъпдейт, но не сте го инсталирали.\n\nСтартирайте програмата {0} като администратор, за да инсталирате ъпдейта.
 msgKeinUpdate=Не съществува ъпдейт
 msgFehlerUpdateSuchen=Грешка при търсенето на ъпдейт: {0}
 lblAktuelleDatei=Актуален файл: {0}
 UpdateFertigstellen=Довършване...
-msgUpdateErfolgreich=Версията беше свалена успешно!{0}За да инсталирате новата версия, трябва да рестартирате {1}.{0}Искате ли да рестартирате сега?
-msgFehlerUpdate=Грешка при ъпдейтването:  {0}
+msgUpdateErfolgreich=Версията беше свалена успешно!\n\nЗа да инсталирате новата версия, трябва да рестартирате {0}.\n\nИскате ли да рестартирате сега?
+Neustarten=
+msgFehlerUpdate=Грешка при ъпдейтването: {0}
 FehlerAusführen=Грешка при провеждането на '{0}':\n\n{1}
 MonoUpdateHinweis=Ако ъпдейтът не започне, изпълнете следната команда: \n\n{0}
 UpdateHistory=История на ъпдейтите

@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Polski
-msgUpdateBereitsVorhanden=Już pobrałeś aktualizacje!{0}Uruchom ponownie {1}, żeby się zainstalowała.
+msgUpdateBereitsVorhanden=Już pobrałeś aktualizacje!\n\nUruchom ponownie {0}, żeby się zainstalowała.
+msgUpdateLokaleInstallationNichtVollständig=
 Update={0} Aktualizacja
-msgUpdateVorhanden=Aktualizacja do wersji {0} istnieje.{1}Chcesz ją pobrać teraz?
+msgUpdateVorhanden=Aktualizacja do wersji {0} istnieje.\n\nChcesz ją pobrać teraz?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=Pobrałeś aktualizacje, ale jej jeszcze nie wgrałeś.\n\nUruchom program {0} jako Administrator żeby zainstalować aktualizacje.
 msgKeinUpdate=Brak Aktualizacji
 msgFehlerUpdateSuchen=Błąd wyszukiwania aktualizacji: {0}
 lblAktuelleDatei=Aktualny plik: {0}
 UpdateFertigstellen=Dokończ...
-msgUpdateErfolgreich=Aktualizacja została pobrana!{0}Do instalacji potrzebny jest restart programu {1}.{0}Mam automatycznie zrestartować program?
+msgUpdateErfolgreich=Aktualizacja została pobrana!\n\nDo instalacji potrzebny jest restart programu {0}.\n\nMam automatycznie zrestartować program?
+Neustarten=
 msgFehlerUpdate=Błąd aktualizacji: {0}
 FehlerAusführen=Błąd wykonania '{0}':\n\n{1}
 MonoUpdateHinweis=Jeśli aktualizacja się nie uruchamia, proszę o wykonanie następującego polecenia:\n\n{0}

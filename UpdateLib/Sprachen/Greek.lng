@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Ελληνικά
-msgUpdateBereitsVorhanden=Έχετε κατεβάσει μία αναβάθμιση.{0}Επανεκίνηση {1} για εγκατάσταση.
+msgUpdateBereitsVorhanden=Έχετε κατεβάσει μία αναβάθμιση.\n\nΕπανεκίνηση {0} για εγκατάσταση.
+msgUpdateLokaleInstallationNichtVollständig=
 Update={0} Αναβάθμιση
-msgUpdateVorhanden=Μία αναβάθμιση στην έκδοση {0} είναι διαθέσιμη.{1}Θέλετε να την κατεβάσετε τώρα;
+msgUpdateVorhanden=Μία αναβάθμιση στην έκδοση {0} είναι διαθέσιμη.\n\nΘέλετε να την κατεβάσετε τώρα;
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=Έχετε κατεβάσει μία αναβάθμιση αλλά δεν την έχετε εγκαταστήσει.\n\n Έναρξη {0} ως διαχειριστής για εγκατάσταση.
 msgKeinUpdate=Καμμία διαθέσιμη αναβάθμιση
 msgFehlerUpdateSuchen=Σφάλμα κατά την αναζήτηση αναβαθμίσεων: {0}
 lblAktuelleDatei=Τρέχων αρχείο: {0}
 UpdateFertigstellen=Ολοκλήρωση...
-msgUpdateErfolgreich=Η αναβάθμιση κατέβηκε επιτυχώς!{0}Για να την εγκαταστήσετε πρέπει να κάνετε επανεκίνηση {1}.{0}Επανεκίνηση τώρα?
+msgUpdateErfolgreich=Η αναβάθμιση κατέβηκε επιτυχώς!\n\nΓια να την εγκαταστήσετε πρέπει να κάνετε επανεκίνηση {0}.\n\nΕπανεκίνηση τώρα?
+Neustarten=
 msgFehlerUpdate=Σφάλμα κατά την αναβάθμιση: {0}
 FehlerAusführen=Σφάλμα κατά την εκτέλεση: '{0}':\n\n{1}
 MonoUpdateHinweis=Εάν η αναβάθμιση δεν ξεκινήσει, εκτελέστε την ακόλουθη εντολή:\n\n{0}

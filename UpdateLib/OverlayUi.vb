@@ -31,7 +31,7 @@
     End Sub
 
     Private Sub _update_UpdateDownloaded(sender As Object, e As EventArgs) Handles _update.UpdateDownloaded
-        lblText.Text = _update.t.Translate("msgUpdateErfolgreich", Environment.NewLine, _update.TranslatedProgramName)
+        lblText.Text = _update.t.Translate("msgUpdateErfolgreich", _update.TranslatedProgramName)
         LinkLabel.Visible = False
         cmdAction.Tag = "Restart"
         cmdAction.Text = _update.t.Translate("Neustarten")
@@ -56,7 +56,7 @@
             additionalText = Environment.NewLine + Environment.NewLine + _update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
         End If
 
-        lblText.Text = _update.t.Translate("msgUpdateVorhanden", e.DisplayVersion, Environment.NewLine) + additionalText
+        lblText.Text = _update.t.Translate("msgUpdateVorhanden", e.DisplayVersion) + additionalText
         LinkLabel.Text = _update.t.Translate("ShowReleasenotes")
         LinkLabel.Links(0).LinkData = e.ReleaseNotesUrl
         LinkLabel.Visible = True

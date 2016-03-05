@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Boarisch
-msgUpdateBereitsVorhanden=Es gibt scho a Update!{0}Zum Installiern, muasst as {1} Programm neistartn.
+msgUpdateBereitsVorhanden=Es gibt scho a Update!\n\nZum Installiern, muasst as {0} Programm neistartn.
+msgUpdateLokaleInstallationNichtVollständig=
 Update=Neie Version vom {0} Programm
-msgUpdateVorhanden=Es gibt a Update auf Version {0}.{1}Mogst des jetz obalon?
+msgUpdateVorhanden=Es gibt a Update auf Version {0}.\n\nMogst des jetz obalon?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=Sie hom grod a Update obaglon.\n\nStartens as {0} Programm ois Admin ums Update zum installiern.
 msgKeinUpdate=Koa neie Version do
 msgFehlerUpdateSuchen=Fella beim Updatesuacha: {0}
 lblAktuelleDatei=Datei: {0}
 UpdateFertigstellen=Fertigmacha...
-msgUpdateErfolgreich=Update erfolgreich obaglon!{0}Ums Update jetz zum Installieren, muast as {1} Programm neistartn.{0}Soi jetz automatisch neigstart wean?
+msgUpdateErfolgreich=Update erfolgreich obaglon!\n\nUms Update jetz zum Installieren, muast as {0} Programm neistartn.\n\nSoi jetz automatisch neigstart wean?
+Neustarten=
 msgFehlerUpdate=Fella beim updatn: {0}
 FehlerAusführen=Do hamma jetzad an Fehla beim Ausführen vo „{0}“:\n\n{1}
 MonoUpdateHinweis=Wenns Update ned kemma soitad muasd des ausführn:\n\n{0}

@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Nederlands
-msgUpdateBereitsVorhanden=Er is een update beschikbaar!{0}Start {1} om het te installeren.
+msgUpdateBereitsVorhanden=Er is een update beschikbaar!\n\nStart {0} om het te installeren.
+msgUpdateLokaleInstallationNichtVollständig=
 Update={0} Update
-msgUpdateVorhanden=Update versie {0} is beschikbaar.{1}Wilt u het downloaden?
+msgUpdateVorhanden=Update versie {0} is beschikbaar.\n\nWilt u het downloaden?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=U hebt een update gedownload maar nog niet geïnstalleerd.\n\n Start {0} als administrator om het te installeren.
 msgKeinUpdate=Geen updates beschikbaar
 msgFehlerUpdateSuchen=Fout bij het zoeken naar updates: {0}
 lblAktuelleDatei=Huidig bestand: {0}
 UpdateFertigstellen=Afwerken...
-msgUpdateErfolgreich=Downloading update succesvol!{0}Herstart {1} om update te installeren.{0}Nu herstarten?
+msgUpdateErfolgreich=Downloading update succesvol!\n\nHerstart {0} om update te installeren.\n\nNu herstarten?
+Neustarten=
 msgFehlerUpdate=Fout bij het updaten: {0}
 FehlerAusführen=Fout waar u mee bezig was '{0}':\n\n{1}
 MonoUpdateHinweis=Als de update niet wil starten doe het volgende:\n\n{0}

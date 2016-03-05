@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Português
-msgUpdateBereitsVorhanden=Você já baixou uma atualização.{0}Reinicie {1} para instalá-la.
+msgUpdateBereitsVorhanden=Você já baixou uma atualização.\n\nReinicie {0} para instalá-la.
+msgUpdateLokaleInstallationNichtVollständig=
 Update={0} atualização
-msgUpdateVorhanden=Atualização para a versão {0} está disponível.{1}Você quer baixá-la agora?
+msgUpdateVorhanden=Atualização para a versão {0} está disponível.\n\nVocê quer baixá-la agora?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=Você baixou uma atualização mas ela ainda não foi instalada.\n\n Inicie {0} como administrador para instalar a atualização.
 msgKeinUpdate=Nenhuma atualização disponível.
 msgFehlerUpdateSuchen=Erro durante a procura por atualizações: {0}
 lblAktuelleDatei=Arquivo atual: {0}
 UpdateFertigstellen=Finalizando...
-msgUpdateErfolgreich=Atualização baixada com sucesso!{0}Para instalar a atualização você precisa reiniciar {1}.{0}Reiniciar agora?
+msgUpdateErfolgreich=Atualização baixada com sucesso!\n\nPara instalar a atualização você precisa reiniciar {0}.\n\nReiniciar agora?
+Neustarten=
 msgFehlerUpdate=Erro durante a atualização: {0}
 FehlerAusführen=Erro ao tentar executar '{0}':\n\n{1}
 MonoUpdateHinweis=Se a atualização não iniciar, execute o seguinte comando:\n\n{0}

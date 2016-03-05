@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Deutsch
-msgUpdateBereitsVorhanden=Es ist bereits ein Update vorhanden!{0}Starten Sie {1} neu, um es zu installieren.
+msgUpdateBereitsVorhanden=Es ist bereits ein Update vorhanden!\n\nStarten Sie {0} neu, um es zu installieren.
+msgUpdateLokaleInstallationNichtVollständig=Die lokale Installation ist nicht vollständig. Bitte laden Sie das Programm manuell herunter und installieren Sie es neu.
 Update={0} Update
-msgUpdateVorhanden=Ein Update auf Version {0} ist vorhanden.{1}Wollen Sie dieses jetzt herunterladen?
-msgUpdateInstallierenAdmin=Sie haben ein Update heruntergeladen aber noch nicht installiert.\n\nStarten Sie das {0} Programm als Administrator um das Update zu installieren.
+msgUpdateVorhanden=Ein Update auf Version {0} ist vorhanden.\n\nWollen Sie dieses jetzt herunterladen?
+ShowReleasenotes=Zeige Neuigkeiten
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=Herunterla&den
+msgUpdateInstallierenAdmin=Sie haben ein Update heruntergeladen aber noch nicht installiert.Starten Sie das {0} Programm als Administrator um das Update zu installieren.
 msgKeinUpdate=Kein Update vorhanden
 msgFehlerUpdateSuchen=Fehler beim Updatesuchen: {0}
 lblAktuelleDatei=Aktuelle Datei: {0}
 UpdateFertigstellen=Fertigstellen...
-msgUpdateErfolgreich=Update erfolgreich heruntergeladen!{0}Um das Update zu installieren müssen Sie {1} neustarten.{0}Soll automatisch neu gestartet werden?
+msgUpdateErfolgreich=Update erfolgreich heruntergeladen!\n\nUm das Update zu installieren müssen Sie {0} neustarten.\n\nSoll automatisch neu gestartet werden?
+Neustarten=Neusta&rten
 msgFehlerUpdate=Fehler beim Updaten: {0}
 FehlerAusführen=Fehler beim Ausführen von „{0}“:\n\n{1}
 MonoUpdateHinweis=Wenn das Update nicht starten sollte, führen Sie folgenden Befehl aus:\n\n{0}

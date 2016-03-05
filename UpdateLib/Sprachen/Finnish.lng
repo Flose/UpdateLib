@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=Suomi
-msgUpdateBereitsVorhanden=Olet jo ladannut päivityksen.{0}Uudelleenkäynnistä{1}asentaaksesi se.
+msgUpdateBereitsVorhanden=Olet jo ladannut päivityksen.\n\nUudelleenkäynnistä{0}asentaaksesi se.
+msgUpdateLokaleInstallationNichtVollständig=
 Update={0} päivitys
-msgUpdateVorhanden=Päivitys versioon {0} on saatavilla.{1}Haluatko ladata sen nyt?
+msgUpdateVorhanden=Päivitys versioon {0} on saatavilla.\n\nHaluatko ladata sen nyt?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+Herunterladen=
 msgUpdateInstallierenAdmin=Olet ladannut päivityksen mutta et ole asentanut sitä vielä. Käynnistä {0} järjestelmänvalvojana asentaaksesi päivityksen.
 msgKeinUpdate=Ei päivityksiä saatavilla
 msgFehlerUpdateSuchen=Virhe päivityksiä etsiessä: {0}
 lblAktuelleDatei=Nykyinen kansio: {0}
 UpdateFertigstellen=Viimeistellään...
-msgUpdateErfolgreich=Päivitys ladattiin onnistuneesti!{0}Asentaaksesi päivityksen sinun täytyy käynnistää uudelleen. Käynistä uudelleen nyt?
+msgUpdateErfolgreich=Päivitys ladattiin onnistuneesti!\n\nAsentaaksesi {1} päivityksen sinun täytyy käynnistää uudelleen.\n\nKäynistä uudelleen nyt?
+Neustarten=
 msgFehlerUpdate=Virhe päivityksen aikana: {0}
 FehlerAusführen=Virhe suorittaessa "{0}":\n\n{1}
 MonoUpdateHinweis=Jos päivitys ei käynnisty, aja seuraava komento:\n\n{0}
