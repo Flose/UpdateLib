@@ -130,11 +130,19 @@ Public Class Update
     End Class
 
     Private Sub RaiseUpdateInfoEvent(message As String)
-        RaiseEvent UpdateInfo(Me, New InfoEventArgs(message))
+        If UpdateInfoEvent Is Nothing OrElse UpdateInfoEvent.GetInvocationList.Length = 0 Then
+            Windows.Forms.MessageBox.Show(message, TranslatedTitle, Windows.Forms.MessageBoxButtons.OK, Windows.Forms.MessageBoxIcon.Information)
+        Else
+            RaiseEvent UpdateInfo(Me, New InfoEventArgs(message))
+        End If
     End Sub
 
     Private Sub RaiseUpdateErrorEvent(message As String, innerException As Exception)
-        RaiseEvent UpdateError(Me, New ErrorEventArgs(message, innerException))
+        If UpdateErrorEvent Is Nothing OrElse UpdateErrorEvent.GetInvocationList.Length = 0 Then
+            Windows.Forms.MessageBox.Show(message, TranslatedTitle, Windows.Forms.MessageBoxButtons.OK, Windows.Forms.MessageBoxIcon.Error)
+        Else
+            RaiseEvent UpdateError(Me, New ErrorEventArgs(message, innerException))
+        End If
     End Sub
 
     Private Sub RaiseUpdateFoundEvent(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkInstallStatus As InstallStatus)
