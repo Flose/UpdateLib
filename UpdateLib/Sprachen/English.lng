@@ -1,14 +1,20 @@
 ﻿1
 SprachenName=English
 msgUpdateBereitsVorhanden=You have already downloaded an update.{0} Restart {1} to install it.
+msgUpdateLokaleInstallationNichtVollständig=The local installation is not complete.\n\nPlease download the program manually and reinstall it.
 Update={0} update
 msgUpdateVorhanden=Update to version {0} is available.{1}Do you want to download it now?
-msgUpdateInstallierenAdmin=You have downloaded an update but have not installed it yet.\n\n Start {0} as administrator to install the update.
+ShowReleasenotes=Show release notes
+WarningNetFrameworkTooOld=Warning: Install .Net Framework {0} (or an equivalent Mono version) before installing the update. Otherwise the program will fail to start after the update.
+WarningNetFrameworkUnknown=Warning: .Net Framework {0} (or an equivalent Mono version) is necessary for this update. Make sure it’s installed.
+Herunterladen=&Download
+msgUpdateInstallierenAdmin=You have downloaded an update but have not installed it yet.\n\nStart {0} as administrator to install the update.
 msgKeinUpdate=No update available
 msgFehlerUpdateSuchen=Error while searching updates: {0}
 lblAktuelleDatei=Current file: {0}
 UpdateFertigstellen=Finalising...
 msgUpdateErfolgreich=Update downloaded successfully!{0}To install the update you have to restart {1}.{0}Restart now?
+Neustarten=&Restart
 msgFehlerUpdate=Error while Updating: {0}
 FehlerAusführen=Error while trying to execute “{0}”:\n\n{1}
 MonoUpdateHinweis=If the update doesn’t start, run the following command:\n\n{0}

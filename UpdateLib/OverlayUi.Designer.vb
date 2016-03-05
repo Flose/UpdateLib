@@ -34,6 +34,7 @@ Partial Class OverlayUi
         'TableLayoutPanel1
         '
         Me.TableLayoutPanel1.AutoSize = True
+        Me.TableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableLayoutPanel1.ColumnCount = 2
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle())
@@ -49,14 +50,14 @@ Partial Class OverlayUi
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle())
-        Me.TableLayoutPanel1.Size = New System.Drawing.Size(146, 84)
+        Me.TableLayoutPanel1.Size = New System.Drawing.Size(116, 84)
         Me.TableLayoutPanel1.TabIndex = 0
         '
         'cmdClose
         '
         Me.cmdClose.AutoSize = True
         Me.cmdClose.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.cmdClose.Location = New System.Drawing.Point(119, 3)
+        Me.cmdClose.Location = New System.Drawing.Point(89, 3)
         Me.cmdClose.Name = "cmdClose"
         Me.cmdClose.Size = New System.Drawing.Size(24, 23)
         Me.cmdClose.TabIndex = 1
@@ -78,19 +79,19 @@ Partial Class OverlayUi
         Me.lblTitle.AutoSize = True
         Me.lblTitle.Location = New System.Drawing.Point(3, 8)
         Me.lblTitle.Name = "lblTitle"
-        Me.lblTitle.Size = New System.Drawing.Size(42, 13)
+        Me.lblTitle.Size = New System.Drawing.Size(27, 13)
         Me.lblTitle.TabIndex = 3
-        Me.lblTitle.Text = "Update"
+        Me.lblTitle.Text = "Title"
         '
         'LinkLabel
         '
         Me.LinkLabel.AutoSize = True
         Me.LinkLabel.Location = New System.Drawing.Point(3, 42)
         Me.LinkLabel.Name = "LinkLabel"
-        Me.LinkLabel.Size = New System.Drawing.Size(110, 13)
+        Me.LinkLabel.Size = New System.Drawing.Size(52, 13)
         Me.LinkLabel.TabIndex = 4
         Me.LinkLabel.TabStop = True
-        Me.LinkLabel.Text = "Neuigkeiten anzeigen"
+        Me.LinkLabel.Text = "Link label"
         '
         'cmdAction
         '
@@ -98,9 +99,9 @@ Partial Class OverlayUi
         Me.cmdAction.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.cmdAction.Location = New System.Drawing.Point(3, 58)
         Me.cmdAction.Name = "cmdAction"
-        Me.cmdAction.Size = New System.Drawing.Size(101, 23)
+        Me.cmdAction.Size = New System.Drawing.Size(80, 23)
         Me.cmdAction.TabIndex = 0
-        Me.cmdAction.Text = "Jetzt aktualisieren"
+        Me.cmdAction.Text = "Action button"
         Me.cmdAction.UseVisualStyleBackColor = True
         '
         'OverlayUi
@@ -108,14 +109,14 @@ Partial Class OverlayUi
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.AutoSize = True
+        Me.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.BackColor = System.Drawing.Color.Khaki
         Me.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Controls.Add(Me.TableLayoutPanel1)
         Me.Name = "OverlayUi"
-        Me.Size = New System.Drawing.Size(149, 87)
+        Me.Size = New System.Drawing.Size(119, 87)
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.TableLayoutPanel1.PerformLayout()
-        Me.Visible = False
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
