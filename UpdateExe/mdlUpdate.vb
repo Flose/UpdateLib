@@ -131,7 +131,7 @@ Module mdlUpdate
 
         Try
             Using UpdateWriter As New IO.StreamWriter(IO.Path.Combine(InstallationPath, "UpdateHistory.txt"), True)
-                UpdateWriter.WriteLine(Date.Now & "|" & programVersion)
+                UpdateWriter.WriteLine(String.Format("{0}|{1}", Date.UtcNow.ToString("u"), programVersion.Replace("|"c, "_"c)))
             End Using
         Catch ex As Exception
             Console.Error.WriteLine("Failed to write update history: {0}", ex.Message)
