@@ -564,7 +564,7 @@ Public Class Update
             End Try
 
             Try
-                Using writer As New IO.StreamWriter("UpdateInfo.txt", False, Text.Encoding.UTF8)
+                Using writer As New IO.StreamWriter(IO.Path.Combine(x.tempUpdatePath, "UpdateInfo.txt"), False, Text.Encoding.UTF8)
                     writer.WriteLine(1)
                     writer.WriteLine(x.remoteVersionsFile.DisplayVersion)
                     For Each f In x.filesToDelete
