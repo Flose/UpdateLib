@@ -1,6 +1,7 @@
 obj/
 bin/
 *.suo
+*.vbproj.user
 
 # Ignore NuGet Packages
 *.nupkg
