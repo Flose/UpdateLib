@@ -20,6 +20,9 @@ Friend Class VersionsFile
     <JsonProperty("categories", Required:=Required.Always)>
     Public Categories As New List(Of Category)
 
+    <JsonProperty("filesToDelete", NullValueHandling:=NullValueHandling.Ignore)>
+    Public FilesToDelete As New List(Of String)
+
     Private originalContent As String
 
     Public Shared Function Open(file As String, Optional keepInputStreamInMemory As Boolean = False) As VersionsFile

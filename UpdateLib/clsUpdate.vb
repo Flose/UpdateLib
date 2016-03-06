@@ -933,6 +933,9 @@ Public Class Update
         Next
 
         filesToDelete = New List(Of String)
+        If remoteVersionsFile.FilesToDelete IsNot Nothing Then
+            filesToDelete.AddRange(remoteVersionsFile.FilesToDelete)
+        End If
         'Search for files that should be deleted
         For Each c In localVersionsFile.Categories
             For Each f In c.Files
