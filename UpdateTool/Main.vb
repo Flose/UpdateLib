@@ -1,4 +1,5 @@
 ﻿Module Main
+    Private Const VersionsFileName = "versions.json"
 
     Sub Main()
         Dim args = Environment.GetCommandLineArgs()
@@ -36,7 +37,7 @@
     Private Sub ConvertLegacyFile(legacyFile As String)
         Dim versionFile = OpenLegacyVersionsFile(legacyFile)
 
-        Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(legacyFile), "versions.json")
+        Dim newFile = IO.Path.Combine(IO.Path.GetDirectoryName(legacyFile), VersionsFileName)
         versionFile.Save(newFile)
         Console.Out.WriteLine("Converted old file to ""{0}""", newFile)
     End Sub
@@ -56,8 +57,9 @@
             Next
         End Using
         For Each file In IO.Directory.EnumerateFiles(dir, "*", IO.SearchOption.AllDirectories)
-            If Not allFileNames.Contains(IO.Path.GetFullPath(file)) Then
+            If IO.Path.GetFileName(file) <> VersionsFileName AndAlso Not allFileNames.Contains(IO.Path.GetFullPath(file)) Then
                 Console.Out.WriteLine("File in update dir, but missing in versions.json: {0}", file)
+                Environment.ExitCode = 3
             End If
         Next
         versionFile.Save(versionsFile)
