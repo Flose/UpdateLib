@@ -59,9 +59,11 @@
 
         lblText.Text = _update.t.Translate("msgUpdateVorhanden", e.DisplayVersion)
         lblText.Show()
-        LinkLabel.Text = _update.t.Translate("ShowReleasenotes")
-        LinkLabel.Links(0).LinkData = e.ReleaseNotesUrl
-        LinkLabel.Visible = True
+        If Not String.IsNullOrEmpty(e.ReleaseNotesUrl) Then
+            LinkLabel.Text = _update.t.Translate("ShowReleasenotes")
+            LinkLabel.Links(0).LinkData = e.ReleaseNotesUrl
+            LinkLabel.Show()
+        End If
         cmdAction.Tag = "Download"
         cmdAction.Text = _update.t.Translate("Herunterladen")
         cmdAction.Show()
