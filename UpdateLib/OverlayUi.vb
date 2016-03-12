@@ -5,7 +5,7 @@
         ' Dieser Aufruf ist für den Designer erforderlich.
         InitializeComponent()
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
-        Me.Visible = False
+        Hide()
     End Sub
 
     Public Sub New(update As Update)
@@ -31,46 +31,47 @@
     End Sub
 
     Private Sub _update_UpdateDownloaded(sender As Object, e As EventArgs) Handles _update.UpdateDownloaded
+        Hide()
         lblText.Text = _update.t.Translate("msgUpdateErfolgreich", _update.TranslatedProgramName)
-        LinkLabel.Visible = False
+        lblText.Show()
         cmdAction.Tag = "Restart"
         cmdAction.Text = _update.t.Translate("Neustarten")
-        cmdAction.Visible = True
+        cmdAction.Show()
         Show()
     End Sub
 
     Private Sub _update_UpdateError(sender As Object, e As ErrorEventArgs) Handles _update.UpdateError
-        'TODO formatting
-        lblText.Text = e.Message
-        LinkLabel.Visible = False
-        cmdAction.Visible = False
+        Hide()
+        lblWarning.Text = e.Message
+        lblWarning.Show()
         Show()
     End Sub
 
     Private Sub _update_UpdateFound(sender As Object, e As UpdateFoundEventArgs) Handles _update.UpdateFound
-        ' TODO separate label (bold) for warnings
-        Dim additionalText As String = ""
+        Hide()
         If e.FrameworkInstallStatus = UpdateLib.Update.InstallStatus.NotInstalled Then
-            additionalText = Environment.NewLine + Environment.NewLine + _update.t.Translate("WarningNetFrameworkTooOld", e.Framework)
+            lblWarning.Text = _update.t.Translate("WarningNetFrameworkTooOld", e.Framework)
+            lblWarning.Show()
         ElseIf e.FrameworkInstallStatus = UpdateLib.Update.InstallStatus.Unknown Then
-            additionalText = Environment.NewLine + Environment.NewLine + _update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
+            lblWarning.Text = _update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
+            lblWarning.Show()
         End If
 
-        lblText.Text = _update.t.Translate("msgUpdateVorhanden", e.DisplayVersion) + additionalText
+        lblText.Text = _update.t.Translate("msgUpdateVorhanden", e.DisplayVersion)
+        lblText.Show()
         LinkLabel.Text = _update.t.Translate("ShowReleasenotes")
         LinkLabel.Links(0).LinkData = e.ReleaseNotesUrl
         LinkLabel.Visible = True
         cmdAction.Tag = "Download"
         cmdAction.Text = _update.t.Translate("Herunterladen")
-        cmdAction.Visible = True
+        cmdAction.Show()
         Show()
     End Sub
 
     Private Sub _update_UpdateInfo(sender As Object, e As InfoEventArgs) Handles _update.UpdateInfo
-        'TODO formating
+        Hide()
         lblText.Text = e.Message
-        LinkLabel.Visible = False
-        cmdAction.Visible = False
+        lblText.Show()
         Show()
     End Sub
 
@@ -89,12 +90,29 @@
         Hide()
     End Sub
 
-    Private Sub LinkLabel_LinkClicked(sender As Object, e As Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel.LinkClicked
+    Private Sub LinkLabel_LinkClicked(sender As Object, e As Windows.Forms.LinkLabelLinkClickedEventArgs) Handles LinkLabel.LinkClicked, LinkLabelWarning.LinkClicked
         e.Link.Visited = True
         Dim target As String = CType(e.Link.LinkData, String)
 
         If target IsNot Nothing Then
             Diagnostics.Process.Start(target)
         End If
+    End Sub
+
+    Private Shadows Sub Show()
+        If Parent IsNot Nothing Then
+            TableLayoutPanel1.MaximumSize = New Drawing.Size(2 * Parent.Size.Width \ 3, TableLayoutPanel1.MaximumSize.Height)
+        End If
+        MyBase.Show()
+        BringToFront()
+    End Sub
+
+    Private Shadows Sub Hide()
+        MyBase.Hide()
+        lblText.Hide()
+        LinkLabel.Hide()
+        lblWarning.Hide()
+        LinkLabelWarning.Hide()
+        cmdAction.Hide()
     End Sub
 End Class
