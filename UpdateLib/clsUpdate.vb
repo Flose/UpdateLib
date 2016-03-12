@@ -107,8 +107,8 @@ Public Class Update
         End If
     End Sub
 
-    Private Sub RaiseUpdateFoundEvent(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkInstallStatus As InstallStatus)
-        RaiseEvent UpdateFound(Me, New UpdateFoundEventArgs(displayVersion, releaseNotesUrl, framework, frameworkInstallStatus))
+    Private Sub RaiseUpdateFoundEvent(newVersionFile As VersionsFile, frameworkInstallStatus As InstallStatus)
+        RaiseEvent UpdateFound(Me, New UpdateFoundEventArgs(newVersionFile.DisplayVersion, newVersionFile.ReleaseNotesUrl, newVersionFile.Framework, newVersionFile.FrameworkUrl, frameworkInstallStatus))
     End Sub
 
     Private Sub RaiseUpdateDownloadedEvent()
@@ -385,7 +385,7 @@ Public Class Update
             End If
 
             x.isUpdating = False
-            x.RaiseUpdateFoundEvent(x.remoteVersionsFile.DisplayVersion, x.remoteVersionsFile.ReleasNotesUrl, x.remoteVersionsFile.Framework, frameworkInstallStatus)
+            x.RaiseUpdateFoundEvent(x.remoteVersionsFile, frameworkInstallStatus)
         End Sub
     End Class
 

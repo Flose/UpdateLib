@@ -1,27 +1,30 @@
 ﻿Imports Newtonsoft.Json
 
 Friend Class VersionsFile
-    <JsonProperty("displayVersion")>
+    <JsonProperty("displayVersion", NullValueHandling:=NullValueHandling.Ignore)>
     Public DisplayVersion As String
 
     <JsonProperty("version", Required:=Required.Always)>
     <JsonConverter(GetType(Converters.VersionConverter))>
     Public Version As Version
 
-    <JsonProperty("releaseNotesUrl")>
-    Public ReleasNotesUrl As String
+    <JsonProperty("releaseNotesUrl", NullValueHandling:=NullValueHandling.Ignore)>
+    Public ReleaseNotesUrl As String
 
-    <JsonProperty("projectUrl")>
+    <JsonProperty("projectUrl", NullValueHandling:=NullValueHandling.Ignore)>
     Public ProjectUrl As String
 
-    <JsonProperty("framework")>
+    <JsonProperty("framework", NullValueHandling:=NullValueHandling.Ignore)>
     Public Framework As String
+
+    <JsonProperty("frameworkUrl", NullValueHandling:=NullValueHandling.Ignore)>
+    Public FrameworkUrl As String
 
     <JsonProperty("categories", Required:=Required.Always)>
     Public Categories As New List(Of Category)
 
     <JsonProperty("filesToDelete", NullValueHandling:=NullValueHandling.Ignore)>
-    Public FilesToDelete As New List(Of String)
+    Public FilesToDelete As List(Of String)
 
     Private originalContent As String
 

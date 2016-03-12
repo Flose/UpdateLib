@@ -84,7 +84,7 @@
                 result.Version = New Version(result.DisplayVersion)
                 'InterneVersion = CInt()
                 reader.ReadLine()
-                result.ReleasNotesUrl = reader.ReadLine
+                result.ReleaseNotesUrl = reader.ReadLine
                 Dim currentCategory As Category = Nothing
                 Do
                     Dim line = reader.ReadLine

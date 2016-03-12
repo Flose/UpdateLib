@@ -26,12 +26,14 @@ Public Class UpdateFoundEventArgs
     Public ReadOnly Property DisplayVersion As String
     Public ReadOnly Property ReleaseNotesUrl As String
     Public ReadOnly Property Framework As String
+    Public ReadOnly Property FrameworkUrl As String
     Public ReadOnly Property FrameworkInstallStatus As Update.InstallStatus
 
-    Friend Sub New(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkInstallStatus As Update.InstallStatus)
+    Friend Sub New(displayVersion As String, releaseNotesUrl As String, framework As String, frameworkUrl As String, frameworkInstallStatus As Update.InstallStatus)
         Me.DisplayVersion = displayVersion
         Me.ReleaseNotesUrl = releaseNotesUrl
         Me.Framework = framework
+        Me.FrameworkUrl = frameworkUrl
         Me.FrameworkInstallStatus = frameworkInstallStatus
     End Sub
 End Class

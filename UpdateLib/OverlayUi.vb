@@ -56,6 +56,13 @@
             lblWarning.Text = _update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
             lblWarning.Show()
         End If
+        If e.FrameworkInstallStatus <> UpdateLib.Update.InstallStatus.Installed Then
+            If Not String.IsNullOrEmpty(e.FrameworkUrl) Then
+                LinkLabelWarning.Text = _update.t.Translate("NetFrameworkDownload")
+                LinkLabelWarning.Links(0).LinkData = e.FrameworkUrl
+                LinkLabelWarning.Show()
+            End If
+        End If
 
         lblText.Text = _update.t.Translate("msgUpdateVorhanden", e.DisplayVersion)
         lblText.Show()

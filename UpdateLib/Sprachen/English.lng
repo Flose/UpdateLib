@@ -7,6 +7,7 @@ msgUpdateVorhanden=Update to version {0} is available.\n\nDo you want to downloa
 ShowReleasenotes=Show release notes
 WarningNetFrameworkTooOld=Warning: Install .Net Framework {0} (or an equivalent Mono version) before installing the update. Otherwise the program will fail to start after the update.
 WarningNetFrameworkUnknown=Warning: .Net Framework {0} (or an equivalent Mono version) is necessary for this update. Make sure it’s installed.
+NetFrameworkDownload=Download .Net Framework
 Herunterladen=&Download
 msgUpdateInstallierenAdmin=You have downloaded an update but have not installed it yet.\n\nStart {0} as administrator to install the update.
 msgKeinUpdate=No update available
