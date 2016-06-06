@@ -1,37 +1,37 @@
 ﻿Imports System.Windows.Forms
 
 Public Class MessageBoxUi
-    Private WithEvents update As Update
+    Private WithEvents _update As Update
 
     Public Sub New(update As Update)
-        Me.update = update
+        Me._update = update
     End Sub
 
-    Private Sub update_UpdateDownloaded(sender As Object, e As EventArgs) Handles update.UpdateDownloaded
-        If DialogResult.Yes <> MessageBox.Show(update.t.Translate("msgUpdateErfolgreich", update.TranslatedProgramName), update.t.Translate("Update", update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
-            update.InstallUpdate()
+    Private Sub _update_UpdateDownloaded(sender As Object, e As EventArgs) Handles _update.UpdateDownloaded
+        If DialogResult.Yes <> MessageBox.Show(_update.t.Translate("msgUpdateErfolgreich", _update.TranslatedProgramName), _update.t.Translate("Update", _update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1) Then
+            _update.InstallUpdate()
         End If
     End Sub
 
-    Private Sub update_UpdateError(sender As Object, e As ErrorEventArgs) Handles update.UpdateError
-        MessageBox.Show(e.Message, update.TranslatedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
+    Private Sub _update_UpdateError(sender As Object, e As ErrorEventArgs) Handles _update.UpdateError
+        MessageBox.Show(e.Message, _update.TranslatedTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
     End Sub
 
-    Private Sub update_UpdateFound(sender As Object, e As UpdateFoundEventArgs) Handles update.UpdateFound
+    Private Sub _update_UpdateFound(sender As Object, e As UpdateFoundEventArgs) Handles _update.UpdateFound
         Dim additionalText As String = ""
         If e.FrameworkInstallStatus = Update.InstallStatus.NotInstalled Then
-            additionalText = Environment.NewLine + Environment.NewLine + _update.t.Translate("WarningNetFrameworkTooOld", e.Framework)
+            additionalText = Environment.NewLine + Environment.NewLine + __update.t.Translate("WarningNetFrameworkTooOld", e.Framework)
         ElseIf e.FrameworkInstallStatus = UpdateLib.Update.InstallStatus.Unknown Then
-            additionalText = Environment.NewLine + Environment.NewLine + _update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
+            additionalText = Environment.NewLine + Environment.NewLine + __update.t.Translate("WarningNetFrameworkUnknown", e.Framework)
         End If
-        If DialogResult.Yes <> MessageBox.Show(update.t.Translate("msgUpdateVorhanden", e.DisplayVersion) + additionalText, update.t.Translate("Update", update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
-            update.DownloadUpdateAsync()
+        If DialogResult.Yes <> MessageBox.Show(_update.t.Translate("msgUpdateVorhanden", e.DisplayVersion) + additionalText, _update.t.Translate("Update", _update.TranslatedProgramName), MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) Then
+            _update.DownloadUpdateAsync()
         Else
-            update.ResetUpdateState()
+            _update.ResetUpdateState()
         End If
     End Sub
 
-    Private Sub update_UpdateInfo(sender As Object, e As InfoEventArgs) Handles update.UpdateInfo
-        MessageBox.Show(e.Message, update.TranslatedTitle, MessageBoxButtons.OK, MessageBoxIcon.Information)
+    Private Sub _update_UpdateInfo(sender As Object, e As InfoEventArgs) Handles _update.UpdateInfo
+        MessageBox.Show(e.Message, _update.TranslatedTitle, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class

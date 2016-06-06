@@ -272,12 +272,12 @@ Public Class Update
                IO.Directory.GetFiles(tempUpdateBasePath, "Update-*.exe").Length > 0
     End Function
 
-
     Public Enum InstallStatus
         Installed
         NotInstalled
         Unknown
     End Enum
+
     Private Class SearchUpdateWorker
         Inherits BackgroundWorker
 

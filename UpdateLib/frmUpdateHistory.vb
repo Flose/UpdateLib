@@ -15,12 +15,12 @@
                             Exit Do
                         End If
 
-                        Dim tmp = line.Split("|"c)
+                        Dim dateAndVersion = line.Split("|"c)
                         Dim installDate As Date
-                        If Not Date.TryParse(tmp(0), Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.AssumeUniversal, installDate) Then
-                            installDate = CDate(tmp(0))
+                        If Not Date.TryParse(dateAndVersion(0), Globalization.CultureInfo.InvariantCulture, Globalization.DateTimeStyles.AssumeUniversal, installDate) Then
+                            installDate = CDate(dateAndVersion(0))
                         End If
-                        Dim version = tmp(1)
+                        Dim version = dateAndVersion(1)
                         lstUpdates.Items.Add(Übersetzen.Translate("VersionErfolgreichInstalliert", installDate.ToShortDateString, Version))
                     Catch
                     End Try
