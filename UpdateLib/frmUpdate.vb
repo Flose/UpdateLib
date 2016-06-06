@@ -11,7 +11,7 @@
 
     Friend Sub Aktualisieren(ByVal lblAktuelleDatei As String, ByVal Fortschritt As Integer)
         If InvokeRequired Then
-            BeginInvoke(New Aktualisieren_Callback(AddressOf Aktualisieren), lblAktuelleDatei)
+            BeginInvoke(New Aktualisieren_Callback(AddressOf Aktualisieren), lblAktuelleDatei, Fortschritt)
             Exit Sub
         End If
 
