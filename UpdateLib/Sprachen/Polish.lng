@@ -7,6 +7,7 @@ msgUpdateVorhanden=Aktualizacja do wersji {0} istnieje.\n\nChcesz ją pobrać te
 ShowReleasenotes=
 WarningNetFrameworkTooOld=
 WarningNetFrameworkUnknown=
+NetFrameworkDownload=
 Herunterladen=
 msgUpdateInstallierenAdmin=Pobrałeś aktualizacje, ale jej jeszcze nie wgrałeś.\n\nUruchom program {0} jako Administrator żeby zainstalować aktualizacje.
 msgKeinUpdate=Brak Aktualizacji

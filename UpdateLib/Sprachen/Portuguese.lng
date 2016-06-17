@@ -1,20 +1,21 @@
 ﻿1
 SprachenName=Português
 msgUpdateBereitsVorhanden=Você já baixou uma atualização.\n\nReinicie {0} para instalá-la.
-msgUpdateLokaleInstallationNichtVollständig=
+msgUpdateLokaleInstallationNichtVollständig=A instalação local não está completa.\n\nPor favor, baixe o programa manualmente e reinstale-o
 Update={0} atualização
 msgUpdateVorhanden=Atualização para a versão {0} está disponível.\n\nVocê quer baixá-la agora?
-ShowReleasenotes=
-WarningNetFrameworkTooOld=
-WarningNetFrameworkUnknown=
-Herunterladen=
+ShowReleasenotes=Exibir notas da versão
+WarningNetFrameworkTooOld=Atenção: Instale o .Net Framework {0} (ou uma versão Mono equivalente) antes de instalar a atualização. Caso contrário o programa irá falhar ao reiniciar após a atualização.
+WarningNetFrameworkUnknown=Atenção:.Net Framework {0} (ou uma versão Mono equivalente) é necessária para esta atualização. Certifique-se de que esteja instalada.
+NetFrameworkDownload=Baixar .Net Framework
+Herunterladen=&Baixar
 msgUpdateInstallierenAdmin=Você baixou uma atualização mas ela ainda não foi instalada.\n\n Inicie {0} como administrador para instalar a atualização.
 msgKeinUpdate=Nenhuma atualização disponível.
 msgFehlerUpdateSuchen=Erro durante a procura por atualizações: {0}
 lblAktuelleDatei=Arquivo atual: {0}
 UpdateFertigstellen=Finalizando...
 msgUpdateErfolgreich=Atualização baixada com sucesso!\n\nPara instalar a atualização você precisa reiniciar {0}.\n\nReiniciar agora?
-Neustarten=
+Neustarten=&Reiniciar
 msgFehlerUpdate=Erro durante a atualização: {0}
 FehlerAusführen=Erro ao tentar executar '{0}':\n\n{1}
 MonoUpdateHinweis=Se a atualização não iniciar, execute o seguinte comando:\n\n{0}

@@ -7,6 +7,7 @@ msgUpdateVorhanden=Es gibt a Update auf Version {0}.\n\nMogst des jetz obalon?
 ShowReleasenotes=
 WarningNetFrameworkTooOld=
 WarningNetFrameworkUnknown=
+NetFrameworkDownload=
 Herunterladen=
 msgUpdateInstallierenAdmin=Sie hom grod a Update obaglon.\n\nStartens as {0} Programm ois Admin ums Update zum installiern.
 msgKeinUpdate=Koa neie Version do

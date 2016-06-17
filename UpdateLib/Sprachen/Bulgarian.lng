@@ -7,6 +7,7 @@ msgUpdateVorhanden=Съществува ъпдейт на версия {0}.\n\n�
 ShowReleasenotes=
 WarningNetFrameworkTooOld=
 WarningNetFrameworkUnknown=
+NetFrameworkDownload=
 Herunterladen=
 msgUpdateInstallierenAdmin=Вече сте свалили един ъпдейт, но не сте го инсталирали.\n\nСтартирайте програмата {0} като администратор, за да инсталирате ъпдейта.
 msgKeinUpdate=Не съществува ъпдейт

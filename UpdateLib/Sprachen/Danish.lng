@@ -7,6 +7,7 @@ msgUpdateVorhanden=Opdatering til version {0}er nu tilgængelig.\n\nØnsker du a
 ShowReleasenotes=
 WarningNetFrameworkTooOld=
 WarningNetFrameworkUnknown=
+NetFrameworkDownload=
 Herunterladen=
 msgUpdateInstallierenAdmin=Du har hentet en opdatering men den er endnu ikke installeret.\n\n Start {0} som Administrator for at installere opdateringen.
 msgKeinUpdate=Ingen opdatering tilgængelig

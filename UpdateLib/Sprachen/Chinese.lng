@@ -7,6 +7,7 @@ msgUpdateVorhanden=有一个更新版本{0}\n\n你想现在就下载吗？
 ShowReleasenotes=
 WarningNetFrameworkTooOld=
 WarningNetFrameworkUnknown=
+NetFrameworkDownload=
 Herunterladen=
 msgUpdateInstallierenAdmin=您已下载了一个更新，但是你还没有安装了它。\n\n启动{0}以管理员身份来安装更新。
 msgKeinUpdate=现在没有更新

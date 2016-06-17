@@ -7,6 +7,7 @@ msgUpdateVorhanden=Postoji jedan Update za verziju {0}.\n\nŽelite li skinuti Up
 ShowReleasenotes=
 WarningNetFrameworkTooOld=
 WarningNetFrameworkUnknown=
+NetFrameworkDownload=
 Herunterladen=
 msgUpdateInstallierenAdmin=Upravo ste skinuliUpdate ali ga još niste izvršili.\n\nPokrenite {0}program kao Administrator da bi izvršili Update
 msgKeinUpdate=Nema novih Update-a
