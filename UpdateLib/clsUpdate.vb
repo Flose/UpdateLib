@@ -167,7 +167,7 @@ Public Class Update
         Me.tempUpdateBasePath = tempUpdateBasePath
         Me.tempUpdatePath = IO.Path.Combine(tempUpdateBasePath, "Update")
 
-        'Sprachen laden
+        ' Load translations
         t.AddLanguage("German", "Deutsch", My.Resources.German)
         t.AddLanguage("English", "English", My.Resources.English)
         t.AddLanguage("French", "Français", My.Resources.French)
@@ -224,7 +224,6 @@ Public Class Update
     End Sub
 
     Private Sub ReadCategoriesFile()
-        'Installierte Kategorien rausfinden
         If Not IO.File.Exists(IO.Path.Combine(programPath, "Kategorien.ini")) Then
             installedCategories = Nothing
             Exit Sub
@@ -307,7 +306,7 @@ Public Class Update
             End If
 
             Dim errors As String = Nothing
-            'Update versionsdatei öffnen:
+            ' Read remote version file
             For Each server In x.updateServers
                 Try
                     Using stream = x.OpenWebStream(x.RemoteVersionsFilePath(server))
@@ -531,9 +530,11 @@ Public Class Update
         Protected Overrides Sub OnDoWork(e As DoWorkEventArgs)
             MyBase.OnDoWork(e)
 
-            IO.Directory.CreateDirectory(x.tempUpdatePath)  'Verzeichnis für Update erstellen
+            ' Create directory for update
+            IO.Directory.CreateDirectory(x.tempUpdatePath)
 
-            For i = 0 To x.filesToUpdate.Count - 1 'Dateien herunterladen
+            ' Download files
+            For i = 0 To x.filesToUpdate.Count - 1
                 Dim currentFile = x.filesToUpdate(i)
                 ReportProgress((i + 1) * 100 \ x.filesToUpdate.Count, x.t.Translate("lblAktuelleDatei", currentFile.Name))
                 Dim url = GetUpdateFileUri(x.currentServer, x.CurrentReleaseChannel, currentFile.Name)
@@ -575,7 +576,7 @@ Public Class Update
                 Throw New Exception("Error storing UpdateInfo.txt file: " & ex.Message, ex)
             End Try
 
-            ' Update.exe verschieben
+            ' Move Update.exe to parent directory
             Dim counter As Int32, tmpNeuFile As String
             Do
                 counter += 1
@@ -647,7 +648,7 @@ Public Class Update
             Throw New Exception("Download update called, but nothing to download.")
         End If
         If IsUpdateDownloaded() Then
-            'bereits ein Update vorhanden
+            ' An update was already downloaded
             If withUI Then RaiseUpdateErrorEvent(t.Translate("msgUpdateBereitsVorhanden", TranslatedProgramName), Nothing)
             SendStatistics(StatisticsTypes.UpdateError)
             isUpdating = False
@@ -833,7 +834,9 @@ Public Class Update
         Dim pi As New ProcessStartInfo
         Try
             IO.File.Create(IO.Path.Combine(programPath, "tmp.d" & (New Random).Next(0, 10)), 1, IO.FileOptions.DeleteOnClose).Close() 'Test ob Schreibrechte im Programmverzeichnis
-        Catch 'wenn keine Schreibrechte im Programmverzeichnis
+        Catch
+            ' No write permissions in program path
+            ' Run as administrator
             If Environment.OSVersion.Platform = PlatformID.Win32NT AndAlso Environment.OSVersion.Version.Major >= 6 Then 'vista, win7/8/10
                 pi.Verb = "runas"
             Else

@@ -30,16 +30,17 @@ Module mdlUpdate
             InstallationPath = args(3)
         ElseIf IO.File.Exists(IO.Path.Combine(Environment.CurrentDirectory, "UpdateDll.dll")) OrElse
                IO.File.Exists(IO.Path.Combine(Environment.CurrentDirectory, "TranslationLib.dll")) Then
-            'Seit UpdateDLL 1.4 werden Updates in %ProgramData% gespeichert
+            ' Since UpdateDLL 1.4 Updates are stored in %ProgramData%
             InstallationPath = Environment.CurrentDirectory
         Else
-            'Davor im Programmpfad
+            ' Before UpdateDLL 1.4 in the program path
             InstallationPath = Application.StartupPath
         End If
 
         Dim filesToDelete As New List(Of String)
         If IO.File.Exists(IO.Path.Combine(UpdatePath, "Versionen.lst")) Then
-            ' Version, Löschen aus Versionen.lst lesen
+            ' Open legacy versions file
+            ' Read version and files to delete
             Using Reader As New IO.StreamReader(IO.Path.Combine(UpdatePath, "Versionen.lst"))
                 Dim line As String, categoryIndex As Integer
                 line = Reader.ReadLine
@@ -57,15 +58,15 @@ Module mdlUpdate
                     ElseIf line.Length > 1 AndAlso line.Substring(0, 2) = "D:" Then
                         categoryIndex = -2
                     ElseIf categoryIndex = -2 Then
-                        'Dateien zum Löschen
+                        ' Files to delete
                         filesToDelete.Add(line)
                     ElseIf categoryIndex > -1 Then
-                        'Dateien in Kategorien
+                        ' ignore file in a category
                     End If
                 Loop
             End Using
         ElseIf IO.File.Exists(IO.Path.Combine(UpdatePath, UpdateInfoFileName)) Then
-            'open new file with version and deleted files
+            ' Open new file with version and deleted files
             Try
                 Using reader As New IO.StreamReader(IO.Path.Combine(UpdatePath, UpdateInfoFileName))
                     Dim version = CDbl(reader.ReadLine)
@@ -111,7 +112,7 @@ Module mdlUpdate
             End Try
         Next
 
-        'alle alten update-*.exe löschen
+        ' Delete old update-*.exe
         For Each file As String In IO.Directory.GetFiles(Application.StartupPath, "Update-*.exe")
             If file <> Application.ExecutablePath Then
                 Try
@@ -144,20 +145,20 @@ Module mdlUpdate
     End Sub
 
     Private Sub RunProgram(program As String)
-        Dim ProgrammEXE As String = """" & program & """"
+        Dim programEXE As String = """" & program & """"
         If Environment.OSVersion.Platform = PlatformID.Unix Then
-            Dim StarProgramm As New ProcessStartInfo("mono", ProgrammEXE)
-            StarProgramm.UseShellExecute = False
+            Dim process As New ProcessStartInfo("mono", programEXE)
+            process.UseShellExecute = False
             Try
-                Process.Start(StarProgramm)
+                Diagnostics.Process.Start(process)
             Catch ex As Exception
-                MessageBox.Show("Error while trying to execute 'mono " & ProgrammEXE & "':" & Environment.NewLine & ex.Message)
+                MessageBox.Show("Error while trying to execute 'mono " & programEXE & "':" & Environment.NewLine & ex.Message)
             End Try
         Else
             Try
-                Process.Start(ProgrammEXE)
+                Process.Start(programEXE)
             Catch ex As Exception
-                MessageBox.Show("Error while trying to execute " & ProgrammEXE & ":" & Environment.NewLine & ex.Message)
+                MessageBox.Show("Error while trying to execute " & programEXE & ":" & Environment.NewLine & ex.Message)
             End Try
         End If
     End Sub
@@ -192,7 +193,7 @@ Module mdlUpdate
         For Each dir As String In IO.Directory.GetDirectories(sourceDirectory)
             MoveDirectory(dir, IO.Path.Combine(targetDirectory, IO.Path.GetFileName(dir)))
         Next
-        Threading.Thread.Sleep(100) 'sonst manchmal dateihandle noch nicht weg
+        Threading.Thread.Sleep(100) ' Workaround: Otherwise the file handle is sometimes still open
         Try
             IO.Directory.Delete(sourceDirectory, True)
         Catch ex As Exception

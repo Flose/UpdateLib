@@ -6,7 +6,7 @@
         InitializeComponent()
         ' Fügen Sie Initialisierungen nach dem InitializeComponent()-Aufruf hinzu.
 
-        'Lizenzen aus Update verzeichnis(haben vorrang)
+        ' Search licences in the update folder (take precedence)
         Try
             For Each file As String In IO.Directory.GetFiles(UpdatePath, "Lizenz-*.txt")
                 cmbSprachen.Items.Add(ReadLicenseLanguage(file))
@@ -15,7 +15,7 @@
         Catch
         End Try
 
-        'Lizenzen aus hauptverzeichnis
+        ' Load licences from he program path
         Try
             For Each file As String In IO.Directory.GetFiles(InstallationPath, "Lizenz-*.txt")
                 Try
