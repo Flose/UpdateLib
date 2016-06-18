@@ -112,6 +112,15 @@ Module mdlUpdate
             End Try
         Next
 
+        Try
+            Dim file = IO.Path.Combine(UpdatePath, UpdateInfoFileName)
+            If IO.File.Exists(file) Then
+                IO.File.Delete(file)
+            End If
+        Catch ex As Exception
+            Console.Error.WriteLine("Failed to delete update info file: {0}", ex.Message)
+        End Try
+
         ' Delete old update-*.exe
         For Each file As String In IO.Directory.GetFiles(Application.StartupPath, "Update-*.exe")
             If file <> Application.ExecutablePath Then
