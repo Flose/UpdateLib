@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
-    "Newtonsoft.Json": "8.0.2",
-    "FloseCode.TranslationLib": "2.0.0"
+    "FloseCode.TranslationLib": "2.0.0",
+    "Newtonsoft.Json": "8.0.3"
   },
   "frameworks": {
     "net20": {},
