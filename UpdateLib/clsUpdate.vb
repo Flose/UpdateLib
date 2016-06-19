@@ -486,8 +486,10 @@ Public Class Update
         Throw New Exception("No framework found")
     End Function
 
-    Private Shared Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
-        Return New Uri(server, Uri.EscapeDataString(releaseChannel + "/" + fileName))
+    Public Shared Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
+        Dim uriBuilder As New UriBuilder(server)
+        uriBuilder.Path += releaseChannel + "/" + fileName
+        Return uriBuilder.Uri
     End Function
 
     Private Class DownloadUpdateWorker
