@@ -686,7 +686,7 @@ Public Class Update
     ''' <param name="displayVersion"></param>
     ''' <returns></returns>
     Public Function SetUninstallInfoInRegistry(appID As String) As Boolean
-        Return SetUninstallInfoInRegistry(appID, TranslatedProgramName + GetVersionsText(programVersion, False), programVersion)
+        Return SetUninstallInfoInRegistry(appID, TranslatedProgramName + " " + GetVersionsText(programVersion, False), programVersion)
     End Function
 
     ''' <summary>
