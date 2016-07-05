@@ -16,8 +16,8 @@
         <files include="**/Update.exe" buildAction="None" copyToOutput="true" />
     </contentFiles>
     <dependencies>
-      <dependency id="Newtonsoft.Json" version="8.0.2" />
-      <dependency id="FloseCode.TranslationLib" version="2.0.0" />
+      <dependency id="Newtonsoft.Json" version="9.0.1" />
+      <dependency id="FloseCode.TranslationLib" version="2.0.1" />
     </dependencies>
   </metadata>
   <files>
