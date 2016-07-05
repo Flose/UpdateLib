@@ -92,27 +92,38 @@ Public Class Update
     Public Event UpdateDownloaded(sender As Object, e As EventArgs)
 
     Private Sub RaiseUpdateInfoEvent(message As String)
+        Dim ea = New InfoEventArgs(message)
         If UpdateInfoEvent Is Nothing OrElse UpdateInfoEvent.GetInvocationList.Length = 0 Then
-            Windows.Forms.MessageBox.Show(message, TranslatedTitle, Windows.Forms.MessageBoxButtons.OK, Windows.Forms.MessageBoxIcon.Information)
+            MessageBoxUi.UpdateInfo(Me, ea)
         Else
-            RaiseEvent UpdateInfo(Me, New InfoEventArgs(message))
+            RaiseEvent UpdateInfo(Me, ea)
         End If
     End Sub
 
     Private Sub RaiseUpdateErrorEvent(message As String, innerException As Exception)
+        Dim ea = New ErrorEventArgs(message, innerException)
         If UpdateErrorEvent Is Nothing OrElse UpdateErrorEvent.GetInvocationList.Length = 0 Then
-            Windows.Forms.MessageBox.Show(message, TranslatedTitle, Windows.Forms.MessageBoxButtons.OK, Windows.Forms.MessageBoxIcon.Error)
+            MessageBoxUi.UpdateError(Me, ea)
         Else
-            RaiseEvent UpdateError(Me, New ErrorEventArgs(message, innerException))
+            RaiseEvent UpdateError(Me, ea)
         End If
     End Sub
 
     Private Sub RaiseUpdateFoundEvent(newVersionFile As VersionsFile, frameworkInstallStatus As InstallStatus)
-        RaiseEvent UpdateFound(Me, New UpdateFoundEventArgs(newVersionFile.DisplayVersion, newVersionFile.ReleaseNotesUrl, newVersionFile.Framework, newVersionFile.FrameworkUrl, frameworkInstallStatus))
+        Dim ea = New UpdateFoundEventArgs(newVersionFile.DisplayVersion, newVersionFile.ReleaseNotesUrl, newVersionFile.Framework, newVersionFile.FrameworkUrl, frameworkInstallStatus)
+        If UpdateFoundEvent Is Nothing OrElse UpdateFoundEvent.GetInvocationList.Length = 0 Then
+            MessageBoxUi.UpdateFound(Me, ea)
+        Else
+            RaiseEvent UpdateFound(Me, ea)
+        End If
     End Sub
 
     Private Sub RaiseUpdateDownloadedEvent()
-        RaiseEvent UpdateDownloaded(Me, EventArgs.Empty)
+        If UpdateDownloadedEvent Is Nothing OrElse UpdateDownloadedEvent.GetInvocationList.Length = 0 Then
+            MessageBoxUi.UpdateDownloaded(Me)
+        Else
+            RaiseEvent UpdateDownloaded(Me, EventArgs.Empty)
+        End If
     End Sub
 
     Friend ReadOnly Property TranslatedTitle() As String
