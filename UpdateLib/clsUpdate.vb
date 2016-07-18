@@ -411,6 +411,7 @@ Public Class Update
 
     ''' <summary>
     ''' Search for update. If an update is found, the UpdateFoundEvent is raised.
+    ''' If no event listeners are registered the MessageBoxUi will be used.
     ''' </summary>
     ''' <param name="showErrors">If true, raises the UpdateErrorEvent if an error occurs</param>
     ''' <remarks></remarks>
@@ -497,7 +498,7 @@ Public Class Update
         Throw New Exception("No framework found")
     End Function
 
-    Public Shared Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
+    Private Shared Function GetUpdateFileUri(server As Uri, releaseChannel As String, fileName As String) As Uri
         Dim uriBuilder As New UriBuilder(server)
         uriBuilder.Path += releaseChannel + "/" + fileName
         Return uriBuilder.Uri
@@ -610,7 +611,7 @@ Public Class Update
             End If
         End Sub
 
-        Public Shared Function GetParentPath(path As String) As String
+        Private Shared Function GetParentPath(path As String) As String
             IO.Path.GetFullPath(path)
             Return IO.Path.GetDirectoryName(path.TrimEnd(New Char() {IO.Path.DirectorySeparatorChar, IO.Path.AltDirectorySeparatorChar}))
         End Function
