@@ -102,7 +102,7 @@
                         currentCategory = Nothing
                     ElseIf currentCategory IsNot Nothing Then
                         'Dateien in Kategorien
-                        currentCategory.Files.Add(New File(line, reader.ReadLine()))
+                        currentCategory.Files.Add(New File(line.Replace("\", "/"), reader.ReadLine()))
                     Else
                         Console.Error.WriteLine("Got a file outside a category (probably deleted): {0}", line)
                     End If
