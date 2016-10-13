@@ -2,6 +2,7 @@ REM Build Solution
 set PATH_SOURCE_SLN="%cd%\UpdateLib.sln"
 set PATH_SOURCE_PROJ="%cd%\UpdateLib\UpdateLib.vbproj"
 
+nuget.exe update -self
 nuget restore %PATH_SOURCE_SLN%
 
 FOR %%C IN (Release20 Release40) DO (
