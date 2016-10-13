@@ -954,9 +954,12 @@ Public Class Update
             filesToDelete.AddRange(remoteVersionsFile.FilesToDelete)
         End If
         'Search for files that should be deleted
+        Dim usesBackslash = IO.Path.DirectorySeparatorChar <> "/"
+        IO.Directory.CreateDirectory(tempUpdateBasePath)
+        Dim isCaseInsensitive = IO.Directory.Exists(tempUpdateBasePath.ToLower) AndAlso IO.Directory.Exists(tempUpdateBasePath.ToUpper)
         For Each c In localVersionsFile.Categories
             For Each f In c.Files
-                If Not allRemoteFiles.Contains(f.Name) Then
+                If Not ContainsFileName(allRemoteFiles, f.Name, usesBackslash, isCaseInsensitive) Then
                     filesToDelete.Add(f.Name)
 #If DEBUG Then
                     Console.Out.WriteLine("delete: " + f.Name)
@@ -965,6 +968,32 @@ Public Class Update
             Next
         Next
     End Sub
+
+    Private Function ContainsFileName(files As List(Of String), file As String, usesBackslash As Boolean, isCaseInsensitive As Boolean) As Boolean
+        If Not usesBackslash AndAlso Not isCaseInsensitive Then
+            Return files.Contains(file)
+        End If
+        ' Compare case insensitive if filesystem is case insensitive and ignore slash
+        ' Otherwise an updated file could be unintentionally deleted, if the versions.json was faulty
+        If isCaseInsensitive Then
+            file = file.ToLowerInvariant
+        End If
+        If usesBackslash Then
+            file = file.Replace(IO.Path.DirectorySeparatorChar, "/")
+        End If
+        For Each f In files
+            If usesBackslash Then
+                f = f.Replace(IO.Path.DirectorySeparatorChar, "/")
+            End If
+            If isCaseInsensitive Then
+                f = f.ToLowerInvariant
+            End If
+            If String.CompareOrdinal(f, file) = 0 Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
 
     ''' <summary>
     ''' Show a window with a list of all installed updates.
