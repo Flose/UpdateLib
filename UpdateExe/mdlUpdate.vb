@@ -187,17 +187,19 @@ Module mdlUpdate
                     My.Computer.FileSystem.MoveFile(file, IO.Path.Combine(targetDirectory, fileName), True)
                     Exit Do
                 Catch ex As Exception
-                    Dim result As DialogResult = MessageBox.Show(String.Format("Error replacing file ""{0}"":" + vbLf + "{1}" + vbLf + vbLf + "Check if the program is still running!", fileName, ex.Message), "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
-                    If result = DialogResult.Abort Then
-                        Environment.Exit(2)
-                    ElseIf result = DialogResult.Ignore Then
-                        Exit Do
-                    ElseIf result = DialogResult.Retry Then
+                    If retryCount > 2 Then
+                        Dim result As DialogResult = MessageBox.Show(String.Format("Error replacing file ""{0}"":" + vbLf + "{1}" + vbLf + vbLf + "Check if the program is still running!", fileName, ex.Message), "Update", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error, MessageBoxDefaultButton.Button2)
+                        If result = DialogResult.Abort Then
+                            Environment.Exit(2)
+                        ElseIf result = DialogResult.Ignore Then
+                            Exit Do
+                        ElseIf result = DialogResult.Retry Then
+                        End If
                     End If
                 End Try
                 retryCount += 1
                 Threading.Thread.Sleep(1000)
-            Loop While retryCount < 4
+            Loop
         Next
         For Each dir As String In IO.Directory.GetDirectories(sourceDirectory)
             MoveDirectory(dir, IO.Path.Combine(targetDirectory, IO.Path.GetFileName(dir)))
