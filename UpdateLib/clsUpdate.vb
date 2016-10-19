@@ -635,7 +635,10 @@ Public Class Update
         Protected Overrides Sub OnRunWorkerCompleted(e As RunWorkerCompletedEventArgs)
             MyBase.OnRunWorkerCompleted(e)
 
-            ui.Close()
+            If ui IsNot Nothing Then
+                ui.Close()
+                ui.Dispose()
+            End If
 
             If e.Error IsNot Nothing Then
                 Console.Error.WriteLine("Error updating: {0}", e.Error.Message)
