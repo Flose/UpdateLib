@@ -20,7 +20,7 @@
             For Each file As String In IO.Directory.GetFiles(InstallationPath, "Lizenz-*.txt")
                 Try
                     Dim fileName = IO.Path.GetFileName(file)
-                    If Not tmpLizenzen.Contains(fileName) Then '=>Datei nicht in update verzeichnis
+                    If Not tmpLizenzen.Contains(fileName) Then '=> File is not also in update directory
                         cmbSprachen.Items.Add(ReadLicenseLanguage(file))
                         tmpLizenzen.Add(fileName)
                     End If
@@ -43,10 +43,10 @@
         End If
 
         Try
-            If IO.File.Exists(UpdatePath & tmpLizenzen(cmbSprachen.SelectedIndex)) Then
-                txtLizenz.Text = ReadLicense(UpdatePath & tmpLizenzen(cmbSprachen.SelectedIndex))
-            ElseIf IO.File.Exists(InstallationPath & tmpLizenzen(cmbSprachen.SelectedIndex)) Then
-                txtLizenz.Text = ReadLicense(InstallationPath & tmpLizenzen(cmbSprachen.SelectedIndex))
+            If IO.File.Exists(IO.Path.Combine(UpdatePath, tmpLizenzen(cmbSprachen.SelectedIndex))) Then
+                txtLizenz.Text = ReadLicense(IO.Path.Combine(UpdatePath, tmpLizenzen(cmbSprachen.SelectedIndex)))
+            ElseIf IO.File.Exists(IO.Path.Combine(InstallationPath, tmpLizenzen(cmbSprachen.SelectedIndex))) Then
+                txtLizenz.Text = ReadLicense(IO.Path.Combine(InstallationPath, tmpLizenzen(cmbSprachen.SelectedIndex)))
             Else
                 txtLizenz.Text = String.Empty
             End If
