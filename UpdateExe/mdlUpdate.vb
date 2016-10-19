@@ -99,8 +99,6 @@ Module mdlUpdate
         frmUpdate.Show()
         Application.DoEvents()
 
-        MoveDirectory(UpdatePath, InstallationPath)
-
         For Each fileName In filesToDelete
             Try
                 Dim file = IO.Path.Combine(InstallationPath, fileName)
@@ -111,6 +109,8 @@ Module mdlUpdate
                 Console.Error.WriteLine("Failed deleted file ""{0}"": {1}", fileName, ex.Message)
             End Try
         Next
+
+        MoveDirectory(UpdatePath, InstallationPath)
 
         Try
             Dim file = IO.Path.Combine(UpdatePath, UpdateInfoFileName)
