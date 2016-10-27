@@ -162,6 +162,7 @@
     <None Include="Sprachen\Danish.lng" />
     <None Include="Sprachen\Dutch.lng" />
     <None Include="Sprachen\English.lng" />
+    <None Include="Sprachen\Estonian.lng" />
     <None Include="Sprachen\French.lng" />
     <None Include="Sprachen\German.lng" />
     <None Include="Sprachen\Greek.lng" />

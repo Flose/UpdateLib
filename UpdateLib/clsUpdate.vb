@@ -192,6 +192,7 @@ Public Class Update
         t.AddLanguage("Greek", "Ελληνικά", My.Resources.Greek)
         t.AddLanguage("Bulgarian", "Български", My.Resources.Bulgarian)
         t.AddLanguage("Danish", "Dansk", My.Resources.Danish)
+        t.AddLanguage("Estonian", "Eesti", My.Resources.Estonian)
 
         ' Set default language
         t.Load(t.CheckLanguageName(String.Empty))

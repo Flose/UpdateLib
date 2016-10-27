@@ -1,0 +1,25 @@
+﻿1
+SprachenName=Eesti
+msgUpdateBereitsVorhanden=
+msgUpdateLokaleInstallationNichtVollständig=
+Update=
+msgUpdateVorhanden=Saadaval on uuendus versioonile {0}.\n\nKas soovite selle alla laadida?
+ShowReleasenotes=
+WarningNetFrameworkTooOld=
+WarningNetFrameworkUnknown=
+NetFrameworkDownload=Laadi alla .Net Framework
+Herunterladen=
+msgUpdateInstallierenAdmin=
+msgKeinUpdate=Uuendusi ei ole saadaval
+msgFehlerUpdateSuchen=
+lblAktuelleDatei=
+UpdateFertigstellen=Lõpuleviimine...
+msgUpdateErfolgreich=
+Neustarten=
+msgFehlerUpdate=
+FehlerAusführen=
+MonoUpdateHinweis=
+UpdateHistory=Uuenduste ajalugu
+Updates=Uuendused:
+Schließen=
+VersionErfolgreichInstalliert=

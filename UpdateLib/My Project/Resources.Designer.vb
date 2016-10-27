@@ -63,14 +63,12 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Boarisch
-        '''msgUpdateBereitsVorhanden=Es gibt scho a Update!{0}Zum Installiern, muasst as {1} Programm neistartn.
+        '''msgUpdateBereitsVorhanden=Es gibt scho a Update!\n\nZum Installiern, muasst as {0} Programm neistartn.
+        '''msgUpdateLokaleInstallationNichtVollständig=De Installation is kaputt. Lods Programm nei runter und installiers nommoi.
         '''Update=Neie Version vom {0} Programm
-        '''msgUpdateVorhanden=Es gibt a Update auf Version {0}.{1}Mogst des jetz obalon?
-        '''msgUpdateInstallierenAdmin=Sie hom grod a Update obaglon.\n\nStartens as {0} Programm ois Admin ums Update zum installiern.
-        '''msgKeinUpdate=Koa neie Version do
-        '''msgFehlerUpdateSuchen=Fella beim Updatesuacha: {0}
-        '''lblAktuelleDatei=Datei: {0}
-        '''UpdateFertigstellen=Ferti [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Es gibt a Update auf Version {0}.\n\nMogst des jetz obalon?
+        '''ShowReleasenotes=Zoag wos neis gibt
+        '''WarningNetFrameworkTooOld=Obacht: .Net Framework {0} (oder a kompatible Mono version) brauchts für des Upd [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Bavarian() As String
             Get
@@ -81,13 +79,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Български
-        '''msgUpdateBereitsVorhanden=Ъпдейтът вече е свален!{0}Рестартирайте {1}, за да го инсталирате.
+        '''msgUpdateBereitsVorhanden=Ъпдейтът вече е свален!\n\nРестартирайте {0}, за да го инсталирате.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} ъпдейт
-        '''msgUpdateVorhanden=Съществува ъпдейт на версия {0}.{1}Искате ли да го свалите сега?
-        '''msgUpdateInstallierenAdmin=Вече сте свалили един ъпдейт, но не сте го инсталирали.\n\nСтартирайте програмата {0} като администратор, за да инсталирате ъпдейта.
-        '''msgKeinUpdate=Не съществува ъпдейт
-        '''msgFehlerUpdateSuchen=Грешка при търсенето на ъпдейт: {0}
-        '''lblAktuelleDatei=Актуален файл: [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Съществува ъпдейт на версия {0}.\n\nИскате ли да го свалите сега?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=Вече сте свалили един ъпдейт, но не сте го инсталирали.\n\nСтартирайте програмата {0} като админи [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Bulgarian() As String
             Get
@@ -98,19 +99,21 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=汉语
-        '''msgUpdateBereitsVorhanden=你已下载了的更新。{0}重新启动{1}来安装它。
+        '''msgUpdateBereitsVorhanden=你已下载了的更新。\n\n重新启动{0}来安装它。
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0}更新
-        '''msgUpdateVorhanden=有一个更新版本{0}{1}你想现在就下载吗？
+        '''msgUpdateVorhanden=有一个更新版本{0}\n\n你想现在就下载吗？
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
         '''msgUpdateInstallierenAdmin=您已下载了一个更新，但是你还没有安装了它。\n\n启动{0}以管理员身份来安装更新。
         '''msgKeinUpdate=现在没有更新
         '''msgFehlerUpdateSuchen=出错搜索更新的时候：{0}
         '''lblAktuelleDatei=当前文件：{0}
         '''UpdateFertigstellen=完成制订... ...
-        '''msgUpdateErfolgreich=成功了下载更新！{0}若要安装此更新，您必须重新启动{1}{0}现在重新启动？
-        '''msgFehlerUpdate=误差，更新的时候：{0}
-        '''FehlerAusführen=尝试执行时发生错误&apos;{0}&apos;：\n\n{1}
-        '''MonoUpdateHinweis=如果更新不启动，请运行以下命令：\n\n{0}
-        '''UpdateHistory=更新的历 [rest of string was truncated]&quot;;.
+        '''msgUpdateErfolgreich=成功了下载更新！\ [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Chinese() As String
             Get
@@ -121,13 +124,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Dansk
-        '''msgUpdateBereitsVorhanden=Du har allerede hentet en opdatering.{0}Genstart {1}for at installere.
+        '''msgUpdateBereitsVorhanden=Du har allerede hentet en opdatering.\n\nGenstart {0}for at installere.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} opdater
-        '''msgUpdateVorhanden=Opdatering til version {0}er nu tilgængelig.{1}Ønsker du at hente den nu?
-        '''msgUpdateInstallierenAdmin=Du har hentet en opdatering men den er endnu ikke installeret.\n\n Start {0} som Administrator for at installere opdateringen.
-        '''msgKeinUpdate=Ingen opdatering tilgængelig
-        '''msgFehlerUpdateSuchen=Fejl under søgning efter opdatering: {0}
-        '''lblAktuelleDat [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Opdatering til version {0}er nu tilgængelig.\n\nØnsker du at hente den nu?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=Du har hentet en opdatering men den er endnu ikke installeret.\n\n Start {0} som Admini [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Danish() As String
             Get
@@ -138,14 +144,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Nederlands
-        '''msgUpdateBereitsVorhanden=Er is een update beschikbaar!{0}Start {1} om het te installeren.
+        '''msgUpdateBereitsVorhanden=Er is een update beschikbaar!\n\nStart {0} om het te installeren.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} Update
-        '''msgUpdateVorhanden=Update versie {0} is beschikbaar.{1}Wilt u het downloaden?
-        '''msgUpdateInstallierenAdmin=U hebt een update gedownload maar nog niet geïnstalleerd.\n\n Start {0} als administrator om het te installeren.
-        '''msgKeinUpdate=Geen updates beschikbaar
-        '''msgFehlerUpdateSuchen=Fout bij het zoeken naar updates: {0}
-        '''lblAktuelleDatei=Huidig bestand: {0}
-        '''UpdateFertigst [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Update versie {0} is beschikbaar.\n\nWilt u het downloaden?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=U hebt een update gedownload maar nog niet geïnstalleerd.\n\n Start {0} als administrator om het te inst [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Dutch() As String
             Get
@@ -156,14 +164,12 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=English
-        '''msgUpdateBereitsVorhanden=You have already downloaded an update.{0} Restart {1} to install it.
+        '''msgUpdateBereitsVorhanden=You have already downloaded an update.\n\nRestart {0} to install it.
+        '''msgUpdateLokaleInstallationNichtVollständig=The local installation is not complete.\n\nPlease download the program manually and reinstall it.
         '''Update={0} update
-        '''msgUpdateVorhanden=Update to version {0} is available.{1}Do you want to download it now?
-        '''msgUpdateInstallierenAdmin=You have downloaded an update but have not installed it yet.\n\n Start {0} as administrator to install the update.
-        '''msgKeinUpdate=No update available
-        '''msgFehlerUpdateSuchen=Error while searching updates: {0}
-        '''lblAktuelleDatei=Current file: {0}
-        '''UpdateFert [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Update to version {0} is available.\n\nDo you want to download it now?
+        '''ShowReleasenotes=Show release notes
+        '''WarningNetFrameworkTooOld=Warning: Install .Net Framework {0} (or an equivalent Mono version) before  [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property English() As String
             Get
@@ -173,14 +179,43 @@ Namespace My.Resources
         
         '''<summary>
         '''  Looks up a localized string similar to 1
+        '''SprachenName=Eesti
+        '''msgUpdateBereitsVorhanden=
+        '''msgUpdateLokaleInstallationNichtVollständig=
+        '''Update=
+        '''msgUpdateVorhanden=Saadaval on uuendus versioonile {0}.\n\nKas soovite selle alla laadida?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=Laadi alla .Net Framework
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=
+        '''msgKeinUpdate=Uuendusi ei ole saadaval
+        '''msgFehlerUpdateSuchen=
+        '''lblAktuelleDatei=
+        '''UpdateFertigstellen=Lõpuleviimine...
+        '''msgUpdateErfolgreich=
+        '''N [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property Estonian() As String
+            Get
+                Return ResourceManager.GetString("Estonian", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to 1
         '''SprachenName=Français
-        '''msgUpdateBereitsVorhanden=Il y a déjà une mise à jour.{0} Redémarrez {1} pour l’installer.
+        '''msgUpdateBereitsVorhanden=Il y a déjà une mise à jour.\n\nRedémarrez {0} pour l’installer.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update=Mise à jour de {0}
-        '''msgUpdateVorhanden=Une mise à jour à version {0} est disponible.{1}Voulez vous la télécharger maintenant?
-        '''msgUpdateInstallierenAdmin=Vous avez téléchargé une mise à jour.\n\nLance le logiciel {0} comme administrateur pour la installer.
-        '''msgKeinUpdate=Il n’y a pas de mise à jour.
-        '''msgFehlerUpdateSuchen=Erreur à chercher une mise à jour: {0}
-        '''lblAktuelleDatei=Fichie [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Une mise à jour à version {0} est disponible.\n\nVoulez vous la télécharger maintenant?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=Télécharger .Net Framework
+        '''Herunterladen=&amp;Télécharger
+        '''msgUpdateInstallierenAdmin=Vous avez téléchargé une mise à j [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property French() As String
             Get
@@ -191,12 +226,12 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Deutsch
-        '''msgUpdateBereitsVorhanden=Es ist bereits ein Update vorhanden!{0}Starten Sie {1} neu, um es zu installieren.
+        '''msgUpdateBereitsVorhanden=Es ist bereits ein Update vorhanden!\n\nStarten Sie {0} neu, um es zu installieren.
+        '''msgUpdateLokaleInstallationNichtVollständig=Die lokale Installation ist nicht vollständig. Bitte laden Sie das Programm manuell herunter und installieren Sie es neu.
         '''Update={0} Update
-        '''msgUpdateVorhanden=Ein Update auf Version {0} ist vorhanden.{1}Wollen Sie dieses jetzt herunterladen?
-        '''msgUpdateInstallierenAdmin=Sie haben ein Update heruntergeladen aber noch nicht installiert.\n\nStarten Sie das {0} Programm als Administrator um das Update zu installieren.
-        '''msgKeinUpdate=Kein Update vorhanden
-        '''msgFehlerUpdateSuchen=Fehler beim Updatesuc [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Ein Update auf Version {0} ist vorhanden.\n\nWollen Sie dieses jetzt herunterladen?
+        '''ShowReleasenotes=Zeige Neuigkeiten
+        '''WarningNetFrameworkTooOld=Warnung: Die Installatio [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property German() As String
             Get
@@ -207,13 +242,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Ελληνικά
-        '''msgUpdateBereitsVorhanden=Έχετε κατεβάσει μία αναβάθμιση.{0}Επανεκίνηση {1} για εγκατάσταση.
+        '''msgUpdateBereitsVorhanden=Έχετε κατεβάσει μία αναβάθμιση.\n\nΕπανεκίνηση {0} για εγκατάσταση.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} Αναβάθμιση
-        '''msgUpdateVorhanden=Μία αναβάθμιση στην έκδοση {0} είναι διαθέσιμη.{1}Θέλετε να την κατεβάσετε τώρα;
-        '''msgUpdateInstallierenAdmin=Έχετε κατεβάσει μία αναβάθμιση αλλά δεν την έχετε εγκαταστήσει.\n\n Έναρξη {0} ως διαχειριστής για εγκατάσταση.
-        '''msgKeinUpdate=Καμμία διαθέσιμη αναβάθμιση
-        '''msgFehlerUpdateSuchen=Σφάλμα κατά την αναζήτηση αναβαθμίσεων: {0}
-        '''lblAktuelleDatei=Τ [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Μία αναβάθμιση στην έκδοση {0} είναι διαθέσιμη.\n\nΘέλετε να την κατεβάσετε τώρα;
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=Έχετε κατεβάσει μία αναβάθμιση αλλά δεν την έχετε εγκαταστήσει.\n\n Έναρξη {0} [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Greek() As String
             Get
@@ -224,13 +262,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Polski
-        '''msgUpdateBereitsVorhanden=Już pobrałeś aktualizacje!{0}Uruchom ponownie {1}, żeby się zainstalowała.
+        '''msgUpdateBereitsVorhanden=Już pobrałeś aktualizacje!\n\nUruchom ponownie {0}, żeby się zainstalowała.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} Aktualizacja
-        '''msgUpdateVorhanden=Aktualizacja do wersji {0} istnieje.{1}Chcesz ją pobrać teraz?
-        '''msgUpdateInstallierenAdmin=Pobrałeś aktualizacje, ale jej jeszcze nie wgrałeś.\n\nUruchom program {0} jako Administrator żeby zainstalować aktualizacje.
-        '''msgKeinUpdate=Brak Aktualizacji
-        '''msgFehlerUpdateSuchen=Błąd wyszukiwania aktualizacji: {0}
-        '''lblAktuelleDatei=Aktualny plik:  [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Aktualizacja do wersji {0} istnieje.\n\nChcesz ją pobrać teraz?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=Pobrałeś aktualizacje, ale jej jeszcze nie wgrałeś.\n\nUruchom program {0} jako Administ [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Polish() As String
             Get
@@ -241,13 +282,12 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Português
-        '''msgUpdateBereitsVorhanden=Você já baixou uma atualização.{0}Reinicie {1} para instalá-la.
+        '''msgUpdateBereitsVorhanden=Você já baixou uma atualização.\n\nReinicie {0} para instalá-la.
+        '''msgUpdateLokaleInstallationNichtVollständig=A instalação local não está completa.\n\nPor favor, baixe o programa manualmente e reinstale-o
         '''Update={0} atualização
-        '''msgUpdateVorhanden=Atualização para a versão {0} está disponível.{1}Você quer baixá-la agora?
-        '''msgUpdateInstallierenAdmin=Você baixou uma atualização mas ela ainda não foi instalada.\n\n Inicie {0} como administrador para instalar a atualização.
-        '''msgKeinUpdate=Nenhuma atualização disponível.
-        '''msgFehlerUpdateSuchen=Erro durante a procura por atualizações: {0}
-        '''lblAktue [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Atualização para a versão {0} está disponível.\n\nVocê quer baixá-la agora?
+        '''ShowReleasenotes=Exibir notas da versão
+        '''WarningNetFrameworkTooOld=Atenção: Instale o .Net Framework {0} (ou uma versão Mono equivale [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Portuguese() As String
             Get
@@ -258,14 +298,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Srpski
-        '''msgUpdateBereitsVorhanden=Jedan Update postoji.{0}Restartujte{1}da bi ažurirali program
+        '''msgUpdateBereitsVorhanden=Jedan Update postoji.\n\nRestartujte{0}da bi ažurirali program
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} Ažuriranje
         '''msgUpdateVorhanden=Postoji jedan Update za verziju {0}.\n\nŽelite li skinuti Update?
-        '''msgUpdateInstallierenAdmin=Upravo ste skinuliUpdate ali ga još niste izvršili.\n\nPokrenite {0}program kao Administrator da bi izvršili Update
-        '''msgKeinUpdate=Nema novih Update-a
-        '''msgFehlerUpdateSuchen=Greška kod traženja Update-a: {0}
-        '''lblAktuelleDatei=Aktuelni fajl: {0}
-        '''UpdateFertigstell [rest of string was truncated]&quot;;.
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=Upravo ste skinuliUpdate ali ga još niste izvršili.\n\nPokrenite {0}program kao Administrator da bi i [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Serbian() As String
             Get
@@ -276,14 +318,16 @@ Namespace My.Resources
         '''<summary>
         '''  Looks up a localized string similar to 1
         '''SprachenName=Español
-        '''msgUpdateBereitsVorhanden=Ya existe una actualización!{0}Reiniciar {1} para instalar.
+        '''msgUpdateBereitsVorhanden=Ya existe una actualización!\n\nReiniciar {0} para instalar.
+        '''msgUpdateLokaleInstallationNichtVollständig=
         '''Update={0} actualización
-        '''msgUpdateVorhanden=Una actualización a la versión {0} existe.{1}Desea bajarla?
-        '''msgUpdateInstallierenAdmin=Ha bajado una actualización pero no esta instalada.\n\nInicie el programa de administrador para instalar la actualización.
-        '''msgKeinUpdate=No hay actualización
-        '''msgFehlerUpdateSuchen=Fallo en la búsqueda de actualización: {0}
-        '''lblAktuelleDatei=Archivo actual: {0}
-        '''Upd [rest of string was truncated]&quot;;.
+        '''msgUpdateVorhanden=Una actualización a la versión {0} existe.\n\nDesea bajarla?
+        '''ShowReleasenotes=
+        '''WarningNetFrameworkTooOld=
+        '''WarningNetFrameworkUnknown=
+        '''NetFrameworkDownload=
+        '''Herunterladen=
+        '''msgUpdateInstallierenAdmin=Ha bajado una actualización pero no esta instalada.\n\nInicie el programa de administrador para instalar [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property Spanish() As String
             Get
