@@ -252,7 +252,7 @@ Public Class Update
 
                     Dim index = line.IndexOf("="c)
                     If index > -1 AndAlso String.Compare(line.Substring(index + 1).Trim, "true", StringComparison.OrdinalIgnoreCase) = 0 Then
-                        installedCategories.Add(line.Substring(0, index).Trim.ToLowerInvariant)
+                        installedCategories.Add(line.Substring(0, index).Trim)
                     End If
                 Loop
             End Using

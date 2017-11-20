@@ -9,7 +9,7 @@
         Select Case args(1)
             Case "convert"
                 If args.Length < 3 Then
-                    Console.Error.WriteLine("Input file missing")
+                    Console.Error.WriteLine("Usage: {0} convert LEGACY_FILE", args(0))
                     Environment.Exit(1)
                 End If
 
@@ -21,7 +21,7 @@
                 End Try
             Case "make-checksums"
                 If args.Length < 4 Then
-                    Console.Error.WriteLine("Input file and update directory missing")
+                    Console.Error.WriteLine("Usage: {0} make-checksums VERSIONS_FILE UPDATE_DIR", args(0))
                     Environment.Exit(1)
                 End If
 
@@ -29,6 +29,18 @@
                     MakeChecksums(args(2), args(3))
                 Catch ex As Exception
                     Console.Error.WriteLine("Failed to make checksums: {0}", ex.Message)
+                    Environment.Exit(2)
+                End Try
+            Case "set-version"
+                If args.Length < 5 Then
+                    Console.Error.WriteLine("Usage: {0} set-version VERSIONS_FILE VERSION DISPLAY_VERSION", args(0))
+                    Environment.Exit(1)
+                End If
+
+                Try
+                    SetVersion(args(2), New Version(args(3)), args(4))
+                Catch ex As Exception
+                    Console.Error.WriteLine("Failed to set version: {0}", ex.Message)
                     Environment.Exit(2)
                 End Try
         End Select
@@ -66,12 +78,21 @@
         Console.Out.WriteLine("Updated checksums in file ""{0}""", versionsFile)
     End Sub
 
+    Private Sub SetVersion(versionsFile As String, version As Version, displayVersion As String)
+        Dim versionFile = UpdateTool.VersionsFile.Open(versionsFile)
+        versionFile.Version = version
+        versionFile.DisplayVersion = displayVersion
+        versionFile.Save(versionsFile)
+        Console.Out.WriteLine("Set version in file ""{0}""", versionsFile)
+    End Sub
+
     Sub PrintHelpAndExit()
         Console.Error.WriteLine("Usage: {0} COMMAND", Environment.GetCommandLineArgs()(0))
         Console.Error.WriteLine()
         Console.Error.WriteLine("Commands:")
         Console.Error.WriteLine(" convert       : convert from old Versionen.lst to new versions.json")
         Console.Error.WriteLine(" make-checksums: hash all files in update directory and update versions.json")
+        Console.Error.WriteLine(" set-version   : update version in versions.json")
         Environment.Exit(1)
     End Sub
 
