@@ -66,6 +66,6 @@ u.SearchUpdateAsync()
 
 ## License
 
-Copyright: Flose 2006 - 2016 https://www.mal-was-anderes.de/
+Copyright: Flose 2006 - 2019 https://www.mal-was-anderes.de/
 
 Licensed under the LGPLv3: http://www.gnu.org/licenses/lgpl-3.0.html

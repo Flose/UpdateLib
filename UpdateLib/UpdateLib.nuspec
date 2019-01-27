@@ -10,7 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright Flose 2016</copyright>
+    <copyright>Copyright Flose 2019</copyright>
     <tags>Update Library</tags>
     <contentFiles>
         <files include="**/Update.exe" buildAction="None" copyToOutput="true" />
