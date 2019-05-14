@@ -1,12 +1,12 @@
 ﻿1
 SprachenName=Français
 msgUpdateBereitsVorhanden=Il y a déjà une mise à jour.\n\nRedémarrez {0} pour l’installer.
-msgUpdateLokaleInstallationNichtVollständig=
+msgUpdateLokaleInstallationNichtVollständig=L'installation locale n'est pas terminée.\n\nVeuillez télécharger le programme manuellement et le réinstaller.
 Update=Mise à jour de {0}
 msgUpdateVorhanden=Une mise à jour à version {0} est disponible.\n\nVoulez vous la télécharger maintenant?
-ShowReleasenotes=
-WarningNetFrameworkTooOld=
-WarningNetFrameworkUnknown=
+ShowReleasenotes=Afficher les notes de publication
+WarningNetFrameworkTooOld=Avertissement: Installez .Net Framework {0} (ou une version Mono équivalente) avant d'installer la mise à jour. Sinon, le programme ne pourra pas démarrer après la mise à jour.
+WarningNetFrameworkUnknown=Avertissement: .Net Framework {0} (ou une version Mono équivalente) est nécessaire pour cette mise à jour. Assurez-vous qu’il est installé.
 NetFrameworkDownload=Télécharger .Net Framework
 Herunterladen=&Télécharger
 msgUpdateInstallierenAdmin=Vous avez téléchargé une mise à jour.\n\nLance le logiciel {0} comme administrateur pour la installer.

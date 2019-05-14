@@ -1,0 +1,25 @@
+﻿1
+SprachenName=Norsk
+msgUpdateBereitsVorhanden=Du har allerede lastet ned en oppdatering.\n\nOmstart {0} for å installere den.
+msgUpdateLokaleInstallationNichtVollständig=Den lokale installasjoen er ikke fullført.\n\nVennligst last ned programmet manuelt og reinstaller det.
+Update={0} oppdater
+msgUpdateVorhanden=Oppdatering til versjon {0} er tilgjengelig.\n\nØnsker du å laste den ned nå?
+ShowReleasenotes=Vis utgivelsesnotater
+WarningNetFrameworkTooOld=Advarsel: Installer. Net Framework {0} (eller en tilsvarende Mono-versjon) før du installerer oppdateringen. Ellers vil programmet ikke starte etter oppdateringen.
+WarningNetFrameworkUnknown=Advarsel: .NET Framework {0} (eller en ekvivalent Mono versjon) er påkrevd for denne oppdateringen. Forsikre deg om at den er installert.
+NetFrameworkDownload=Last ned .NET Framework
+Herunterladen=&Last ned
+msgUpdateInstallierenAdmin=Du har lastet ned en oppdatering, men har ikke installert den ennå.\n\nStart {0} som administrator for å installere oppdateringen.
+msgKeinUpdate=Ingen oppdatering tilgjengelig.
+msgFehlerUpdateSuchen=Feil under søk etter oppdateringer: {0}
+lblAktuelleDatei=Gjeldende fil: {0}
+UpdateFertigstellen=Ferdigstiller...
+msgUpdateErfolgreich=Oppdatering nedlastet!\n\nFor å installere oppdateringen må {0} omstartes.\n\nOmstart nå?
+Neustarten=&Restart
+msgFehlerUpdate=Feil under oppdatering: {0}
+FehlerAusführen=Feil under forsøk på å utføre "{0}":\n\n{1}
+MonoUpdateHinweis=Dersom oppdateringen ikke starter kjører du følgende kommando:\n\n{0}
+UpdateHistory=Oppdateringshistorikk
+Updates=Oppdateringer:
+Schließen=&Lukk
+VersionErfolgreichInstalliert={0}: versjon {1} installert.
