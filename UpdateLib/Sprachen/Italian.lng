@@ -1,0 +1,25 @@
+﻿1
+SprachenName=Italiano
+msgUpdateBereitsVorhanden=Hai già scaricato un aggiornamento.\n\nRiavvia {0} per installarlo.
+msgUpdateLokaleInstallationNichtVollständig=L'installazione locale non è completa.\n\nPer favore scarica il programma manualmente e reinstallalo.
+Update=Aggiornamento di {0}
+msgUpdateVorhanden=L'aggiornamento alla versione {0} è disponibile.\n\nVuoi scaricarlo ora?
+ShowReleasenotes=Mostra le note di rilascio
+WarningNetFrameworkTooOld=Attenzione: Installare .Net Framework {0} (o una versione equivalente Mono) prima di installare l'aggiornamento.\n\nAltrimenti, il programma non riuscirà ad avviarsi dopo l'aggiornamento.
+WarningNetFrameworkUnknown=Attenzione: .Net Framework {0} (o una versione equivalente Mono) è necessario per questo aggiornamento. Assicurati che sia installato.
+NetFrameworkDownload=Scarica .Net Framework
+Herunterladen=&Download
+msgUpdateInstallierenAdmin=Hai scaricato un aggiornamento ma non l'hai ancora installato.\n\nAvvia {0} come amministratore per installare l'aggiornamento.
+msgKeinUpdate=Nessun aggiornamento disponibile
+msgFehlerUpdateSuchen=Errore nella ricerca di aggiornamenti: {0}
+lblAktuelleDatei=File corrente: {0}
+UpdateFertigstellen=Completamento...
+msgUpdateErfolgreich=Aggiornamento scaricato con successo!\n\nPer installare l'aggiornamento devi riavviare {0}\n\nRiavviare ora?
+Neustarten=&Riavvia
+msgFehlerUpdate=Errore durante l'Aggiornamento: {0}
+FehlerAusführen=Errore nel tentativo di esecuzione di "{0}"\n\n{1}
+MonoUpdateHinweis=Se l'aggiornamento non inizia, esegui il comando seguente:\n\n{0}
+UpdateHistory=Cronologia degli aggiornamenti
+Updates=Aggiornamenti:
+Schließen=&Chiudi
+VersionErfolgreichInstalliert={0}: versione {1} installata con successo.
