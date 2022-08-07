@@ -14,7 +14,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Replace program files with previously downloaded update files")>
 <Assembly: AssemblyCompany("Flose")>
 <Assembly: AssemblyProduct("Update")>
-<Assembly: AssemblyCopyright("© Flose 2006-2016")>
+<Assembly: AssemblyCopyright("© Flose 2006-2022")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -34,7 +34,7 @@ Imports System.Runtime.InteropServices
 ' übernehmen, indem Sie "*" eingeben:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("2.0.4.0")>
-<Assembly: AssemblyFileVersion("2.0.4.0")>
+<Assembly: AssemblyVersion("2.0.8.0")>
+<Assembly: AssemblyFileVersion("2.0.8.0")>
 
-<Assembly: NeutralResourcesLanguageAttribute("de-DE")> 
+<Assembly: NeutralResourcesLanguageAttribute("de-DE")>

@@ -8,10 +8,12 @@
     <owners>$author$</owners>
     <projectUrl>https://www.mal-was-anderes.de/UpdateLib</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">LGPL-3.0-only</license>
     <description>$description$</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright Flose 2019</copyright>
+    <copyright>Copyright Flose 2022</copyright>
     <tags>Update Library</tags>
+    <readme>docs\README.md</readme>
     <contentFiles>
         <files include="**/Update.exe" buildAction="None" copyToOutput="true" />
     </contentFiles>
@@ -21,6 +23,7 @@
     </dependencies>
   </metadata>
   <files>
+    <file src="..\README.md" target="docs\" />
     <file src="bin\Release20\$id$.dll" target="lib\net20\" />
     <file src="bin\Release40\$id$.dll" target="lib\net40\" />
     <file src="..\UpdateExe\bin\Release20\Update.exe" target="contentFiles\any\net20" />

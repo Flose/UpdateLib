@@ -13,7 +13,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Provide update functionality for programs")>
 <Assembly: AssemblyCompany("Flose")>
 <Assembly: AssemblyProduct("UpdateLib")>
-<Assembly: AssemblyCopyright("© Flose 2007 - 2019")>
+<Assembly: AssemblyCopyright("© Flose 2007 - 2022")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
@@ -33,7 +33,7 @@ Imports System.Runtime.InteropServices
 ' übernehmen, indem Sie "*" eingeben:
 ' <Assembly: AssemblyVersion("1.0.*")>
 
-<Assembly: AssemblyVersion("2.0.7.0")>
-<Assembly: AssemblyFileVersion("2.0.7.0")>
+<Assembly: AssemblyVersion("2.0.8.0")>
+<Assembly: AssemblyFileVersion("2.0.8.0")>
 
 <Assembly: NeutralResourcesLanguage("en")>

@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("")>
 <Assembly: AssemblyCompany("")>
 <Assembly: AssemblyProduct("UpdateTool")>
-<Assembly: AssemblyCopyright("Copyright © Flose 2016")>
+<Assembly: AssemblyCopyright("Copyright © Flose 2022")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
